@@ -21,7 +21,8 @@ class Usuario(
     val celular: Long,
 
     @Column
-    val email: String) {
+    val email: String
+) {
 
     @Column
     val username: String? = null
@@ -33,10 +34,10 @@ class Usuario(
     val fechaNacimiento: LocalDate? = null
 
     @Column
-    val fechaAlta : LocalDate = LocalDate.now()
+    val fechaAlta: LocalDate = LocalDate.now()
 
     @Column
-    var fechaBaja : LocalDate? = null
+    var fechaBaja: LocalDate? = null
 
     fun toUsuarioAbmDto(): UsuarioAbmDTO {
         return UsuarioAbmDTO(id, nombre, apellido, username)

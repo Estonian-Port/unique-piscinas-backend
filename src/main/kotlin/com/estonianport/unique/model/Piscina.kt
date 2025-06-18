@@ -1,12 +1,9 @@
 package com.estonianport.unique.model
 
 import com.estonianport.unique.common.errors.BusinessException
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import java.time.LocalDate
+import com.estonianport.unique.model.enums.EntradaAgua
+import com.estonianport.unique.model.enums.FuncionFiltro
+import jakarta.persistence.*
 
 @Entity
 class Piscina(
@@ -47,16 +44,19 @@ class Piscina(
     val volumenTC: Double?,
 
     // Puede tener una o dos bombas.
-    @Column
     val bomba: MutableList<Bomba>,
 
     // Filtro entiendo que es uno solo pero habria que confirmar con Leo.
     @Column
     val filtro: Filtro,
 
-    // Dispositivos de la piscina: Son opcionales y corresponden a UV, Ionizador, Trasductor y Calefacción.
+    val valvulas: MutableSet<Valvula>,
+
+    // Dispositivos de la piscina: Son opcionales y corresponden a UV, Ionizador y Trasductor.
+    val sistemaGermicida: MutableSet<SistemaGermicida>,
+
     @Column
-    val dispositivos: MutableSet<Dispostivo>,
+    val calefaccion: Calefaccion? = null,
 
     // Los siguiente atributos en el prototipo aparecen en el formulario de añadir piscina pero luego esa informacion no se muestra en ningun lado.
     // Consultar a Leo si quiere mostrarla, por ejemplo junto con los dispostivos, o si los sacamos.
@@ -68,12 +68,12 @@ class Piscina(
 
     @Column
     val orp: Boolean,
-    ) {
+) {
     @Column
     val entradaAgua: MutableList<EntradaAgua> = mutableListOf()
 
     @Column
-    val funcionActiva: MutableList<FuncionActiva> = mutableListOf()
+    val funcionActiva: MutableList<FuncionFiltro> = mutableListOf()
 
     @Column
     val programacionFiltrado: MutableSet<Programacion> = mutableSetOf()
@@ -149,52 +149,4 @@ class Piscina(
         // Implementación de la función para realizar una lectura de la piscina mediante la placa de control.
         lecturas.add(lectura)
     }
-}
-
-// Las siguientes interfaces son para representar los distintos componentes de la piscina que aun no han sido modelado.
-
-interface Bomba {
-    val potencia: Double
-    val tipo: String
-}
-
-interface Filtro {
-    val tipo: String
-}
-
-enum class EntradaAgua {
-    FONDO, BARREFONDO, SKIMMER
-}
-
-enum class FuncionActiva {
-    FILTRAR, RETROLAVAR, ENJUAGAR, DESAGOTAR, RECIRCULAR
-}
-
-interface Programacion {
-    val horaInicio: String
-    val horaFin: String
-    val dias: List<String>
-    val estaActivos: Boolean
-}
-
-interface Lectura {
-    val fecha: String
-    val ph: Double
-    val cloro: Double
-    val temperatura: Double
-    val presion: Double
-}
-
-interface Dispostivo {
-    val tipo: String
-    val marca: String
-    val modelo: String
-    val potencia: Double
-}
-
-interface Registro {
-    val fecha: LocalDate
-    val descripcion: String
-    val tecnico: Usuario
-    val accion: String
 }
