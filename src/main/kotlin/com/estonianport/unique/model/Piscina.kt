@@ -149,4 +149,8 @@ class Piscina(
         // Implementación de la función para realizar una lectura de la piscina mediante la placa de control.
         lecturas.add(lectura)
     }
+
+    fun tieneCalefaccion() = calefaccion != null
+
+    fun filtroActivo() : Boolean = (entradaAgua.isNotEmpty() and funcionActiva.isNotEmpty())
 }
