@@ -16,9 +16,13 @@ data class Programacion(
     @Column
     val horaFin: LocalTime,
 
-    // No estoy tan seguro si es correcto usar ElemnentCollection.
     @ElementCollection
+    @CollectionTable(
+        name = "programacion_dia",
+        joinColumns = [JoinColumn(name = "programacion_id")]
+    )
     @Enumerated(EnumType.STRING)
+    @Column(name = "dia")
     val dias: List<DayOfWeek>,
 
     @Column

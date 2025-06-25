@@ -1,31 +1,45 @@
 package com.estonianport.unique.model
 
 import jakarta.persistence.*
-import java.time.LocalDate
-import java.time.LocalTime
+import java.time.LocalDateTime
 
-@Entity
-data class Lectura(
+@MappedSuperclass
+abstract class LecturaBase(
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long,
+    val id: Long = 0,
 
-    @Column
-    val fecha: LocalDate,
+    @Column(nullable = false)
+    val fecha: LocalDateTime
+)
 
-    @Column
-    val hora: LocalTime,
 
-    @Column
+@Entity
+class Lectura(
+
+    id: Long = 0,
+    fecha: LocalDateTime,
+
+    @Column(nullable = false)
     val ph: Double,
 
-    @Column
+    @Column(nullable = false)
     val cloro: Double,
 
-    @Column
+    @Column(nullable = false)
     val temperatura: Double,
 
-    @Column
+    @Column(nullable = false)
     val presion: Double
-) {
-}
+
+) : LecturaBase(id, fecha)
+
+
+@Entity
+class ErrorLectura(
+    id: Long = 0,
+    fecha: LocalDateTime
+
+) : LecturaBase(id, fecha)
+

@@ -15,14 +15,14 @@ object PiscinaMapper {
         )
     }
 
-    fun buildPiscinaResumenDto(piscina: Piscina): PiscinaResumenResponseDto {
+    fun buildPiscinaResumenDto(piscina: Piscina, ph : Double, diferenciaPh : Double): PiscinaResumenResponseDto {
         return PiscinaResumenResponseDto(
             id = piscina.id.toString(),
             nombre = piscina.nombre,
             direccion = piscina.direccion,
             volumen = piscina.volumen.toString(),
-            ph = piscina.ph().toString(),
-            diferenciaPh = piscina.diferenciaPh().toString(),
+            ph = ph.toString(),
+            diferenciaPh = diferenciaPh.toString(),
             clima = piscina.climaLocal().toString(),
             entradaAgua = piscina.entradaAgua.map { it.toString() }.toList(),
             funcionActiva = piscina.funcionActiva.map { it.toString() }.toList(),
@@ -31,7 +31,7 @@ object PiscinaMapper {
         )
     }
 
-    fun buildPiscinaEquipamientoResponseDto(piscina: Piscina): PiscinaEquipamientoResponseDto {
+    fun buildPiscinaEquipamientoResponseDto(piscina: Piscina, presion : Double): PiscinaEquipamientoResponseDto {
         return PiscinaEquipamientoResponseDto(
             id = piscina.id.toString(),
             nombre = piscina.nombre,
@@ -40,7 +40,7 @@ object PiscinaMapper {
             estadoFiltro = piscina.filtroActivo(),
             entradaAgua = piscina.entradaAgua.map { it.toString() }.toList(),
             funcionActiva = piscina.funcionActiva.map { it.toString() }.toList(),
-            presion = piscina.presion().toString(),
+            presion = presion.toString(),
             bombas = piscina.bomba.map { BombaMapper.buildBombaResponseDto(it) }.toList(),
             filtro = FiltroMapper.buildFiltroResponseDto(piscina.filtro),
             valvulas = piscina.valvulas.map { ValvulaMapper.buildValvulaResponseDto(it) }.toList(),

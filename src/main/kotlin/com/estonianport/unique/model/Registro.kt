@@ -15,7 +15,8 @@ data class Registro(
     @Column
     val descripcion: String,
 
-    @Column
+    @ManyToOne(fetch = FetchType.LAZY)
+    @PrimaryKeyJoinColumn
     val tecnico: Usuario,
 
     @Column

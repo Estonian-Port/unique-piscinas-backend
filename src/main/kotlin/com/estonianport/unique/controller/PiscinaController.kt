@@ -16,15 +16,13 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/piscina")
 @CrossOrigin("*")
 class PiscinaController {
-    @Autowired
-    lateinit var usuarioService: UsuarioService
 
     @Autowired
     lateinit var piscinaService: PiscinaService
 
-    // Endpoint para retornar la lista de piscinas asignadas a un usuario
+    // Te cambie los id que llegan por endpoint a Long, prefiero q se trabajen directo asi q estar casteandolos en el service
     @GetMapping("/{usuarioId}")
-    fun getPiscinasByUsuarioId(@PathVariable usuarioId: String): ResponseEntity<CustomResponse> {
+    fun getPiscinasByUsuarioId(@PathVariable usuarioId: Long): ResponseEntity<CustomResponse> {
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Piscinas obtenidas correctamente",
@@ -35,22 +33,38 @@ class PiscinaController {
 
     // Endpoint para retornar los datos de la seccion resumen de la piscina
     @GetMapping("/resumen/{piscinaId}")
-    fun getDataResumenPiscina(@PathVariable piscinaId: String): ResponseEntity<CustomResponse> {
+    fun getDataResumenPiscina(@PathVariable piscinaId: Long): ResponseEntity<CustomResponse> {
         return ResponseEntity.status(200).body(
             CustomResponse(
-                message = "Informacion de la piscina obtenida correctamente",
-                data = PiscinaMapper.buildPiscinaResumenDto(piscinaService.findById(piscinaId))
+                message = "Resumen de la piscina obtenida correctamente",
+                data = PiscinaMapper.buildPiscinaResumenDto(
+                    piscinaService.findById(piscinaId),
+                    piscinaService.getPh(piscinaId),
+                    piscinaService.getDiferenciaPh(piscinaId))
             )
         )
     }
 
-    // Endpoint para retornar los datos de la seccion resumen de la piscina
-    @GetMapping("/resumen/{piscinaId}")
-    fun getDataEquipamientoPiscina(@PathVariable piscinaId: String): ResponseEntity<CustomResponse> {
+    // Endpoint para retornar el equipamiento de la piscina
+    @GetMapping("/equipamiento/{piscinaId}")
+    fun getDataEquipamientoPiscina(@PathVariable piscinaId: Long): ResponseEntity<CustomResponse> {
         return ResponseEntity.status(200).body(
             CustomResponse(
-                message = "Informacion de la piscina obtenida correctamente",
-                data = PiscinaMapper.buildPiscinaEquipamientoResponseDto(piscinaService.findById(piscinaId))
+                message = "Equipamiento de la piscina obtenida correctamente",
+                data = PiscinaMapper.buildPiscinaEquipamientoResponseDto(
+                    piscinaService.findById(piscinaId),
+                    piscinaService.getPresion(piscinaId))
+            )
+        )
+    }
+
+    @GetMapping("lectura/{piscinaId}")
+    fun getLecturasPiscina(@PathVariable piscinaId: Long): ResponseEntity<CustomResponse> {
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Lecturas de la piscina obtenida correctamente",
+                // TODO Aca no se si harias un mapper, despues acomodalo como mejor creas yo suelo hacerlo asi
+                data = piscinaService.getLecturasPiscina(piscinaId)
             )
         )
     }
