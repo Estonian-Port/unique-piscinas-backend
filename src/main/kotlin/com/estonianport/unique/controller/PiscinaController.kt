@@ -3,7 +3,6 @@ package com.estonianport.unique.controller
 import com.estonianport.unique.mapper.PiscinaMapper
 import com.estonianport.unique.dto.response.CustomResponse
 import com.estonianport.unique.service.PiscinaService
-import com.estonianport.unique.service.UsuarioService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CrossOrigin
@@ -63,8 +62,17 @@ class PiscinaController {
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Lecturas de la piscina obtenida correctamente",
-                // TODO Aca no se si harias un mapper, despues acomodalo como mejor creas yo suelo hacerlo asi
                 data = piscinaService.getLecturasPiscina(piscinaId)
+            )
+        )
+    }
+
+    @GetMapping("programacion/{piscinaId}")
+    fun getProgramacionPiscina(@PathVariable piscinaId: Long): ResponseEntity<CustomResponse> {
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Programaciones de la piscina obtenidas correctamente",
+                data = PiscinaMapper.buildPiscinaProgramacionResponseDto(piscinaService.findById(piscinaId))
             )
         )
     }

@@ -1,6 +1,6 @@
 package com.estonianport.unique.repository
 
-import com.estonianport.unique.dto.response.LecturaConErrorDto
+import com.estonianport.unique.dto.response.LecturaConErrorResponseDto
 import com.estonianport.unique.model.Piscina
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
@@ -59,5 +59,5 @@ interface PiscinaRepository : JpaRepository<Piscina, Int> {
             ORDER BY fecha""",
         nativeQuery = true
     )
-    fun findTodasLecturasConError(piscinaId: Long): List<LecturaConErrorDto>
+    fun findTodasLecturasConError(piscinaId: Long): List<LecturaConErrorResponseDto>
 }

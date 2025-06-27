@@ -1,6 +1,6 @@
 package com.estonianport.unique.service
 
-import com.estonianport.unique.dto.response.LecturaConErrorDto
+import com.estonianport.unique.dto.response.LecturaConErrorResponseDto
 import com.estonianport.unique.model.Piscina
 import com.estonianport.unique.repository.PiscinaRepository
 import org.springframework.stereotype.Service
@@ -19,7 +19,7 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
             ?: throw IllegalArgumentException("Piscina no encontrada con ID: $piscinaId")
     }
 
-    fun getLecturasPiscina(piscinaId: Long): List<LecturaConErrorDto> {
+    fun getLecturasPiscina(piscinaId: Long): List<LecturaConErrorResponseDto> {
         return piscinaRepository.findTodasLecturasConError(piscinaId)
     }
 
