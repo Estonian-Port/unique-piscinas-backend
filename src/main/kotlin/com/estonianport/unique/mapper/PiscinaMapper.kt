@@ -2,6 +2,7 @@ package com.estonianport.unique.mapper
 
 import com.estonianport.unique.dto.response.PiscinaEquipamientoResponseDto
 import com.estonianport.unique.dto.response.PiscinaListResponseDto
+import com.estonianport.unique.dto.response.PiscinaProgramacionResponseDto
 import com.estonianport.unique.dto.response.PiscinaResumenResponseDto
 import com.estonianport.unique.model.Piscina
 
@@ -27,7 +28,7 @@ object PiscinaMapper {
             entradaAgua = piscina.entradaAgua.map { it.toString() }.toList(),
             funcionActiva = piscina.funcionActiva.map { it.toString() }.toList(),
             sistemasGermicidas = piscina.sistemaGermicida.map { it.toString() }.toList(),
-            calefaccion = piscina.tieneCalefaccion()
+            calefaccion = piscina.tieneCalefaccion(),
         )
     }
 
@@ -49,6 +50,17 @@ object PiscinaMapper {
                     it
                 )
             }.toList(),
+        )
+    }
+
+    fun buildPiscinaProgramacionResponseDto(piscina: Piscina): PiscinaProgramacionResponseDto {
+        return PiscinaProgramacionResponseDto(
+            id = piscina.id.toString(),
+            nombre = piscina.nombre,
+            direccion = piscina.direccion,
+            volumen = piscina.volumen.toString(),
+            programacionLuces = piscina.programacionLuces.map { ProgramacionMapper.buildProgramacionResponseDto(it) }.toList(),
+            programacionFiltrado = piscina.programacionFiltrado.map { ProgramacionMapper.buildProgramacionResponseDto(it) }.toList()
         )
     }
 }
