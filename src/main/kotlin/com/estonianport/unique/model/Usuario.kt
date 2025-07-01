@@ -21,7 +21,10 @@ class Usuario(
     val celular: Long,
 
     @Column
-    val email: String
+    val email: String,
+
+    @Column
+    val esAdministrador: Boolean = false
 ) {
 
     @Column

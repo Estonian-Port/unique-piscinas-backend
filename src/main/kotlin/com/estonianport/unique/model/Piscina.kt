@@ -77,7 +77,7 @@ class Piscina(
     // Lo puse aca porque entiendo que se deberia poder crear una pileta sin administrador
     // y que el admin total en este caso leo, la maneje y luego asigne a un administrador
     @ManyToOne(fetch = FetchType.LAZY)
-    val administrador: Usuario? = null
+    var administrador: Usuario? = null
 
     @ElementCollection
     @CollectionTable(

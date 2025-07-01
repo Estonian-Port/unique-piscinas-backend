@@ -22,6 +22,8 @@ class UsuarioService : GenericServiceImpl<Usuario, Long>() {
     fun getUsuarioIdByUsername(username: String): Long {
         return usuarioRepository.getByUsername(username).id
     }
+
+
 /*
     fun getAllUsuario(id : Long, pageNumber : Int): List<UsuarioAbmDTO> {
         return usuarioRepository.getAllUsuario(id, PageRequest.of(pageNumber,10)).content
@@ -65,6 +67,14 @@ class UsuarioService : GenericServiceImpl<Usuario, Long>() {
 
     fun findById(id : Long) : Usuario? {
         return usuarioRepository.findById(id).get()
+    }
+
+    fun getUsuariosActivos() : Int {
+        return usuarioRepository.countUsuariosActivos()
+    }
+
+    fun getUsuariosRegistrados(): List<Usuario> {
+        return usuarioRepository.getAllUsuarios()
     }
 /*
     fun getUsuarioPerfil(usuarioId: Long): UsuarioPerfilDTO {

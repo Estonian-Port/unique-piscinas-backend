@@ -39,4 +39,40 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
         return ultimasDosPh[0] - ultimasDosPh[1]
     }
 
+    fun totalPiscinas(): Int {
+        return piscinaRepository.count().toInt()
+    }
+
+    fun countPiscinasByTipo(tipo: String): Int {
+        return piscinaRepository.countByTipo(tipo)
+    }
+
+    fun getVolumenTotal(): Double {
+        return piscinaRepository.getTotalVolumen() ?: 0.0
+    }
+
+    fun getVolumenPromedio(): Double {
+        return piscinaRepository.getPromedioVolumen() ?: 0.0
+    }
+
+    fun getPiscinasRegistradas(): List<Piscina> {
+        return piscinaRepository.findAll()
+    }
+
+    fun getPiscinasSinAdministrador(): List<Piscina> {
+        return piscinaRepository.findByAdministradorIsNull()
+    }
+
+    fun desasignarAdministrador(usuarioId: Long, piscinaId: Long) {
+        val usuario = usuarioService.findById(usuarioId)
+            ?: throw IllegalArgumentException("Usuario no encontrado con ID: $usuarioId")
+        val piscina = findById(piscinaId)
+        //piscina.administrador.remove(usuario)
+        // Creo que deberiamos tener una lista de administradores en vez de uno solo. Porque Leo debe tener permisos
+        // y tambien el usuario que Leo asigne. Si no hay que crear dos entradas en la tabla de piscina. Una para adminitrador
+        // y otra para usuario a cargo de la piscina.
+        piscina.administrador = null
+        piscinaRepository.save(piscina)
+    }
+
 }

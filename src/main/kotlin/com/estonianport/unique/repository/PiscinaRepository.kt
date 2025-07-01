@@ -14,6 +14,8 @@ interface PiscinaRepository : JpaRepository<Piscina, Int> {
 
     fun findById(piscinaId: Long): Piscina?
 
+    fun findByAdministradorIsNull(): List<Piscina>
+
     @Query(
         """
             SELECT presion
@@ -60,4 +62,11 @@ interface PiscinaRepository : JpaRepository<Piscina, Int> {
         nativeQuery = true
     )
     fun findTodasLecturasConError(piscinaId: Long): List<LecturaConErrorResponseDto>
+
+    // Estas tres queires son para las estadisticas de administracion. Habria que ver si JPA infiere o hay que codearlas a mano
+    fun countByTipo(tipo: String): Int
+
+    fun getTotalVolumen(): Double
+
+    fun getPromedioVolumen(): Double
 }

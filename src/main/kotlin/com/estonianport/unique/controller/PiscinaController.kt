@@ -25,7 +25,8 @@ class PiscinaController {
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Piscinas obtenidas correctamente",
-                data = piscinaService.getPiscinasByUsuarioId(usuarioId).map { PiscinaMapper.buildPiscinaListDto(it) }
+                data = piscinaService.getPiscinasByUsuarioId(usuarioId)
+                    .map { PiscinaMapper.buildPiscinaListResponseDto(it) }
             )
         )
     }
@@ -36,10 +37,11 @@ class PiscinaController {
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Resumen de la piscina obtenida correctamente",
-                data = PiscinaMapper.buildPiscinaResumenDto(
+                data = PiscinaMapper.buildPiscinaResumenResponseDto(
                     piscinaService.findById(piscinaId),
                     piscinaService.getPh(piscinaId),
-                    piscinaService.getDiferenciaPh(piscinaId))
+                    piscinaService.getDiferenciaPh(piscinaId)
+                )
             )
         )
     }
@@ -52,7 +54,8 @@ class PiscinaController {
                 message = "Equipamiento de la piscina obtenida correctamente",
                 data = PiscinaMapper.buildPiscinaEquipamientoResponseDto(
                     piscinaService.findById(piscinaId),
-                    piscinaService.getPresion(piscinaId))
+                    piscinaService.getPresion(piscinaId)
+                )
             )
         )
     }
