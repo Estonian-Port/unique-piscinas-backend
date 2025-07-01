@@ -71,6 +71,10 @@ class UsuarioService : GenericServiceImpl<Usuario, Long>() {
     fun getUsuariosActivos() : Int {
         return usuarioRepository.countUsuariosActivos()
     }
+
+    fun getUsuariosRegistrados(): List<Usuario> {
+        return usuarioRepository.getAllUsuarios()
+    }
 /*
     fun getUsuarioPerfil(usuarioId: Long): UsuarioPerfilDTO {
         return usuarioRepository.getUsuarioPerfil(usuarioId)

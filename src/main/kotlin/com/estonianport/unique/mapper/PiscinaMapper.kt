@@ -1,9 +1,6 @@
 package com.estonianport.unique.mapper
 
-import com.estonianport.unique.dto.response.PiscinaEquipamientoResponseDto
-import com.estonianport.unique.dto.response.PiscinaListResponseDto
-import com.estonianport.unique.dto.response.PiscinaProgramacionResponseDto
-import com.estonianport.unique.dto.response.PiscinaResumenResponseDto
+import com.estonianport.unique.dto.response.*
 import com.estonianport.unique.model.Piscina
 
 object PiscinaMapper {
@@ -63,4 +60,26 @@ object PiscinaMapper {
             programacionFiltrado = piscina.programacionFiltrado.map { ProgramacionMapper.buildProgramacionResponseDto(it) }.toList()
         )
     }
+
+    fun buildPiscinaRegistradaListDto(piscina: Piscina, ph: Double?): PiscinaRegistradaListResponseDto {
+        return PiscinaRegistradaListResponseDto(
+            id = piscina.id,
+            nombre = piscina.nombre,
+            esDesbordante = piscina.esDesbordante,
+            administradorNombre = piscina.administrador?.nombre ?: "Sin administrador asignado",
+            ph = ph ?: 0.0,
+            sistemasGermicidas = piscina.sistemaGermicida.map { SistemaGermicidaMapper.buildSistemaGermicidaResponseDto(it) },
+            calefaccion = piscina.calefaccion?.let { CalefaccionResponseDto(id = it.id, tipo = it.tipo.toString(), estado = it.estado.toString()) }
+        )
+    }
+
+    fun buildPiscinaAsignadaResponseDto(piscina: Piscina): PiscinaAsignadaResponseDto {
+        return PiscinaAsignadaResponseDto(
+            id = piscina.id,
+            nombre = piscina.nombre,
+            esDesbordante = piscina.esDesbordante,
+            volumen = piscina.volumen.toString(),
+        )
+    }
+
 }

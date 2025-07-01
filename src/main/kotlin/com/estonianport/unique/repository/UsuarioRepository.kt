@@ -16,6 +16,8 @@ interface UsuarioRepository : CrudRepository<Usuario, Long> {
     // Aca entiendo que habria que crear la query. No recuerdo que era lo que definia si el usuario esta activo o no
     fun countUsuariosActivos(): Int
 
+    fun getAllUsuarios(): List<Usuario>
+
     fun getByUsername(username: String): Usuario
 /*
     @Query("SELECT new com.estonianport.unique.dto.UsuarioAbmDTO(c.usuario.id, c.usuario.nombre, " +

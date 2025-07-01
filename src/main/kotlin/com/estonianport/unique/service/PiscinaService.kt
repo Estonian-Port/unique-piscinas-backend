@@ -39,4 +39,24 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
         return ultimasDosPh[0] - ultimasDosPh[1]
     }
 
+    fun totalPiscinas(): Int {
+        return piscinaRepository.count().toInt()
+    }
+
+    fun countPiscinasByTipo(tipo: String): Int {
+        return piscinaRepository.countByTipo(tipo)
+    }
+
+    fun getVolumenTotal(): Double {
+        return piscinaRepository.getTotalVolumen() ?: 0.0
+    }
+
+    fun getVolumenPromedio(): Double {
+        return piscinaRepository.getPromedioVolumen() ?: 0.0
+    }
+
+    fun getPiscinasRegistradas(): List<Piscina> {
+        return piscinaRepository.findAll()
+    }
+
 }
