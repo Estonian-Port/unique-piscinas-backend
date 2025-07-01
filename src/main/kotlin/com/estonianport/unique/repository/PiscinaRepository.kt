@@ -14,6 +14,8 @@ interface PiscinaRepository : JpaRepository<Piscina, Int> {
 
     fun findById(piscinaId: Long): Piscina?
 
+    fun findByAdministradorIsNull(): List<Piscina>
+
     @Query(
         """
             SELECT presion

@@ -9,8 +9,10 @@ import com.estonianport.unique.service.UsuarioService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CrossOrigin
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -66,6 +68,48 @@ class AdministracionController {
                         piscinaService.getPiscinasByUsuarioId(it.id)
                     )
                 }
+            )
+        )
+    }
+
+    @GetMapping("/no-asignadas")
+    fun getPiscinasNoAsignadas(): ResponseEntity<CustomResponse> {
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Piscinas sin asignar obtenidas correctamente",
+                data = piscinaService.getPiscinasSinAdministrador()
+                    .map { PiscinaMapper.buildPiscinaListResponseDto(it) }
+            )
+        )
+    }
+
+    @DeleteMapping("/{usuarioId}/{administradorId}")
+    fun deleteUsuario(
+        @PathVariable usuarioId: Long,
+        @PathVariable administradorId: Long
+    ): ResponseEntity<CustomResponse> {
+        administracionService.verificarRol(administradorId)
+        usuarioService.delete(usuarioId)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Usuario eliminado correctamente",
+                data = null
+            )
+        )
+    }
+
+    @PutMapping("/desasginar-piscina/{piscinaId}/{usuarioId}/{administradorId}")
+    fun desasignarAdministrador(
+        @PathVariable piscinaId: Long,
+        @PathVariable usuarioId: Long,
+        @PathVariable administradorId: Long
+    ): ResponseEntity<CustomResponse> {
+        administracionService.verificarRol(administradorId)
+        piscinaService.desasignarAdministrador(usuarioId, piscinaId)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Usuario desasignado correctamente",
+                data = PiscinaMapper.buildPiscinaListResponseDto(piscinaService.findById(piscinaId))
             )
         )
     }

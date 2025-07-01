@@ -5,7 +5,7 @@ import com.estonianport.unique.model.Piscina
 
 object PiscinaMapper {
 
-    fun buildPiscinaListDto(piscina: Piscina): PiscinaListResponseDto {
+    fun buildPiscinaListResponseDto(piscina: Piscina): PiscinaListResponseDto {
         return PiscinaListResponseDto(
             id = piscina.id.toString(),
             nombre = piscina.nombre,
@@ -13,7 +13,7 @@ object PiscinaMapper {
         )
     }
 
-    fun buildPiscinaResumenDto(piscina: Piscina, ph : Double, diferenciaPh : Double): PiscinaResumenResponseDto {
+    fun buildPiscinaResumenResponseDto(piscina: Piscina, ph : Double, diferenciaPh : Double): PiscinaResumenResponseDto {
         return PiscinaResumenResponseDto(
             id = piscina.id.toString(),
             nombre = piscina.nombre,

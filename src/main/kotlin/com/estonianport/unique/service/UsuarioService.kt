@@ -23,6 +23,7 @@ class UsuarioService : GenericServiceImpl<Usuario, Long>() {
         return usuarioRepository.getByUsername(username).id
     }
 
+
 /*
     fun getAllUsuario(id : Long, pageNumber : Int): List<UsuarioAbmDTO> {
         return usuarioRepository.getAllUsuario(id, PageRequest.of(pageNumber,10)).content
