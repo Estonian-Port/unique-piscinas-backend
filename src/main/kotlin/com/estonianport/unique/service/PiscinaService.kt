@@ -2,6 +2,7 @@ package com.estonianport.unique.service
 
 import com.estonianport.unique.dto.response.LecturaConErrorResponseDto
 import com.estonianport.unique.model.Piscina
+import com.estonianport.unique.model.Programacion
 import com.estonianport.unique.repository.PiscinaRepository
 import org.springframework.stereotype.Service
 
@@ -75,4 +76,40 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
         piscinaRepository.save(piscina)
     }
 
+    fun deleteProgramacion(piscinaId: Long, programacionId: Long) {
+        val piscina = findById(piscinaId)
+        piscina.programacionLuces.removeIf { it.id == programacionId }
+        piscina.programacionFiltrado.removeIf { it.id == programacionId }
+        piscinaRepository.save(piscina)
+    }
+
+    fun agregarProgramacion(piscinaId: Long, programacion: Programacion, filtrado: Boolean) {
+        val piscina = findById(piscinaId)
+        if (filtrado) piscina.programacionFiltrado.add(programacion)
+        if (!filtrado) piscina.programacionLuces.add(programacion)
+        piscinaRepository.save(piscina)
+    }
+
+    fun updateProgramacion(
+        piscinaId: Long,
+        programacion: Programacion,
+        filtrado: Boolean
+    ) {
+        val piscina = findById(piscinaId)
+        val lista = if (filtrado) piscina.programacionFiltrado else piscina.programacionLuces
+        actualizarListaProgramacion(lista.toList(), programacion)
+        piscinaRepository.save(piscina)
+    }
+
+    private fun actualizarListaProgramacion(
+        lista: List<Programacion>,
+        programacion: Programacion
+    ) {
+        lista.find { it.id == programacion.id }?.apply {
+            horaInicio = programacion.horaInicio
+            horaFin = programacion.horaFin
+            dias = programacion.dias
+            estaActivo = programacion.estaActivo
+        }
+    }
 }
