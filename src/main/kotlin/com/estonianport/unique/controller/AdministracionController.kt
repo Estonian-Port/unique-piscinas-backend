@@ -83,21 +83,6 @@ class AdministracionController {
         )
     }
 
-    @DeleteMapping("/{usuarioId}/{administradorId}")
-    fun deleteUsuario(
-        @PathVariable usuarioId: Long,
-        @PathVariable administradorId: Long
-    ): ResponseEntity<CustomResponse> {
-        administracionService.verificarRol(administradorId)
-        usuarioService.delete(usuarioId)
-        return ResponseEntity.status(200).body(
-            CustomResponse(
-                message = "Usuario eliminado correctamente",
-                data = null
-            )
-        )
-    }
-
     @PutMapping("/desasginar-piscina/{piscinaId}/{usuarioId}/{administradorId}")
     fun desasignarAdministrador(
         @PathVariable piscinaId: Long,
