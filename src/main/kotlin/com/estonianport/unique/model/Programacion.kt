@@ -11,10 +11,10 @@ data class Programacion(
     val id: Long,
 
     @Column
-    val horaInicio: LocalTime,
+    var horaInicio: LocalTime,
 
     @Column
-    val horaFin: LocalTime,
+    var horaFin: LocalTime,
 
     @ElementCollection
     @CollectionTable(
@@ -23,8 +23,8 @@ data class Programacion(
     )
     @Enumerated(EnumType.STRING)
     @Column(name = "dia")
-    val dias: List<DayOfWeek>,
+    var dias: List<DayOfWeek>,
 
     @Column
-    val estaActivo: Boolean
+    var estaActivo: Boolean
 ) {}
