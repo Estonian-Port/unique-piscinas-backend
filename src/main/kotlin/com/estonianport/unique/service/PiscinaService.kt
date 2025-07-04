@@ -85,8 +85,8 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
 
     fun agregarProgramacion(piscinaId: Long, programacion: Programacion, filtrado: Boolean) {
         val piscina = findById(piscinaId)
-        if (filtrado) piscina.programacionFiltrado.add(programacion)
-        if (!filtrado) piscina.programacionLuces.add(programacion)
+        if (filtrado) piscina.agregarProgramacionFiltrado(programacion)
+        if (!filtrado) piscina.agregarProgramacionLuces(programacion)
         piscinaRepository.save(piscina)
     }
 
