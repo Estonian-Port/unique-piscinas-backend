@@ -1,6 +1,6 @@
-package com.estonianport.unique.dto.request
+package com.estonianport.unique.dto.response
 
-data class PiscinaRequestDto(
+data class PiscinaResponseDto (
     val id: Long,
     val nombre: String,
     val direccion: String,
@@ -11,13 +11,12 @@ data class PiscinaRequestDto(
     val profundidad: Double,
     val volumen: Double,
     val volumenTC: Double?,
-    val bomba: List<BombaRequestDto>,
-    val filtro: FiltroRequestDto,
-    val valvulas: List<ValvulaRequestDto>,
-    val sistemaGermicida: List<SistemaGermicidaRequestDto>,
-    val calefaccion: CalefaccionRequestDto?,
+    val bomba: List<BombaResponseDto>,
+    val filtro: FiltroResponseDto,
+    val valvulas: List<ValvulaResponseDto>,
+    val sistemaGermicida: List<SistemaGermicidaResponseDto>,
+    val calefaccion: CalefaccionResponseDto?,
     val cloroSalino: Boolean,
     val controlAutomaticoPH: Boolean,
     val orp: Boolean,
-    val administradorId: Long?,
 )
