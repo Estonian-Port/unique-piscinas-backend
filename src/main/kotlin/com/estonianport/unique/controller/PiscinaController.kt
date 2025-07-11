@@ -1,13 +1,17 @@
 package com.estonianport.unique.controller
 
+import com.estonianport.unique.dto.request.PiscinaRequestDto
 import com.estonianport.unique.mapper.PiscinaMapper
 import com.estonianport.unique.dto.response.CustomResponse
 import com.estonianport.unique.service.PiscinaService
+import com.estonianport.unique.service.UsuarioService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -15,6 +19,9 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/piscina")
 @CrossOrigin("*")
 class PiscinaController {
+
+    @Autowired
+    private lateinit var usuarioService: UsuarioService
 
     @Autowired
     lateinit var piscinaService: PiscinaService
@@ -76,6 +83,21 @@ class PiscinaController {
             CustomResponse(
                 message = "Programaciones de la piscina obtenidas correctamente",
                 data = PiscinaMapper.buildPiscinaProgramacionResponseDto(piscinaService.findById(piscinaId))
+            )
+        )
+    }
+
+    @PostMapping("")
+    fun createPiscina(@RequestBody piscinaDto: PiscinaRequestDto): ResponseEntity<CustomResponse> {
+        val newPiscina = PiscinaMapper.buildPiscina(piscinaDto)
+        if (piscinaDto.administradorId != null) {
+            newPiscina.administrador = usuarioService.findById(piscinaDto.administradorId)
+        }
+        piscinaService.create(newPiscina)
+        return ResponseEntity.status(201).body(
+            CustomResponse(
+                message = "Piscina creada correctamente",
+                data = PiscinaMapper.buildPiscinaResponseDto(newPiscina),
             )
         )
     }

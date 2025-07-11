@@ -1,7 +1,9 @@
 package com.estonianport.unique.mapper
 
+import com.estonianport.unique.dto.request.ValvulaRequestDto
 import com.estonianport.unique.dto.response.ValvulaResponseDto
 import com.estonianport.unique.model.Valvula
+import com.estonianport.unique.model.enums.ValvulaType
 
 object ValvulaMapper {
 
@@ -10,6 +12,13 @@ object ValvulaMapper {
             id = valvula.id,
             tipo = valvula.tipo.toString(),
             estado = valvula.estado()
+        )
+    }
+
+    fun buildValvula(valvulaDTO: ValvulaRequestDto): Valvula {
+        return Valvula(
+            id = valvulaDTO.id,
+            tipo = ValvulaType.valueOf(valvulaDTO.tipo),
         )
     }
 }

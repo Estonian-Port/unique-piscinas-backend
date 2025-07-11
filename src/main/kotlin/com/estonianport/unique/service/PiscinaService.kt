@@ -75,4 +75,8 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
         piscinaRepository.save(piscina)
     }
 
+    fun create(piscina: Piscina): Piscina {
+        return piscinaRepository.save(piscina)
+    }
+
 }
