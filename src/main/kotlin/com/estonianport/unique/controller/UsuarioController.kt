@@ -35,7 +35,7 @@ class UsuarioController {
     fun getCurrentUser(principal : Principal): ResponseEntity<CustomResponse> {
         val email = principal.name
         val usuario = usuarioService.getUsuarioByEmail(email)
-        val cantPiscinas = piscinaService.getPiscinasByUsuarioId(usuario.id).size
+        val cantPiscinas = piscinaService.getPiscinasByUsuarioId(usuario.id).map { it.id }
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Usuario obtenido correctamente",

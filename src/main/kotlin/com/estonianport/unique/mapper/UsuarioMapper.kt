@@ -7,14 +7,14 @@ import com.estonianport.unique.model.Usuario
 
 object UsuarioMapper {
 
-    fun buildUsuarioResponseDto(usuario: Usuario, piscinasAsignadas : Int): UsuarioResponseDto {
+    fun buildUsuarioResponseDto(usuario: Usuario, listaPiscinasId : List<Long>): UsuarioResponseDto {
         return UsuarioResponseDto(
             id = usuario.id,
             nombre = usuario.nombre,
             apellido = usuario.apellido,
             email = usuario.email,
             isAdmin = usuario.esAdministrador,
-            cantidadPiscinas = piscinasAsignadas
+            piscinasId = listaPiscinasId
         )
     }
 

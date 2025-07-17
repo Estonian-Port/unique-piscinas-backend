@@ -6,5 +6,5 @@ data class UsuarioResponseDto (
     val apellido: String,
     val email: String,
     val isAdmin: Boolean,
-    val cantidadPiscinas: Int
+    val piscinasId: List<Long>
 )
