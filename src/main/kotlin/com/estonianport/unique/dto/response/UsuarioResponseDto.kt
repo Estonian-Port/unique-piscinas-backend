@@ -1,0 +1,10 @@
+package com.estonianport.unique.dto.response
+
+data class UsuarioResponseDto (
+    val id: Long,
+    val nombre: String,
+    val apellido: String,
+    val email: String,
+    val isAdmin: Boolean,
+    val cantidadPiscinas: Int
+)
