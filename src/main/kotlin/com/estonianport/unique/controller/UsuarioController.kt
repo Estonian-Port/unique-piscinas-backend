@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.security.Principal
 
 @RestController
 @RequestMapping("/usuario")
@@ -26,6 +27,22 @@ class UsuarioController {
 
     @Autowired
     lateinit var usuarioService: UsuarioService
+
+    @Autowired
+    lateinit var piscinaService: PiscinaService
+
+    @GetMapping("/me")
+    fun getCurrentUser(principal : Principal): ResponseEntity<CustomResponse> {
+        val email = principal.name
+        val usuario = usuarioService.getUsuarioByEmail(email)
+        val cantPiscinas = piscinaService.getPiscinasByUsuarioId(usuario.id).map { it.id }
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Usuario obtenido correctamente",
+                data = UsuarioMapper.buildUsuarioResponseDto(usuario, cantPiscinas)
+            )
+        )
+    }
 
     @DeleteMapping("/{usuarioId}/{administradorId}")
     fun deleteUsuario(

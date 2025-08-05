@@ -1,16 +1,20 @@
 package com.estonianport.unique.controller
 
 import com.estonianport.unique.dto.request.PiscinaRequestDto
+import com.estonianport.unique.dto.request.ProgramacionRequestDto
 import com.estonianport.unique.mapper.PiscinaMapper
 import com.estonianport.unique.dto.response.CustomResponse
+import com.estonianport.unique.mapper.ProgramacionMapper
 import com.estonianport.unique.service.PiscinaService
 import com.estonianport.unique.service.UsuarioService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CrossOrigin
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -93,11 +97,48 @@ class PiscinaController {
         if (piscinaDto.administradorId != null) {
             newPiscina.administrador = usuarioService.findById(piscinaDto.administradorId)
         }
+        
         piscinaService.create(newPiscina)
         return ResponseEntity.status(201).body(
             CustomResponse(
                 message = "Piscina creada correctamente",
-                data = PiscinaMapper.buildPiscinaResponseDto(newPiscina),
+                data = PiscinaMapper.buildPiscinaResponseDto(newPiscina)
+            )
+        )
+    }
+ 
+    @DeleteMapping("programacion/{piscinaId}/{programacionId}")
+    fun getProgramacionPiscina(@PathVariable piscinaId: Long, @PathVariable programacionId: Long): ResponseEntity<CustomResponse> {
+        piscinaService.deleteProgramacion(piscinaId, programacionId)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Programación de la piscina eliminada correctamente",
+                data = null
+            )
+        )
+    }
+
+    @PostMapping("/programacion/{piscinaId}")
+    fun createProgramacionPiscina(@PathVariable piscinaId: Long, @RequestBody programacionDTO : ProgramacionRequestDto): ResponseEntity<CustomResponse> {
+        // El id de la piscina se puede pasar por path o en el mismo DTO de la programacion podria venir ese dato?
+        val nuevaProgramacion = ProgramacionMapper.buildProgramacion(programacionDTO)
+        piscinaService.agregarProgramacion(piscinaId, nuevaProgramacion, programacionDTO.filtrado)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Programación de la piscina creada correctamente",
+                data = ProgramacionMapper.buildProgramacionResponseDto(nuevaProgramacion)
+            )
+        )
+    }
+
+    @PutMapping("/programacion/{piscinaId}")
+    fun updateProgramacionPiscina(@PathVariable piscinaId: Long, @RequestBody programacionDTO: ProgramacionRequestDto): ResponseEntity<CustomResponse> {
+        val programacionActualizada = ProgramacionMapper.buildProgramacion(programacionDTO)
+        piscinaService.updateProgramacion(piscinaId, programacionActualizada, programacionDTO.filtrado)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Programación de la piscina actualizada correctamente",
+                data = ProgramacionMapper.buildProgramacionResponseDto(programacionActualizada)
             )
         )
     }

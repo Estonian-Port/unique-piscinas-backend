@@ -28,9 +28,6 @@ class Usuario(
 ) {
 
     @Column
-    val username: String? = null
-
-    @Column
     var password: String? = null
 
     @Column

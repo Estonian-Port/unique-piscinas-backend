@@ -57,8 +57,9 @@ class UsuarioService : GenericServiceImpl<Usuario, Long>() {
         return usuarioRepository.getCantidadClienteFiltrados(id,buscar)
     }
 */
-    fun getUsuarioByEmail(email : String) : Usuario?{
+    fun getUsuarioByEmail(email: String): Usuario {
         return usuarioRepository.getUsuarioByEmail(email)
+            ?: throw NoSuchElementException("No se encontró un usuario con el email proporcionado")
     }
 
     fun getUsuarioByCelular(celular : Long): Usuario?{
