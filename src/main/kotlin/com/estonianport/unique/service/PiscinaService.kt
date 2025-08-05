@@ -76,6 +76,11 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
         piscinaRepository.save(piscina)
     }
 
+
+    fun create(piscina: Piscina): Piscina {
+        return piscinaRepository.save(piscina)
+    }
+ 
     fun deleteProgramacion(piscinaId: Long, programacionId: Long) {
         val piscina = findById(piscinaId)
         piscina.programacionLuces.removeIf { it.id == programacionId }

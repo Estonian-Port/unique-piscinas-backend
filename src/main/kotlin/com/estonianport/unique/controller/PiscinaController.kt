@@ -1,10 +1,12 @@
 package com.estonianport.unique.controller
 
+import com.estonianport.unique.dto.request.PiscinaRequestDto
 import com.estonianport.unique.dto.request.ProgramacionRequestDto
 import com.estonianport.unique.mapper.PiscinaMapper
 import com.estonianport.unique.dto.response.CustomResponse
 import com.estonianport.unique.mapper.ProgramacionMapper
 import com.estonianport.unique.service.PiscinaService
+import com.estonianport.unique.service.UsuarioService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CrossOrigin
@@ -21,6 +23,9 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/piscina")
 @CrossOrigin("*")
 class PiscinaController {
+
+    @Autowired
+    private lateinit var usuarioService: UsuarioService
 
     @Autowired
     lateinit var piscinaService: PiscinaService
@@ -86,6 +91,22 @@ class PiscinaController {
         )
     }
 
+    @PostMapping("")
+    fun createPiscina(@RequestBody piscinaDto: PiscinaRequestDto): ResponseEntity<CustomResponse> {
+        val newPiscina = PiscinaMapper.buildPiscina(piscinaDto)
+        if (piscinaDto.administradorId != null) {
+            newPiscina.administrador = usuarioService.findById(piscinaDto.administradorId)
+        }
+        
+        piscinaService.create(newPiscina)
+        return ResponseEntity.status(201).body(
+            CustomResponse(
+                message = "Piscina creada correctamente",
+                data = PiscinaMapper.buildPiscinaResponseDto(newPiscina)
+            )
+        )
+    }
+ 
     @DeleteMapping("programacion/{piscinaId}/{programacionId}")
     fun getProgramacionPiscina(@PathVariable piscinaId: Long, @PathVariable programacionId: Long): ResponseEntity<CustomResponse> {
         piscinaService.deleteProgramacion(piscinaId, programacionId)
