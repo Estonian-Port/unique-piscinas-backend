@@ -1,6 +1,7 @@
 package com.estonianport.unique.model
 
 import com.estonianport.unique.dto.UsuarioAbmDTO
+import com.estonianport.unique.model.enums.UsuarioType
 import jakarta.persistence.*
 import java.time.LocalDate
 
@@ -24,14 +25,14 @@ class Usuario(
     val email: String,
 
     @Column
-    val esAdministrador: Boolean = false
+    val esAdministrador: Boolean = false,
+
+    @Column
+    var estado: UsuarioType = UsuarioType.PENDIENTE,
 ) {
 
     @Column
     var password: String? = null
-
-    @Column
-    val fechaNacimiento: LocalDate? = null
 
     @Column
     val fechaAlta: LocalDate = LocalDate.now()
@@ -39,7 +40,16 @@ class Usuario(
     @Column
     var fechaBaja: LocalDate? = null
 
+    @Column
+    var ultimoIngreso: LocalDate? = null
+
     fun toUsuarioAbmDto(): UsuarioAbmDTO {
-        return UsuarioAbmDTO(id, nombre, apellido, username)
+        return UsuarioAbmDTO(id, nombre, apellido)
+    }
+
+    fun confirmarPrimerLoguin() {
+        if (ultimoIngreso != null) {
+            estado = UsuarioType.INACTIVO
+        }
     }
 }
