@@ -77,6 +77,10 @@ class UsuarioService : GenericServiceImpl<Usuario, Long>() {
     fun getUsuariosRegistrados(): List<Usuario> {
         return usuarioRepository.getAllUsuarios()
     }
+
+    fun create(usuario: Usuario): Usuario {
+        return usuarioRepository.save(usuario)
+    }
 /*
     fun getUsuarioPerfil(usuarioId: Long): UsuarioPerfilDTO {
         return usuarioRepository.getUsuarioPerfil(usuarioId)
