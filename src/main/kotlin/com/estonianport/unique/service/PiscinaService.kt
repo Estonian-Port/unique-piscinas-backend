@@ -37,6 +37,11 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
     fun getDiferenciaPh(piscinaId: Long): Double {
         val ultimasDosPh = piscinaRepository.getDiferenciaPh(piscinaId)
             ?: throw IllegalArgumentException("Ph de piscina: $piscinaId no encontrado")
+        if (ultimasDosPh.size < 2) {
+            //"No hay suficientes lecturas de pH para calcular la diferencia"
+            return 0.0
+        }
+
         return ultimasDosPh[0] - ultimasDosPh[1]
     }
 

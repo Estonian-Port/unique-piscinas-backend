@@ -51,7 +51,7 @@ class PiscinaController {
                 data = PiscinaMapper.buildPiscinaResumenResponseDto(
                     piscinaService.findById(piscinaId),
                     piscinaService.getPh(piscinaId),
-                    piscinaService.getDiferenciaPh(piscinaId)
+                    piscinaService.getDiferenciaPh(piscinaId) ?: 0.0
                 )
             )
         )
