@@ -23,7 +23,7 @@ data class Programacion(
     )
     @Enumerated(EnumType.STRING)
     @Column(name = "dia")
-    var dias: List<DayOfWeek>,
+    var dias: MutableList<DayOfWeek> = mutableListOf(),
 
     @Column
     var estaActivo: Boolean

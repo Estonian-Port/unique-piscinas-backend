@@ -1,5 +1,6 @@
 package com.estonianport.unique.repository
 
+import com.estonianport.unique.common.emailService.Email
 import com.estonianport.unique.model.Usuario
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
@@ -8,6 +9,8 @@ import java.util.*
 
 @Repository
 interface UsuarioRepository : CrudRepository<Usuario, Long> {
+
+    fun findOneByEmail(email: String) : Usuario?
 
     // TODO una vez leidos y entendido, borrar los comentarios, y hay q arreglar si vamos a usar "usuarios"
     // o "usuario", al poner "usuarios" seria como decir "all usuario" o "lista usuario" me da igual usar cualquiera de los dos
@@ -32,9 +35,6 @@ interface UsuarioRepository : CrudRepository<Usuario, Long> {
         AND u.fechaBaja IS NULL
     """)
     fun getUsuariosActivos(): List<Usuario>
-
-    // Yo lo decia por este, q es All y usuarios
-    fun getAllUsuarios(): List<Usuario>
 
     /*
     @Query("SELECT new com.estonianport.unique.dto.UsuarioAbmDTO(c.usuario.id, c.usuario.nombre, " +

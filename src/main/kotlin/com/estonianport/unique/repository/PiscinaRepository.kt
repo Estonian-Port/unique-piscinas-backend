@@ -63,10 +63,23 @@ interface PiscinaRepository : JpaRepository<Piscina, Int> {
     )
     fun findTodasLecturasConError(piscinaId: Long): List<LecturaConErrorResponseDto>
 
-    // Estas tres queires son para las estadisticas de administracion. Habria que ver si JPA infiere o hay que codearlas a mano
+    // Estas tres Query son para las estadisticas de administracion. Habria que ver si JPA infiere o hay que codearlas a mano
+
+    // TODO no me queda claro bien que es, vi que solicitaste by skimmer o desbordante pero eso son parametros q habria
+    // configurar o buscar a mano en una query, jpa no tiene forma de determinarlo si no le seteas una variable Tipo
+    // lo dejo asi puedo probar
+    @Query("""
+        SELECT COUNT(p) FROM Piscina p WHERE p.esDesbordante IS TRUE
+    """)
     fun countByTipo(tipo: String): Int
 
+    @Query("""
+        SELECT SUM(p.volumen) FROM Piscina p
+    """)
     fun getTotalVolumen(): Double
 
+    @Query("""
+       SELECT AVG(p.volumen) FROM Piscina p
+    """)
     fun getPromedioVolumen(): Double
 }

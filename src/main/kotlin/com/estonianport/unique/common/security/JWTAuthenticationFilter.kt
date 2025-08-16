@@ -1,6 +1,5 @@
 package com.estonianport.unique.common.security
 
-import com.estonianport.unique.common.security.UserDetailImpl
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest

@@ -57,7 +57,7 @@ class UsuarioService : GenericServiceImpl<Usuario, Long>() {
     }
 
     fun getUsuariosRegistrados(): List<Usuario> {
-        return usuarioRepository.getAllUsuarios()
+        return getAll()!!.toList()
     }
 
      fun encriptarPassword(usuarioDto: UsuarioRequestDto, newUser: Usuario) : String {

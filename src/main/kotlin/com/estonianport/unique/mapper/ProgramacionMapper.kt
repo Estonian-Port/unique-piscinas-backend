@@ -26,7 +26,7 @@ object ProgramacionMapper {
             id = programacionRequestDto.id,
             horaInicio = LocalTime.parse(programacionRequestDto.horaInicio),
             horaFin = LocalTime.parse(programacionRequestDto.horaFin),
-            dias = programacionRequestDto.dias.map { DayOfWeek.valueOf(it.uppercase()) },
+            dias = programacionRequestDto.dias.map { DayOfWeek.valueOf(it.uppercase()) }.toMutableList(),
             estaActivo = programacionRequestDto.estaActivo,
         )
     }
