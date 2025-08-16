@@ -4,11 +4,13 @@ import com.estonianport.unique.dto.request.UsuarioRequestDto
 import com.estonianport.unique.mapper.PiscinaMapper
 import com.estonianport.unique.dto.response.CustomResponse
 import com.estonianport.unique.mapper.UsuarioMapper
+import com.estonianport.unique.model.Usuario
 import com.estonianport.unique.service.AdministracionService
 import com.estonianport.unique.service.PiscinaService
 import com.estonianport.unique.service.UsuarioService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
+import kotlin.text.get
 
 @RestController
 @RequestMapping("/usuario")
@@ -65,7 +68,18 @@ class UsuarioController {
     @PostMapping("/alta")
     fun createUser(@RequestBody usuarioDto: UsuarioRequestDto): ResponseEntity<CustomResponse> {
         val newUser = UsuarioMapper.buildUsuario(usuarioDto)
-        usuarioService.create(newUser)
+
+        // Si llega por primera vez se encripta la contraseña sino se deja igual
+        // para cambiar contraseña se debe usar editPassword
+
+        if (usuarioDto.id == 0L) {
+            newUser.password = usuarioService.encriptarPassword(usuarioDto, newUser)
+        } else {
+            newUser.password = usuarioService.findById(usuarioDto.id)!!.password!!
+        }
+
+        // Usamos save porque ya esta en el generics de service, asi no redeclaramos metodos
+        usuarioService.save(newUser)
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Usuario creado correctamente",
@@ -73,5 +87,20 @@ class UsuarioController {
             )
         )
     }
+
+    // Busca el usuario por id y encriptar la nueva password
+    @PostMapping("/editPassword")
+    fun editPassword(@RequestBody usuarioDto: UsuarioRequestDto): ResponseEntity<CustomResponse> {
+        val usuario = usuarioService.get(usuarioDto.id)!!
+        usuario.password = usuarioService.encriptarPassword(usuarioDto, usuario)
+
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Constraseña actualizada correctamente",
+                data = UsuarioMapper.buildUsuarioResponseDto(usuario, mutableListOf<Long>())
+            )
+        )
+    }
+
 
 }

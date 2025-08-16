@@ -6,4 +6,5 @@ data class UsuarioRequestDto (
     val apellido: String,
     val celular: Long,
     val email: String,
+    val password: String
 )

@@ -39,9 +39,7 @@ object UsuarioMapper {
             apellido = usuarioDto.apellido,
             celular = usuarioDto.celular,
             email = usuarioDto.email
-        ).apply {
-            password = "unique"
-        }
+        )
     }
 
 }

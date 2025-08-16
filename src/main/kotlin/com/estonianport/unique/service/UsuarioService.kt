@@ -3,11 +3,13 @@ package com.estonianport.unique.service
 import GenericServiceImpl
 import com.estonianport.unique.dto.UsuarioAbmDTO
 import com.estonianport.unique.dto.UsuarioPerfilDTO
+import com.estonianport.unique.dto.request.UsuarioRequestDto
 import com.estonianport.unique.repository.UsuarioRepository
 import com.estonianport.unique.model.Usuario
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.CrudRepository
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 
 @Service
@@ -18,11 +20,6 @@ class UsuarioService : GenericServiceImpl<Usuario, Long>() {
 
     override val dao: CrudRepository<Usuario, Long>
         get() = usuarioRepository
-
-    fun getUsuarioIdByUsername(username: String): Long {
-        return usuarioRepository.getByUsername(username).id
-    }
-
 
 /*
     fun getAllUsuario(id : Long, pageNumber : Int): List<UsuarioAbmDTO> {
@@ -41,21 +38,6 @@ class UsuarioService : GenericServiceImpl<Usuario, Long>() {
         return usuarioRepository.getCantidadUsuarioFiltrados(id,buscar)
     }
 
-    fun getAllCliente(id : Long, pageNumber : Int): List<UsuarioAbmDTO> {
-        return usuarioRepository.getAllCliente(id, PageRequest.of(pageNumber,10)).content
-    }
-
-    fun getAllClienteFiltrados(id : Long, pageNumber : Int, buscar: String): List<UsuarioAbmDTO>{
-        return usuarioRepository.getAllClienteFiltrados(id, buscar, PageRequest.of(pageNumber,10)).content
-    }
-
-    fun getCantidadCliente(id : Long): Int {
-        return usuarioRepository.getCantidadCliente(id)
-    }
-
-    fun getCantidadClienteFiltrados(id : Long, buscar : String): Int {
-        return usuarioRepository.getCantidadClienteFiltrados(id,buscar)
-    }
 */
     fun getUsuarioByEmail(email: String): Usuario {
         return usuarioRepository.getUsuarioByEmail(email)
@@ -78,13 +60,8 @@ class UsuarioService : GenericServiceImpl<Usuario, Long>() {
         return usuarioRepository.getAllUsuarios()
     }
 
-    fun create(usuario: Usuario): Usuario {
-        return usuarioRepository.save(usuario)
+     fun encriptarPassword(usuarioDto: UsuarioRequestDto, newUser: Usuario) : String {
+        return BCryptPasswordEncoder().encode(usuarioDto.password)
     }
-/*
-    fun getUsuarioPerfil(usuarioId: Long): UsuarioPerfilDTO {
-        return usuarioRepository.getUsuarioPerfil(usuarioId)
-    }
-    */
 
 }
