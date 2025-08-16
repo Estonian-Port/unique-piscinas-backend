@@ -38,10 +38,11 @@ class UsuarioController {
     lateinit var piscinaService: PiscinaService
 
     @GetMapping("/me")
-    fun getCurrentUser(principal : Principal): ResponseEntity<CustomResponse> {
+    fun getCurrent(principal : Principal): ResponseEntity<CustomResponse> {
         val email = principal.name
         val usuario = usuarioService.getUsuarioByEmail(email)
         val cantPiscinas = piscinaService.getPiscinasByUsuarioId(usuario.id).map { it.id }
+
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Usuario obtenido correctamente",
@@ -51,10 +52,7 @@ class UsuarioController {
     }
 
     @DeleteMapping("/{usuarioId}/{administradorId}")
-    fun deleteUsuario(
-        @PathVariable usuarioId: Long,
-        @PathVariable administradorId: Long
-    ): ResponseEntity<CustomResponse> {
+    fun delete(@PathVariable usuarioId: Long, @PathVariable administradorId: Long): ResponseEntity<CustomResponse> {
         administracionService.verificarRol(administradorId)
         usuarioService.delete(usuarioId)
         return ResponseEntity.status(200).body(
@@ -66,7 +64,7 @@ class UsuarioController {
     }
 
     @PostMapping("/alta")
-    fun createUser(@RequestBody usuarioDto: UsuarioRequestDto): ResponseEntity<CustomResponse> {
+    fun create(@RequestBody usuarioDto: UsuarioRequestDto): ResponseEntity<CustomResponse> {
         val newUser = UsuarioMapper.buildUsuario(usuarioDto)
 
         // Si llega por primera vez se encripta la contraseña sino se deja igual
@@ -101,6 +99,4 @@ class UsuarioController {
             )
         )
     }
-
-
 }
