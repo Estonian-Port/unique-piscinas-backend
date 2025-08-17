@@ -5,8 +5,6 @@ data class PiscinaResumenResponseDto (
     val nombre: String,
     val direccion: String,
     val volumen: String,
-    val ph: String,
-    val diferenciaPh: String,
     val clima: String,
     val entradaAgua: List<String>,
     val funcionActiva: List<String>,

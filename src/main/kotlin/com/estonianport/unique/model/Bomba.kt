@@ -1,5 +1,6 @@
 package com.estonianport.unique.model
 
+import com.estonianport.unique.model.enums.EstadoType
 import jakarta.persistence.*
 
 @Entity
@@ -21,5 +22,9 @@ data class Bomba(
     val esVelocidadVariable: Boolean = false,
 
     @Column
-    val estaActiva: Boolean = true // Hay que ver si con un booleano alcanza o hay que trabajar con multiples estados como en los sitemas germicidas
+    val activa: Boolean = false,
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    val estado: EstadoType
 ) {}

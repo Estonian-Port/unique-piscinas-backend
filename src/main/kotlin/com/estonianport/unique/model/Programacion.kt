@@ -1,5 +1,6 @@
 package com.estonianport.unique.model
 
+import com.estonianport.unique.model.enums.ProgramacionType
 import jakarta.persistence.*
 import java.time.DayOfWeek
 import java.time.LocalTime
@@ -26,5 +27,9 @@ data class Programacion(
     var dias: MutableList<DayOfWeek> = mutableListOf(),
 
     @Column
-    var estaActivo: Boolean
+    var activa: Boolean,
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    val tipo: ProgramacionType
 ) {}

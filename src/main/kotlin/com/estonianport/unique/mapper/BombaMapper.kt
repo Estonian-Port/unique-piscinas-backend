@@ -13,7 +13,8 @@ object BombaMapper {
             modelo = bomba.modelo,
             potencia = bomba.potencia.toString(),
             esVelocidadVariable = bomba.esVelocidadVariable,
-            estaActiva = bomba.estaActiva
+            activa = bomba.activa,
+            estado = bomba.estado.toString()
         )
     }
 
@@ -24,6 +25,8 @@ object BombaMapper {
             modelo = bombaDto.modelo,
             potencia = bombaDto.potencia,
             esVelocidadVariable = bombaDto.esVelocidadVariable,
+            activa = bombaDto.activa,
+            estado = bombaDto.estadoType
         )
     }
 }

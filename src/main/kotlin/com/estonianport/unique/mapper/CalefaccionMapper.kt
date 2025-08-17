@@ -11,7 +11,7 @@ object CalefaccionMapper {
         return CalefaccionResponseDto(
             id = calefaccion.id,
             tipo = calefaccion.tipo.toString(),
-            estado = calefaccion.estado.toString()
+            estado = calefaccion.activa
         )
     }
 
@@ -22,7 +22,8 @@ object CalefaccionMapper {
             potencia = calefaccionDTO.potencia,
             modelo = calefaccionDTO.modelo,
             marca = calefaccionDTO.marca,
-            estado = calefaccionDTO.estado
+            estado = calefaccionDTO.estado,
+            activa = calefaccionDTO.activa
         )
     }
 }

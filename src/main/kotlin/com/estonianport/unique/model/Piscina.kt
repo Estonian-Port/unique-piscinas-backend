@@ -124,34 +124,6 @@ class Piscina(
         // Implementación de la función clima pegandole a una API externa
     }
 
-    // Las hacemos todas por consulta querry SQL
-    /*
-    fun ph(): Double {
-        // Implementación de la función para obtener el pH de la piscina. Dato que nos dara la placa de control.
-        // Pienso que se puede buscar la ultima lectura de pH en la lista de lecturas y retornar ese valor.
-        if (lecturas.isEmpty()) {
-            throw BusinessException("No hay lecturas de pH disponibles.")
-        }
-        return lecturas.last().ph
-    }
-
-    fun presion(): Double {
-        // Implementación de la función para obtener la presion de la piscina. Dato que nos dara la placa de control.
-        // Pienso que se puede buscar la ultima lectura de presion en la lista de lecturas y retornar ese valor.
-        if (lecturas.isEmpty()) {
-            throw BusinessException("No hay lecturas de presion disponibles.")
-        }
-        return lecturas.last().presion
-    }
-
-    fun diferenciaPh(): Double {
-        if (lecturas.size > 1) {
-            val penultimaLectura = lecturas.elementAt(lecturas.size - 2)
-            return ph() - penultimaLectura.ph
-        }
-        return 0.0
-    }*/
-
     fun agregarProgramacionFiltrado(programacion: Programacion) {
         programacionFiltrado.add(programacion)
     }

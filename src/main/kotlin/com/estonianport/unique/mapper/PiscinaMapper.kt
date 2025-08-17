@@ -14,19 +14,24 @@ object PiscinaMapper {
         )
     }
 
-    fun buildPiscinaResumenResponseDto(piscina: Piscina, ph : Double, diferenciaPh : Double): PiscinaResumenResponseDto {
+    fun buildPiscinaResumenResponseDto(piscina: Piscina): PiscinaResumenResponseDto {
         return PiscinaResumenResponseDto(
             id = piscina.id.toString(),
             nombre = piscina.nombre,
             direccion = piscina.direccion,
             volumen = piscina.volumen.toString(),
-            ph = ph.toString(),
-            diferenciaPh = diferenciaPh.toString(),
             clima = piscina.climaLocal().toString(),
             entradaAgua = piscina.entradaAgua.map { it.toString() }.toList(),
             funcionActiva = piscina.funcionActiva.map { it.toString() }.toList(),
-            sistemasGermicidas = piscina.sistemaGermicida.map { it.toString() }.toList(),
+            sistemasGermicidas = piscina.sistemaGermicida.map { it.tipo.toString() }.toList(),
             calefaccion = piscina.tieneCalefaccion(),
+        )
+    }
+
+    fun buildPiscinaPhResponseDto( ph : Double, diferenciaPh : Double): PiscinaResumenPhResponseDto {
+        return PiscinaResumenPhResponseDto(
+            ph = ph,
+            diferenciaPh = diferenciaPh,
         )
     }
 

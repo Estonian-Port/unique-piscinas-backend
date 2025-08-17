@@ -49,9 +49,20 @@ class PiscinaController {
             CustomResponse(
                 message = "Resumen de la piscina obtenida correctamente",
                 data = PiscinaMapper.buildPiscinaResumenResponseDto(
-                    piscinaService.findById(piscinaId),
+                    piscinaService.findById(piscinaId)
+                )
+            )
+        )
+    }
+
+    @GetMapping("/resumenPh/{piscinaId}")
+    fun getDataResumenPiscinaPh(@PathVariable piscinaId: Long): ResponseEntity<CustomResponse> {
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Resumen de PH de la piscina obtenida correctamente",
+                data = PiscinaMapper.buildPiscinaPhResponseDto(
                     piscinaService.getPh(piscinaId),
-                    piscinaService.getDiferenciaPh(piscinaId) ?: 0.0
+                    piscinaService.getDiferenciaPh(piscinaId)
                 )
             )
         )

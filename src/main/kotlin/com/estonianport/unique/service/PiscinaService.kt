@@ -1,6 +1,7 @@
 package com.estonianport.unique.service
 
 import com.estonianport.unique.dto.response.LecturaConErrorResponseDto
+import com.estonianport.unique.common.errors.NotFoundException
 import com.estonianport.unique.model.Piscina
 import com.estonianport.unique.model.Programacion
 import com.estonianport.unique.repository.PiscinaRepository
@@ -11,13 +12,13 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
 
     fun getPiscinasByUsuarioId(usuarioId: Long): List<Piscina> {
         usuarioService.findById(usuarioId)
-            ?: throw IllegalArgumentException("Usuario no encontrado con ID: $usuarioId")
+            ?: throw NotFoundException("Usuario no encontrado con ID: $usuarioId")
         return piscinaRepository.findByAdministradorId(usuarioId)
     }
 
     fun findById(piscinaId: Long): Piscina {
         return piscinaRepository.findById(piscinaId)
-            ?: throw IllegalArgumentException("Piscina no encontrada con ID: $piscinaId")
+            ?: throw NotFoundException("Piscina no encontrada con ID: $piscinaId")
     }
 
     fun getLecturasPiscina(piscinaId: Long): List<LecturaConErrorResponseDto> {
@@ -26,17 +27,17 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
 
     fun getPresion(piscinaId: Long): Double {
         return piscinaRepository.getPresion(piscinaId)
-            ?: throw IllegalArgumentException("Presion de piscina: $piscinaId no encontrado")
+            ?: throw NotFoundException("Presion de piscina: $piscinaId no encontrado")
     }
 
     fun getPh(piscinaId: Long): Double {
         return piscinaRepository.getPh(piscinaId)
-            ?: throw IllegalArgumentException("Ph de piscina: $piscinaId no encontrado")
+            ?: throw NotFoundException("Ph de piscina: $piscinaId no encontrado")
     }
 
     fun getDiferenciaPh(piscinaId: Long): Double {
         val ultimasDosPh = piscinaRepository.getDiferenciaPh(piscinaId)
-            ?: throw IllegalArgumentException("Ph de piscina: $piscinaId no encontrado")
+            ?: throw NotFoundException("Ph de piscina: $piscinaId no encontrado")
         if (ultimasDosPh.size < 2) {
             //"No hay suficientes lecturas de pH para calcular la diferencia"
             return 0.0
@@ -54,11 +55,11 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
     }
 
     fun getVolumenTotal(): Double {
-        return piscinaRepository.getTotalVolumen() ?: 0.0
+        return piscinaRepository.getTotalVolumen()
     }
 
     fun getVolumenPromedio(): Double {
-        return piscinaRepository.getPromedioVolumen() ?: 0.0
+        return piscinaRepository.getPromedioVolumen()
     }
 
     fun getPiscinasRegistradas(): List<Piscina> {
@@ -70,8 +71,7 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
     }
 
     fun desasignarAdministrador(usuarioId: Long, piscinaId: Long) {
-        val usuario = usuarioService.findById(usuarioId)
-            ?: throw IllegalArgumentException("Usuario no encontrado con ID: $usuarioId")
+        //val usuario = usuarioService.findById(usuarioId) ?: throw NotFoundException("Usuario no encontrado con ID: $usuarioId")
         val piscina = findById(piscinaId)
         //piscina.administrador.remove(usuario)
         // Creo que deberiamos tener una lista de administradores en vez de uno solo. Porque Leo debe tener permisos
@@ -119,7 +119,7 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
             horaInicio = programacion.horaInicio
             horaFin = programacion.horaFin
             dias = programacion.dias
-            estaActivo = programacion.estaActivo
+            activa = programacion.activa
         }
     }
 }

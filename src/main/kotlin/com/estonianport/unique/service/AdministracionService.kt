@@ -1,6 +1,7 @@
 package com.estonianport.unique.service
 
 import com.estonianport.unique.dto.response.EstadisticasResponseDto
+import com.estonianport.unique.common.errors.NotFoundException
 import org.springframework.stereotype.Service
 
 @Service
@@ -11,7 +12,7 @@ class AdministracionService(
 
     fun verificarRol(usuarioId: Long) {
         val usuario = usuarioService.findById(usuarioId)
-            ?: throw IllegalArgumentException("Usuario no encontrado con ID: $usuarioId")
+            ?: throw NotFoundException("Usuario no encontrado con ID: $usuarioId")
 
         if (!usuario.esAdministrador) {
             throw IllegalAccessException("El usuario no tiene permisos de administrador")

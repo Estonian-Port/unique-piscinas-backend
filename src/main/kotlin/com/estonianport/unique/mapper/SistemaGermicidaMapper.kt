@@ -3,6 +3,7 @@ package com.estonianport.unique.mapper
 import com.estonianport.unique.dto.request.SistemaGermicidaRequestDto
 import com.estonianport.unique.dto.response.SistemaGermicidaResponseDto
 import com.estonianport.unique.model.SistemaGermicida
+import com.estonianport.unique.model.enums.EstadoType
 import com.estonianport.unique.model.enums.SistemaGermicidaType
 
 object SistemaGermicidaMapper {
@@ -20,6 +21,7 @@ object SistemaGermicidaMapper {
         return SistemaGermicida(
             id = germicida.id,
             tipo = SistemaGermicidaType.valueOf(germicida.tipo),
+            estado = EstadoType.OPERATIVO,
         )
     }
 }

@@ -1,6 +1,7 @@
 package com.estonianport.unique.model
 
 import com.estonianport.unique.model.enums.SistemaGermicidaType
+import com.estonianport.unique.model.enums.EstadoType
 import jakarta.persistence.*
 
 @Entity
@@ -10,7 +11,12 @@ class SistemaGermicida(
     val id: Long,
 
     @Column
+    @Enumerated(EnumType.STRING)
     val tipo: SistemaGermicidaType,
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    val estado: EstadoType
 ) {
     fun vidaRestante(): Int {
         // Implementación de la lógica para calcular la vida restante del sistema germicida

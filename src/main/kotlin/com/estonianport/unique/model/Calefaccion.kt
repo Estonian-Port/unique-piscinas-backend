@@ -1,6 +1,7 @@
 package com.estonianport.unique.model
 
 import com.estonianport.unique.model.enums.CalefaccionType
+import com.estonianport.unique.model.enums.EstadoType
 import jakarta.persistence.*
 
 @Entity
@@ -10,6 +11,7 @@ class Calefaccion(
     val id: Long,
 
     @Column
+    @Enumerated(EnumType.STRING)
     val tipo: CalefaccionType,
 
     @Column
@@ -22,9 +24,13 @@ class Calefaccion(
     val marca: String,
 
     @Column
-    var estado: Boolean
+    var activa: Boolean,
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    var estado: EstadoType
 ) {
     fun cambiarEstado() {
-        estado = !estado
+        activa = !activa
     }
 }
