@@ -1,7 +1,5 @@
 package com.estonianport.unique.model
 
-import com.fasterxml.jackson.annotation.JsonSubTypes
-import com.fasterxml.jackson.annotation.JsonTypeInfo
 import jakarta.persistence.DiscriminatorValue
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
@@ -12,55 +10,60 @@ import jakarta.persistence.InheritanceType
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-abstract class Filtro (
+abstract class Filtro(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long,
     val marca: String,
     val modelo: String,
-    val diametro: Double
+    val diametro: Double,
+    val activo: Boolean
 )
 
 @DiscriminatorValue("ARENA")
 @Entity
- class FiltroArena(
-    id : Long,
-    marca : String,
-    modelo : String,
-    diametro : Double,
+class FiltroArena(
+    id: Long,
+    marca: String,
+    modelo: String,
+    diametro: Double,
+    activo: Boolean,
     val cantidadArena: Int
-) : Filtro(id,  marca, modelo, diametro)
+) : Filtro(id, marca, modelo, diametro, activo)
 
 @DiscriminatorValue("VIDRIO")
 @Entity
- class FiltroVidrio(
-    id : Long,
-    marca : String,
-    modelo : String,
-    diametro : Double,
+class FiltroVidrio(
+    id: Long,
+    marca: String,
+    modelo: String,
+    diametro: Double,
+    activo: Boolean,
     val cantidadVidrio: Int
-) : Filtro(id,  marca, modelo, diametro)
+) : Filtro(id, marca, modelo, diametro, activo)
 
 @DiscriminatorValue("CARTUCHO")
 @Entity
- class FiltroCartucho(
-    id : Long,
-    marca : String,
-    modelo : String,
-    diametro : Double,
+class FiltroCartucho(
+    id: Long,
+    marca: String,
+    modelo: String,
+    diametro: Double,
+    activo: Boolean,
     val micrasDelCartucho: Int
-) : Filtro(id,  marca, modelo, diametro){
+) : Filtro(id, marca, modelo, diametro, activo) {
 
 }
 
 @DiscriminatorValue("DIATOMEA")
 @Entity
- class FiltroDiatomea(
-    id : Long,
-    marca : String,
-    modelo : String,
-    diametro : Double,
-) : Filtro(id,  marca, modelo, diametro)
+class FiltroDiatomea(
+    id: Long,
+    marca: String,
+    modelo: String,
+    diametro: Double,
+    activo: Boolean
+) : Filtro(id, marca, modelo, diametro, activo)
 
 
 

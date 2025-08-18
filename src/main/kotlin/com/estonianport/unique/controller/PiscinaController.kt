@@ -76,7 +76,8 @@ class PiscinaController {
                 message = "Equipamiento de la piscina obtenida correctamente",
                 data = PiscinaMapper.buildPiscinaEquipamientoResponseDto(
                     piscinaService.findById(piscinaId),
-                    piscinaService.getPresion(piscinaId)
+                    //piscinaService.getPresion(piscinaId)
+                    2.00
                 )
             )
         )

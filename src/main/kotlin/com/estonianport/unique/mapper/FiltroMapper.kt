@@ -10,7 +10,8 @@ object FiltroMapper {
         return FiltroResponseDto(
             marca = filtro.marca,
             modelo = filtro.modelo,
-            diametro = filtro.diametro
+            diametro = filtro.diametro,
+            activo = filtro.activo
         )
     }
 
@@ -21,6 +22,7 @@ object FiltroMapper {
                 marca = filtroDTO.marca,
                 modelo = filtroDTO.modelo,
                 diametro = filtroDTO.diametro,
+                activo = filtroDTO.activo,
                 cantidadArena = filtroDTO.cantidadArena
             )
 
@@ -29,6 +31,7 @@ object FiltroMapper {
                 marca = filtroDTO.marca,
                 modelo = filtroDTO.modelo,
                 diametro = filtroDTO.diametro,
+                activo = filtroDTO.activo,
                 cantidadVidrio = filtroDTO.cantidadVidrio
             )
 
@@ -37,6 +40,7 @@ object FiltroMapper {
                 marca = filtroDTO.marca,
                 modelo = filtroDTO.modelo,
                 diametro = filtroDTO.diametro,
+                activo = filtroDTO.activo,
                 micrasDelCartucho = filtroDTO.micrasDelCartucho
             )
 
@@ -45,6 +49,7 @@ object FiltroMapper {
                 marca = filtroDTO.marca,
                 modelo = filtroDTO.modelo,
                 diametro = filtroDTO.diametro,
+                activo = filtroDTO.activo,
             )
         }
     }

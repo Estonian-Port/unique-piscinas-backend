@@ -5,6 +5,7 @@ data class FiltroRequestDto (
     val marca: String,
     val modelo: String,
     val diametro: Double,
+    val activo: Boolean,
     val cantidadArena: Int?,
     val cantidadVidrio: Int?,
     val micrasDelCartucho: Int?,

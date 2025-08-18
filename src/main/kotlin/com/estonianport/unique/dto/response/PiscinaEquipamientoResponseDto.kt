@@ -9,7 +9,7 @@ data class PiscinaEquipamientoResponseDto(
     val estadoFiltro: Boolean,
     val entradaAgua: List<String>,
     val funcionActiva: List<String>,
-    val presion: String,
+    val presion: Double,
     // Los siguientes datos no se si se refieren a lecturas o actividad del filtro. Si es actividad del filtro, ese dato de donde lo obtendriamos?
     // val ultimaActividad : String,
     // val proximoCiclo : String,

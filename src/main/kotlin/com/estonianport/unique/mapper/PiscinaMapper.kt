@@ -3,6 +3,7 @@ package com.estonianport.unique.mapper
 import com.estonianport.unique.dto.request.PiscinaRequestDto
 import com.estonianport.unique.dto.response.*
 import com.estonianport.unique.model.Piscina
+import com.estonianport.unique.model.enums.toCapitalized
 
 object PiscinaMapper {
 
@@ -35,16 +36,16 @@ object PiscinaMapper {
         )
     }
 
-    fun buildPiscinaEquipamientoResponseDto(piscina: Piscina, presion : Double): PiscinaEquipamientoResponseDto {
+    fun buildPiscinaEquipamientoResponseDto(piscina: Piscina, presionPiscina : Double): PiscinaEquipamientoResponseDto {
         return PiscinaEquipamientoResponseDto(
             id = piscina.id.toString(),
             nombre = piscina.nombre,
             direccion = piscina.direccion,
             volumen = piscina.volumen.toString(),
             estadoFiltro = piscina.filtroActivo(),
-            entradaAgua = piscina.entradaAgua.map { it.toString() }.toList(),
-            funcionActiva = piscina.funcionActiva.map { it.toString() }.toList(),
-            presion = presion.toString(),
+            entradaAgua = piscina.entradaAgua.map { it.toCapitalized() }.toList(),
+            funcionActiva = piscina.funcionActiva.map { it.toCapitalized() }.toList(),
+            presion = presionPiscina,
             bombas = piscina.bomba.map { BombaMapper.buildBombaResponseDto(it) }.toList(),
             filtro = FiltroMapper.buildFiltroResponseDto(piscina.filtro),
             valvulas = piscina.valvulas.map { ValvulaMapper.buildValvulaResponseDto(it) }.toList(),
