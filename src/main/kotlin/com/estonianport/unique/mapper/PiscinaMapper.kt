@@ -21,10 +21,12 @@ object PiscinaMapper {
             nombre = piscina.nombre,
             direccion = piscina.direccion,
             volumen = piscina.volumen.toString(),
+            ph = 0.0,
+            diferenciaPh = 0.0,
             clima = piscina.climaLocal().toString(),
-            entradaAgua = piscina.entradaAgua.map { it.toString() }.toList(),
-            funcionActiva = piscina.funcionActiva.map { it.toString() }.toList(),
-            sistemasGermicidas = piscina.sistemaGermicida.map { it.tipo.toString() }.toList(),
+            entradaAgua = piscina.entradaAgua.map { it.toCapitalized() }.toList(),
+            funcionActiva = piscina.funcionActiva.map { it.toCapitalized() }.toList(),
+            sistemasGermicidas = piscina.sistemaGermicida.map { it.tipo.toCapitalized() }.toList(),
             calefaccion = piscina.tieneCalefaccion(),
         )
     }
