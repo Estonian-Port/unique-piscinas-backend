@@ -61,10 +61,8 @@ class PiscinaController {
             CustomResponse(
                 message = "Resumen de PH de la piscina obtenida correctamente",
                 data = PiscinaMapper.buildPiscinaPhResponseDto(
-                    //piscinaService.getPh(piscinaId),
-                    //piscinaService.getDiferenciaPh(piscinaId)
-                    7.5, // Simulando un valor de pH
-                    0.3-0.5 // Simulando una diferencia de pH
+                    piscinaService.getPh(piscinaId),
+                    piscinaService.getDiferenciaPh(piscinaId)
                 )
             )
         )
@@ -78,8 +76,7 @@ class PiscinaController {
                 message = "Equipamiento de la piscina obtenida correctamente",
                 data = PiscinaMapper.buildPiscinaEquipamientoResponseDto(
                     piscinaService.findById(piscinaId),
-                    //piscinaService.getPresion(piscinaId)
-                    2.00
+                    piscinaService.getPresion(piscinaId)
                 )
             )
         )

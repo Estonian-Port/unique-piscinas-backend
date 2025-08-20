@@ -27,22 +27,21 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
 
     fun getPresion(piscinaId: Long): Double {
         return piscinaRepository.getPresion(piscinaId)
-            ?: throw NotFoundException("Presion de piscina: $piscinaId no encontrado")
+            ?: 0.0
     }
 
     fun getPh(piscinaId: Long): Double {
         return piscinaRepository.getPh(piscinaId)
-            ?: throw NotFoundException("Ph de piscina: $piscinaId no encontrado")
+            ?: 0.0
     }
 
     fun getDiferenciaPh(piscinaId: Long): Double {
         val ultimasDosPh = piscinaRepository.getDiferenciaPh(piscinaId)
-            ?: throw NotFoundException("Ph de piscina: $piscinaId no encontrado")
+            ?: return 0.0
+
         if (ultimasDosPh.size < 2) {
-            //"No hay suficientes lecturas de pH para calcular la diferencia"
             return 0.0
         }
-
         return ultimasDosPh[0] - ultimasDosPh[1]
     }
 
