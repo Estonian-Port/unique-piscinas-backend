@@ -1,6 +1,6 @@
 package com.estonianport.unique.dto.response
 
-data class ProgramacionLucesResponseDto (
+data class ProgramacionIluminacionResponseDto (
     val id: String,
     val horaInicio: String,
     val horaFin: String,

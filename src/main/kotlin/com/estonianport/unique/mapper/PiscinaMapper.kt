@@ -63,7 +63,7 @@ object PiscinaMapper {
             nombre = piscina.nombre,
             direccion = piscina.direccion,
             volumen = piscina.volumen.toString(),
-            programacionLuces = piscina.programacionLuces.map { ProgramacionMapper.buildProgramacionLucesResponseDto(it) }.toList(),
+            programacionIluminacion = piscina.programacionIluminacion.map { ProgramacionMapper.buildProgramacionIluminacionResponseDto(it) }.toList(),
             programacionFiltrado = piscina.programacionFiltrado.map { ProgramacionMapper.buildProgramacionFiltradoResponseDto(it) }.toList()
         )
     }

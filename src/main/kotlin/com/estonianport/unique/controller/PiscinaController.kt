@@ -132,12 +132,12 @@ class PiscinaController {
 
     @PostMapping("/programacion-luces/{piscinaId}")
     fun createProgramacionPiscina(@PathVariable piscinaId: Long, @RequestBody programacionDTO : ProgramacionLucesRequestDto): ResponseEntity<CustomResponse> {
-        val nuevaProgramacion = ProgramacionMapper.buildProgramacionLuces(programacionDTO)
+        val nuevaProgramacion = ProgramacionMapper.buildProgramacionIluminacion(programacionDTO)
         piscinaService.agregarProgramacionLuces(piscinaId, nuevaProgramacion)
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Programación luces de la piscina creada correctamente",
-                data = ProgramacionMapper.buildProgramacionLucesResponseDto(nuevaProgramacion)
+                data = ProgramacionMapper.buildProgramacionIluminacionResponseDto(nuevaProgramacion)
             )
         )
     }
@@ -156,12 +156,12 @@ class PiscinaController {
 
     @PutMapping("/programacion-luces-update/{piscinaId}")
     fun updateProgramacionLucesPiscina(@PathVariable piscinaId: Long, @RequestBody programacionDTO: ProgramacionLucesRequestDto): ResponseEntity<CustomResponse> {
-        val programacionActualizada = ProgramacionMapper.buildProgramacionLuces(programacionDTO)
+        val programacionActualizada = ProgramacionMapper.buildProgramacionIluminacion(programacionDTO)
         piscinaService.updateProgramacionLuces(piscinaId, programacionActualizada)
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Programación luces de la piscina actualizada correctamente",
-                data = ProgramacionMapper.buildProgramacionLucesResponseDto(programacionActualizada)
+                data = ProgramacionMapper.buildProgramacionIluminacionResponseDto(programacionActualizada)
             )
         )
     }

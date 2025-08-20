@@ -3,9 +3,8 @@ package com.estonianport.unique.service
 import com.estonianport.unique.dto.response.LecturaConErrorResponseDto
 import com.estonianport.unique.common.errors.NotFoundException
 import com.estonianport.unique.model.Piscina
-import com.estonianport.unique.model.Programacion
 import com.estonianport.unique.model.ProgramacionFiltrado
-import com.estonianport.unique.model.ProgramacionLuces
+import com.estonianport.unique.model.ProgramacionIluminacion
 import com.estonianport.unique.repository.PiscinaRepository
 import org.springframework.stereotype.Service
 
@@ -89,14 +88,14 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
  
     fun deleteProgramacion(piscinaId: Long, programacionId: Long) {
         val piscina = findById(piscinaId)
-        piscina.programacionLuces.removeIf { it.id == programacionId }
+        piscina.programacionIluminacion.removeIf { it.id == programacionId }
         piscina.programacionFiltrado.removeIf { it.id == programacionId }
         piscinaRepository.save(piscina)
     }
 
-    fun agregarProgramacionLuces(piscinaId: Long, programacion: ProgramacionLuces) {
+    fun agregarProgramacionLuces(piscinaId: Long, programacion: ProgramacionIluminacion) {
         val piscina = findById(piscinaId)
-        piscina.agregarProgramacionLuces(programacion)
+        piscina.agregarProgramacionIluminacion(programacion)
         piscinaRepository.save(piscina)
     }
 
@@ -108,10 +107,10 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
 
     fun updateProgramacionLuces(
         piscinaId: Long,
-        programacion: ProgramacionLuces,
+        programacion: ProgramacionIluminacion,
     ) {
         val piscina = findById(piscinaId)
-        piscina.programacionLuces.find { it.id == programacion.id}?.apply {
+        piscina.programacionIluminacion.find { it.id == programacion.id}?.apply {
             horaInicio = programacion.horaInicio
             horaFin = programacion.horaFin
             dias = programacion.dias

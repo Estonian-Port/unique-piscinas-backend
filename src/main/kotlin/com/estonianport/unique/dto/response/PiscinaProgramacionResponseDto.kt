@@ -5,6 +5,6 @@ data class PiscinaProgramacionResponseDto (
     val nombre: String,
     val direccion: String,
     val volumen: String,
-    val programacionLuces: List<ProgramacionLucesResponseDto>,
+    val programacionIluminacion: List<ProgramacionIluminacionResponseDto>,
     val programacionFiltrado: List<ProgramacionFiltradoResponseDto>
 )

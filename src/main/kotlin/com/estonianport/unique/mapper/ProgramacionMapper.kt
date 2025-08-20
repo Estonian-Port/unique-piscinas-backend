@@ -3,18 +3,18 @@ package com.estonianport.unique.mapper
 import com.estonianport.unique.dto.request.ProgramacionFiltradoRequestDto
 import com.estonianport.unique.dto.request.ProgramacionLucesRequestDto
 import com.estonianport.unique.dto.response.ProgramacionFiltradoResponseDto
-import com.estonianport.unique.dto.response.ProgramacionLucesResponseDto
+import com.estonianport.unique.dto.response.ProgramacionIluminacionResponseDto
 import com.estonianport.unique.model.ProgramacionFiltrado
-import com.estonianport.unique.model.ProgramacionLuces
+import com.estonianport.unique.model.ProgramacionIluminacion
 import java.time.DayOfWeek
 import java.time.LocalTime
 
 object ProgramacionMapper {
 
-    fun buildProgramacionLucesResponseDto(
-        programacion: ProgramacionLuces
-    ): ProgramacionLucesResponseDto {
-        return ProgramacionLucesResponseDto(
+    fun buildProgramacionIluminacionResponseDto(
+        programacion: ProgramacionIluminacion
+    ): ProgramacionIluminacionResponseDto {
+        return ProgramacionIluminacionResponseDto(
             id = programacion.id.toString(),
             horaInicio = programacion.horaInicio.toString(),
             horaFin = programacion.horaFin.toString(),
@@ -36,8 +36,8 @@ object ProgramacionMapper {
         )
     }
 
-    fun buildProgramacionLuces(programacionRequestDto: ProgramacionLucesRequestDto): ProgramacionLuces {
-        return ProgramacionLuces(
+    fun buildProgramacionIluminacion(programacionRequestDto: ProgramacionLucesRequestDto): ProgramacionIluminacion {
+        return ProgramacionIluminacion(
             id = programacionRequestDto.id,
             horaInicio = LocalTime.parse(programacionRequestDto.horaInicio),
             horaFin = LocalTime.parse(programacionRequestDto.horaFin),

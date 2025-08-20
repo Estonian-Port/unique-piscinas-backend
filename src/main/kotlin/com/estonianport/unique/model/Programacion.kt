@@ -6,7 +6,7 @@ import java.time.DayOfWeek
 import java.time.LocalTime
 
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 abstract class Programacion(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,8 +31,9 @@ abstract class Programacion(
     var activa: Boolean,
 )
 
+@DiscriminatorValue("ILUMINACION")
 @Entity
-class ProgramacionLuces(
+class ProgramacionIluminacion(
     id: Long?,
     horaInicio: LocalTime,
     horaFin: LocalTime,
@@ -46,6 +47,7 @@ class ProgramacionLuces(
     activa = activa,
 )
 
+@DiscriminatorValue("FILTRADO")
 @Entity
 class ProgramacionFiltrado(
     id: Long?,

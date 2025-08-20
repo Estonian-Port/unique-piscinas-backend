@@ -1,6 +1,5 @@
 package com.estonianport.unique.model
 
-import com.estonianport.unique.common.errors.BusinessException
 import com.estonianport.unique.model.enums.EntradaAgua
 import com.estonianport.unique.model.enums.FuncionFiltro
 import jakarta.persistence.*
@@ -106,7 +105,7 @@ class Piscina(
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "piscina_id")
-    val programacionLuces: MutableSet<ProgramacionLuces> = mutableSetOf()
+    val programacionIluminacion: MutableSet<ProgramacionIluminacion> = mutableSetOf()
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "piscina_id")
@@ -128,16 +127,16 @@ class Piscina(
         programacionFiltrado.add(programacion)
     }
 
-    fun agregarProgramacionLuces(programacion: ProgramacionLuces) {
-        programacionLuces.add(programacion)
+    fun agregarProgramacionIluminacion(programacion: ProgramacionIluminacion) {
+        programacionIluminacion.add(programacion)
     }
 
     fun eliminarProgramacionFiltrado(programacion: ProgramacionFiltrado) {
         programacionFiltrado.remove(programacion)
     }
 
-    fun eliminarProgramacionLuces(programacion: ProgramacionLuces) {
-        programacionLuces.remove(programacion)
+    fun eliminarProgramacionLuces(programacion: ProgramacionIluminacion) {
+        programacionIluminacion.remove(programacion)
     }
 
     fun agregarRegistro(registro: Registro) {
