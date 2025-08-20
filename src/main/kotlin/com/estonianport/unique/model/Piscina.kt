@@ -99,14 +99,14 @@ class Piscina(
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "piscina_id")
-    val programacionFiltrado: MutableSet<Programacion> = mutableSetOf()
+    val programacionFiltrado: MutableSet<ProgramacionFiltrado> = mutableSetOf()
 
     @Column
     val lucesManual: Boolean = false
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "piscina_id")
-    val programacionLuces: MutableSet<Programacion> = mutableSetOf()
+    val programacionLuces: MutableSet<ProgramacionLuces> = mutableSetOf()
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "piscina_id")
@@ -124,19 +124,19 @@ class Piscina(
         // Implementación de la función clima pegandole a una API externa
     }
 
-    fun agregarProgramacionFiltrado(programacion: Programacion) {
+    fun agregarProgramacionFiltrado(programacion: ProgramacionFiltrado) {
         programacionFiltrado.add(programacion)
     }
 
-    fun agregarProgramacionLuces(programacion: Programacion) {
+    fun agregarProgramacionLuces(programacion: ProgramacionLuces) {
         programacionLuces.add(programacion)
     }
 
-    fun eliminarProgramacionFiltrado(programacion: Programacion) {
+    fun eliminarProgramacionFiltrado(programacion: ProgramacionFiltrado) {
         programacionFiltrado.remove(programacion)
     }
 
-    fun eliminarProgramacionLuces(programacion: Programacion) {
+    fun eliminarProgramacionLuces(programacion: ProgramacionLuces) {
         programacionLuces.remove(programacion)
     }
 

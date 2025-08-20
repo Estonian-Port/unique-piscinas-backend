@@ -1,7 +1,8 @@
 package com.estonianport.unique.controller
 
 import com.estonianport.unique.dto.request.PiscinaRequestDto
-import com.estonianport.unique.dto.request.ProgramacionRequestDto
+import com.estonianport.unique.dto.request.ProgramacionFiltradoRequestDto
+import com.estonianport.unique.dto.request.ProgramacionLucesRequestDto
 import com.estonianport.unique.mapper.PiscinaMapper
 import com.estonianport.unique.dto.response.CustomResponse
 import com.estonianport.unique.mapper.ProgramacionMapper
@@ -132,27 +133,50 @@ class PiscinaController {
         )
     }
 
-    @PostMapping("/programacion/{piscinaId}")
-    fun createProgramacionPiscina(@PathVariable piscinaId: Long, @RequestBody programacionDTO : ProgramacionRequestDto): ResponseEntity<CustomResponse> {
-        // El id de la piscina se puede pasar por path o en el mismo DTO de la programacion podria venir ese dato?
-        val nuevaProgramacion = ProgramacionMapper.buildProgramacion(programacionDTO)
-        piscinaService.agregarProgramacion(piscinaId, nuevaProgramacion, programacionDTO.filtrado)
+    @PostMapping("/programacion-luces/{piscinaId}")
+    fun createProgramacionPiscina(@PathVariable piscinaId: Long, @RequestBody programacionDTO : ProgramacionLucesRequestDto): ResponseEntity<CustomResponse> {
+        val nuevaProgramacion = ProgramacionMapper.buildProgramacionLuces(programacionDTO)
+        piscinaService.agregarProgramacionLuces(piscinaId, nuevaProgramacion)
         return ResponseEntity.status(200).body(
             CustomResponse(
-                message = "Programación de la piscina creada correctamente",
-                data = ProgramacionMapper.buildProgramacionResponseDto(nuevaProgramacion)
+                message = "Programación luces de la piscina creada correctamente",
+                data = ProgramacionMapper.buildProgramacionLucesResponseDto(nuevaProgramacion)
             )
         )
     }
 
-    @PutMapping("/programacion/{piscinaId}")
-    fun updateProgramacionPiscina(@PathVariable piscinaId: Long, @RequestBody programacionDTO: ProgramacionRequestDto): ResponseEntity<CustomResponse> {
-        val programacionActualizada = ProgramacionMapper.buildProgramacion(programacionDTO)
-        piscinaService.updateProgramacion(piscinaId, programacionActualizada, programacionDTO.filtrado)
+    @PostMapping("/programacion-filtrado/{piscinaId}")
+    fun createProgramacionPiscina(@PathVariable piscinaId: Long, @RequestBody programacionDTO : ProgramacionFiltradoRequestDto): ResponseEntity<CustomResponse> {
+        val nuevaProgramacion = ProgramacionMapper.buildProgramacionFiltrado(programacionDTO)
+        piscinaService.agregarProgramacionFiltrado(piscinaId, nuevaProgramacion)
         return ResponseEntity.status(200).body(
             CustomResponse(
-                message = "Programación de la piscina actualizada correctamente",
-                data = ProgramacionMapper.buildProgramacionResponseDto(programacionActualizada)
+                message = "Programación filtrado de la piscina creada correctamente",
+                data = ProgramacionMapper.buildProgramacionFiltradoResponseDto(nuevaProgramacion)
+            )
+        )
+    }
+
+    @PutMapping("/programacion-luces-update/{piscinaId}")
+    fun updateProgramacionLucesPiscina(@PathVariable piscinaId: Long, @RequestBody programacionDTO: ProgramacionLucesRequestDto): ResponseEntity<CustomResponse> {
+        val programacionActualizada = ProgramacionMapper.buildProgramacionLuces(programacionDTO)
+        piscinaService.updateProgramacionLuces(piscinaId, programacionActualizada)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Programación luces de la piscina actualizada correctamente",
+                data = ProgramacionMapper.buildProgramacionLucesResponseDto(programacionActualizada)
+            )
+        )
+    }
+
+    @PutMapping("/programacion-filtrado-update/{piscinaId}")
+    fun updateProgramacionLucesPiscina(@PathVariable piscinaId: Long, @RequestBody programacionDTO: ProgramacionFiltradoRequestDto): ResponseEntity<CustomResponse> {
+        val programacionActualizada = ProgramacionMapper.buildProgramacionFiltrado(programacionDTO)
+        piscinaService.updateProgramacionFiltrado(piscinaId, programacionActualizada)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Programación filtrado de la piscina actualizada correctamente",
+                data = ProgramacionMapper.buildProgramacionFiltradoResponseDto(programacionActualizada)
             )
         )
     }

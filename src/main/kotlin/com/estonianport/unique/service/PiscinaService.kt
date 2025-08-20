@@ -4,6 +4,8 @@ import com.estonianport.unique.dto.response.LecturaConErrorResponseDto
 import com.estonianport.unique.common.errors.NotFoundException
 import com.estonianport.unique.model.Piscina
 import com.estonianport.unique.model.Programacion
+import com.estonianport.unique.model.ProgramacionFiltrado
+import com.estonianport.unique.model.ProgramacionLuces
 import com.estonianport.unique.repository.PiscinaRepository
 import org.springframework.stereotype.Service
 
@@ -93,33 +95,46 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
         piscinaRepository.save(piscina)
     }
 
-    fun agregarProgramacion(piscinaId: Long, programacion: Programacion, filtrado: Boolean) {
+    fun agregarProgramacionLuces(piscinaId: Long, programacion: ProgramacionLuces) {
         val piscina = findById(piscinaId)
-        if (filtrado) piscina.agregarProgramacionFiltrado(programacion)
-        if (!filtrado) piscina.agregarProgramacionLuces(programacion)
+        piscina.agregarProgramacionLuces(programacion)
         piscinaRepository.save(piscina)
     }
 
-    fun updateProgramacion(
+    fun agregarProgramacionFiltrado(piscinaId: Long, programacion: ProgramacionFiltrado) {
+        val piscina = findById(piscinaId)
+        piscina.agregarProgramacionFiltrado(programacion)
+        piscinaRepository.save(piscina)
+    }
+
+    fun updateProgramacionLuces(
         piscinaId: Long,
-        programacion: Programacion,
-        filtrado: Boolean
+        programacion: ProgramacionLuces,
     ) {
         val piscina = findById(piscinaId)
-        val lista = if (filtrado) piscina.programacionFiltrado else piscina.programacionLuces
-        actualizarListaProgramacion(lista.toList(), programacion)
-        piscinaRepository.save(piscina)
-    }
-
-    private fun actualizarListaProgramacion(
-        lista: List<Programacion>,
-        programacion: Programacion
-    ) {
-        lista.find { it.id == programacion.id }?.apply {
+        piscina.programacionLuces.find { it.id == programacion.id}?.apply {
             horaInicio = programacion.horaInicio
             horaFin = programacion.horaFin
             dias = programacion.dias
             activa = programacion.activa
         }
+        piscinaRepository.save(piscina)
     }
+
+    fun updateProgramacionFiltrado(
+        piscinaId: Long,
+        programacion: ProgramacionFiltrado,
+    ) {
+        val piscina = findById(piscinaId)
+        piscina.programacionFiltrado.find { it.id == programacion.id}?.apply {
+            horaInicio = programacion.horaInicio
+            horaFin = programacion.horaFin
+            dias = programacion.dias
+            activa = programacion.activa
+            funcionFiltro = programacion.funcionFiltro
+        }
+        piscinaRepository.save(piscina)
+    }
+
+
 }
