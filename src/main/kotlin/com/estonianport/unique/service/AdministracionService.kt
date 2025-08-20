@@ -1,5 +1,6 @@
 package com.estonianport.unique.service
 
+import com.estonianport.unique.common.errors.IllegalAccessException
 import com.estonianport.unique.dto.response.EstadisticasResponseDto
 import com.estonianport.unique.common.errors.NotFoundException
 import org.springframework.stereotype.Service
