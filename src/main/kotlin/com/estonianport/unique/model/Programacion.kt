@@ -1,5 +1,6 @@
 package com.estonianport.unique.model
 
+import com.estonianport.unique.model.enums.FuncionFiltro
 import com.estonianport.unique.model.enums.ProgramacionType
 import jakarta.persistence.*
 import java.time.DayOfWeek
@@ -31,5 +32,9 @@ data class Programacion(
 
     @Column
     @Enumerated(EnumType.STRING)
-    val tipo: ProgramacionType
+    val tipo: ProgramacionType,
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    val funcionFiltro: FuncionFiltro?,
 ) {}

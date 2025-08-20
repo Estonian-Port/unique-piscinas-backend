@@ -1,5 +1,6 @@
 package com.estonianport.unique.dto.request
 
+import com.estonianport.unique.model.enums.FuncionFiltro
 import com.estonianport.unique.model.enums.ProgramacionType
 
 data class ProgramacionRequestDto (
@@ -8,6 +9,7 @@ data class ProgramacionRequestDto (
     val horaFin: String,
     val dias: List<String>,
     val activa: Boolean,
-    val filtrado: Boolean,
-    val tipo: ProgramacionType
+    val funcionFiltro: FuncionFiltro,
+    val tipo: ProgramacionType,
+    val filtrado : Boolean,
 )

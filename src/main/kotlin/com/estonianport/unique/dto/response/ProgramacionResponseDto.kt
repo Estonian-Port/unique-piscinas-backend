@@ -5,5 +5,7 @@ data class ProgramacionResponseDto (
     val horaInicio: String,
     val horaFin: String,
     val dias: List<String>,
-    val estaActivo: Boolean
+    val funcionFiltro: String,
+    val estaActivo: Boolean,
+    val tipo: String
 )
