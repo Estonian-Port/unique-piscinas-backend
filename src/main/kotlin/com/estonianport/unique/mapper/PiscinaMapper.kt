@@ -15,6 +15,15 @@ object PiscinaMapper {
         )
     }
 
+    fun buildPiscinaHeaderResponseDto(piscina: Piscina): PiscinaListResponseDto {
+        return PiscinaListResponseDto(
+            id = piscina.id.toString(),
+            nombre = piscina.nombre,
+            direccion = piscina.direccion,
+            volumen = piscina.volumen
+        )
+    }
+
     fun buildPiscinaResumenResponseDto(piscina: Piscina): PiscinaResumenResponseDto {
         return PiscinaResumenResponseDto(
             id = piscina.id.toString(),

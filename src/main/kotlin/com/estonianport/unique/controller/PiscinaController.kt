@@ -31,9 +31,8 @@ class PiscinaController {
     @Autowired
     lateinit var piscinaService: PiscinaService
 
-    // Te cambie los id que llegan por endpoint a Long, prefiero q se trabajen directo asi q estar casteandolos en el service
-    @GetMapping("/{usuarioId}")
-    fun getPiscinasByUsuarioId(@PathVariable usuarioId: Long): ResponseEntity<CustomResponse> {
+    @GetMapping("/getAll/{usuarioId}")
+    fun getAllPiscinasByUsuarioId(@PathVariable usuarioId: Long): ResponseEntity<CustomResponse> {
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Piscinas obtenidas correctamente",
@@ -43,7 +42,18 @@ class PiscinaController {
         )
     }
 
-    // Endpoint para retornar los datos de la seccion resumen de la piscina
+    @GetMapping("/header/{piscinaId}")
+    fun getPiscinaHeader(@PathVariable piscinaId: Long): ResponseEntity<CustomResponse> {
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Piscina para header obtenida correctamente",
+                data = PiscinaMapper.buildPiscinaHeaderResponseDto(
+                    piscinaService.findById(piscinaId)
+                )
+            )
+        )
+    }
+
     @GetMapping("/resumen/{piscinaId}")
     fun getDataResumenPiscina(@PathVariable piscinaId: Long): ResponseEntity<CustomResponse> {
         return ResponseEntity.status(200).body(
@@ -104,7 +114,7 @@ class PiscinaController {
     }
 
     @PostMapping("")
-    fun createPiscina(@RequestBody piscinaDto: PiscinaRequestDto): ResponseEntity<CustomResponse> {
+    fun savePiscina(@RequestBody piscinaDto: PiscinaRequestDto): ResponseEntity<CustomResponse> {
         val newPiscina = PiscinaMapper.buildPiscina(piscinaDto)
         if (piscinaDto.administradorId != null) {
             newPiscina.administrador = usuarioService.findById(piscinaDto.administradorId)
