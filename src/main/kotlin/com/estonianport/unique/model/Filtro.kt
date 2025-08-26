@@ -51,18 +51,6 @@ class FiltroCartucho(
     diametro: Double,
     activo: Boolean,
     val micrasDelCartucho: Int
-) : Filtro(id, marca, modelo, diametro, activo) {
-
-}
-
-@DiscriminatorValue("DIATOMEA")
-@Entity
-class FiltroDiatomea(
-    id: Long,
-    marca: String,
-    modelo: String,
-    diametro: Double,
-    activo: Boolean
 ) : Filtro(id, marca, modelo, diametro, activo)
 
 

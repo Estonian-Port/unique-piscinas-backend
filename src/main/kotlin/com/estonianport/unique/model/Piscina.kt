@@ -12,9 +12,6 @@ class Piscina(
     val id: Long,
 
     @Column
-    val nombre: String,
-
-    @Column
     val direccion: String,
 
     @Column
@@ -71,6 +68,12 @@ class Piscina(
 
     @Column
     val orp: Boolean,
+
+    @Column
+    val placaId: Long,
+
+    @Column(length = 5000)
+    val notas: String?,
 ) {
 
     // Lo puse aca porque entiendo que se deberia poder crear una pileta sin administrador

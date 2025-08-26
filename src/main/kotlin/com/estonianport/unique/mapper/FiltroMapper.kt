@@ -44,13 +44,7 @@ object FiltroMapper {
                 micrasDelCartucho = filtroDTO.micrasDelCartucho
             )
 
-            else -> FiltroDiatomea(
-                id = filtroDTO.id,
-                marca = filtroDTO.marca,
-                modelo = filtroDTO.modelo,
-                diametro = filtroDTO.diametro,
-                activo = filtroDTO.activo,
-            )
+            else -> throw IllegalArgumentException("Tipo de filtro no reconocido")
         }
     }
 }

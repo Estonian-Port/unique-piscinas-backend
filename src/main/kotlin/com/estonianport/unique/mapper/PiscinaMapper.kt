@@ -10,7 +10,6 @@ object PiscinaMapper {
     fun buildPiscinaListResponseDto(piscina: Piscina): PiscinaListResponseDto {
         return PiscinaListResponseDto(
             id = piscina.id.toString(),
-            nombre = piscina.nombre,
             direccion = piscina.direccion
         )
     }
@@ -18,7 +17,6 @@ object PiscinaMapper {
     fun buildPiscinaHeaderResponseDto(piscina: Piscina): PiscinaListResponseDto {
         return PiscinaListResponseDto(
             id = piscina.id.toString(),
-            nombre = piscina.nombre,
             direccion = piscina.direccion,
             volumen = piscina.volumen
         )
@@ -27,7 +25,6 @@ object PiscinaMapper {
     fun buildPiscinaResumenResponseDto(piscina: Piscina): PiscinaResumenResponseDto {
         return PiscinaResumenResponseDto(
             id = piscina.id.toString(),
-            nombre = piscina.nombre,
             direccion = piscina.direccion,
             volumen = piscina.volumen.toString(),
             clima = piscina.climaLocal().toString(),
@@ -48,7 +45,6 @@ object PiscinaMapper {
     fun buildPiscinaEquipamientoResponseDto(piscina: Piscina, presionPiscina : Double): PiscinaEquipamientoResponseDto {
         return PiscinaEquipamientoResponseDto(
             id = piscina.id.toString(),
-            nombre = piscina.nombre,
             direccion = piscina.direccion,
             volumen = piscina.volumen.toString(),
             estadoFiltro = piscina.filtroActivo(),
@@ -69,7 +65,6 @@ object PiscinaMapper {
     fun buildPiscinaProgramacionResponseDto(piscina: Piscina): PiscinaProgramacionResponseDto {
         return PiscinaProgramacionResponseDto(
             id = piscina.id.toString(),
-            nombre = piscina.nombre,
             direccion = piscina.direccion,
             volumen = piscina.volumen.toString(),
             programacionIluminacion = piscina.programacionIluminacion.map { ProgramacionMapper.buildProgramacionIluminacionResponseDto(it) }.toList(),
@@ -80,19 +75,35 @@ object PiscinaMapper {
     fun buildPiscinaRegistradaListDto(piscina: Piscina, ph: Double?): PiscinaRegistradaListResponseDto {
         return PiscinaRegistradaListResponseDto(
             id = piscina.id,
-            nombre = piscina.nombre,
+            direccion = piscina.direccion,
             esDesbordante = piscina.esDesbordante,
             administradorNombre = piscina.administrador?.nombre ?: "Sin administrador asignado",
             ph = ph ?: 0.0,
             sistemasGermicidas = piscina.sistemaGermicida.map { SistemaGermicidaMapper.buildSistemaGermicidaResponseDto(it) },
-            calefaccion = piscina.calefaccion?.let { CalefaccionMapper.buildCalefaccionResponseDto(it) },
+        )
+    }
+
+    fun buildPiscinaFichaTecnicaDto(piscina: Piscina) : PiscinaFichaTecnicaDto {
+        return PiscinaFichaTecnicaDto(
+            id = piscina.id,
+            direccion = piscina.direccion,
+            ciudad = piscina.ciudad,
+            nombreAdministrador = piscina.administrador?.nombre + ' ' + piscina.administrador?.apellido,
+            placaId = piscina.placaId,
+            esDesbordante = piscina.esDesbordante,
+            largo = piscina.largo,
+            ancho = piscina.ancho,
+            profundidad = piscina.profundidad,
+            volumen = piscina.volumen,
+            volumenTC = piscina.volumenTC,
+            notas = piscina.notas
         )
     }
 
     fun buildPiscinaAsignadaResponseDto(piscina: Piscina): PiscinaAsignadaResponseDto {
         return PiscinaAsignadaResponseDto(
             id = piscina.id,
-            nombre = piscina.nombre,
+            direccion = piscina.direccion,
             esDesbordante = piscina.esDesbordante,
             volumen = piscina.volumen.toString(),
         )
@@ -101,7 +112,6 @@ object PiscinaMapper {
     fun buildPiscinaResponseDto(piscina: Piscina): PiscinaResponseDto {
         return PiscinaResponseDto(
             id = piscina.id,
-            nombre = piscina.nombre,
             direccion = piscina.direccion,
             ciudad = piscina.ciudad,
             esDesbordante = piscina.esDesbordante,
@@ -124,7 +134,6 @@ object PiscinaMapper {
     fun buildPiscina (piscinaDTO: PiscinaRequestDto) : Piscina {
         return Piscina(
             id = piscinaDTO.id,
-            nombre = piscinaDTO.nombre,
             direccion = piscinaDTO.direccion,
             ciudad = piscinaDTO.ciudad,
             esDesbordante = piscinaDTO.esDesbordante,
@@ -141,6 +150,8 @@ object PiscinaMapper {
             cloroSalino = piscinaDTO.cloroSalino,
             controlAutomaticoPH = piscinaDTO.controlAutomaticoPH,
             orp = piscinaDTO.orp,
+            placaId = piscinaDTO.placaId,
+            notas = piscinaDTO.notas,
         )
     }
 

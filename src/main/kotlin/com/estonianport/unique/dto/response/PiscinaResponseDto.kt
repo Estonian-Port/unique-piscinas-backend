@@ -2,7 +2,6 @@ package com.estonianport.unique.dto.response
 
 data class PiscinaResponseDto (
     val id: Long,
-    val nombre: String,
     val direccion: String,
     val ciudad: String,
     val esDesbordante: Boolean,

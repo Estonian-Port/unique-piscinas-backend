@@ -12,9 +12,7 @@ object BombaMapper {
             marca = bomba.marca,
             modelo = bomba.modelo,
             potencia = bomba.potencia.toString(),
-            esVelocidadVariable = bomba.esVelocidadVariable,
             activa = bomba.activa,
-            estado = bomba.estado.toString()
         )
     }
 
@@ -24,9 +22,7 @@ object BombaMapper {
             marca = bombaDto.marca,
             modelo = bombaDto.modelo,
             potencia = bombaDto.potencia,
-            esVelocidadVariable = bombaDto.esVelocidadVariable,
             activa = bombaDto.activa,
-            estado = bombaDto.estadoType
         )
     }
 }

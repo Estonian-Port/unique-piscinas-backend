@@ -2,7 +2,6 @@ package com.estonianport.unique.dto.request
 
 data class PiscinaRequestDto(
     val id: Long,
-    val nombre: String,
     val direccion: String,
     val ciudad: String,
     val esDesbordante: Boolean,
@@ -20,4 +19,6 @@ data class PiscinaRequestDto(
     val controlAutomaticoPH: Boolean,
     val orp: Boolean,
     val administradorId: Long?,
+    val placaId: Long,
+    val notas: String?,
 )

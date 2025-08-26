@@ -2,7 +2,6 @@ package com.estonianport.unique.dto.response
 
 data class PiscinaEquipamientoResponseDto(
     val id: String,
-    val nombre: String,
     val direccion: String,
     val volumen: String,
     // Los datos anteriores son comunes, no estoy seguro de pasarlos siempre.

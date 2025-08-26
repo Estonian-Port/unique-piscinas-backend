@@ -26,9 +26,6 @@ class Calefaccion(
     @Column
     var activa: Boolean,
 
-    @Column
-    @Enumerated(EnumType.STRING)
-    var estado: EstadoType
 ) {
     fun cambiarEstado() {
         activa = !activa

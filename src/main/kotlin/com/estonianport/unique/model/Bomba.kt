@@ -19,12 +19,5 @@ data class Bomba(
     val potencia: Double,
 
     @Column
-    val esVelocidadVariable: Boolean = false,
-
-    @Column
     val activa: Boolean = false,
-
-    @Column
-    @Enumerated(EnumType.STRING)
-    val estado: EstadoType
 ) {}

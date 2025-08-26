@@ -7,7 +7,5 @@ data class BombaResponseDto (
     val marca: String,
     val modelo: String,
     val potencia: String,
-    val esVelocidadVariable: Boolean,
     val activa: Boolean,
-    val estado: String
 )
