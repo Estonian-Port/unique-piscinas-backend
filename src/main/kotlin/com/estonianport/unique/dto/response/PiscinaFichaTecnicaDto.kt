@@ -5,7 +5,7 @@ data class PiscinaFichaTecnicaDto (
     val direccion: String,
     val ciudad: String,
     val nombreAdministrador: String,
-    val placaId: Long,
+    val codigoPlaca: Long,
     val esDesbordante: Boolean,
     val largo: Double,
     val ancho: Double,

@@ -19,6 +19,6 @@ data class PiscinaRequestDto(
     val controlAutomaticoPH: Boolean,
     val orp: Boolean,
     val administradorId: Long?,
-    val placaId: Long,
+    val codigoPlaca: Long,
     val notas: String?,
 )

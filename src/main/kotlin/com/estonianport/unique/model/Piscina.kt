@@ -70,7 +70,7 @@ class Piscina(
     val orp: Boolean,
 
     @Column
-    val placaId: Long,
+    val codigoPlaca: Long,
 
     @Column(length = 5000)
     val notas: String?,

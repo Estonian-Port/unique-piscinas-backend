@@ -77,7 +77,7 @@ object PiscinaMapper {
             id = piscina.id,
             direccion = piscina.direccion,
             esDesbordante = piscina.esDesbordante,
-            administradorNombre = piscina.administrador?.nombre ?: "Sin administrador asignado",
+            nombreAdministrador = (piscina.administrador?.nombre + ' ' + piscina.administrador?.apellido),
             ph = ph ?: 0.0,
             sistemasGermicidas = piscina.sistemaGermicida.map { SistemaGermicidaMapper.buildSistemaGermicidaResponseDto(it) },
         )
@@ -89,7 +89,7 @@ object PiscinaMapper {
             direccion = piscina.direccion,
             ciudad = piscina.ciudad,
             nombreAdministrador = piscina.administrador?.nombre + ' ' + piscina.administrador?.apellido,
-            placaId = piscina.placaId,
+            codigoPlaca = piscina.codigoPlaca,
             esDesbordante = piscina.esDesbordante,
             largo = piscina.largo,
             ancho = piscina.ancho,
@@ -131,6 +131,18 @@ object PiscinaMapper {
         )
     }
 
+    fun buildPiscinaEquiposResponseDto(piscina: Piscina): PiscinaEquiposDto {
+        return PiscinaEquiposDto(
+            id = piscina.id,
+            direccion = piscina.direccion,
+            bomba = piscina.bomba.map { BombaMapper.buildBombaResponseDto(it) },
+            filtro = FiltroMapper.buildFiltroResponseDto(piscina.filtro),
+            sistemasGermicidas = piscina.sistemaGermicida.map { SistemaGermicidaMapper.buildSistemaGermicidaResponseDto(it) },
+            valvulas = piscina.valvulas.map { ValvulaMapper.buildValvulaResponseDto(it) },
+            calefaccion = piscina.calefaccion?.let { CalefaccionMapper.buildCalefaccionResponseDto(it) }
+        )
+    }
+
     fun buildPiscina (piscinaDTO: PiscinaRequestDto) : Piscina {
         return Piscina(
             id = piscinaDTO.id,
@@ -150,7 +162,7 @@ object PiscinaMapper {
             cloroSalino = piscinaDTO.cloroSalino,
             controlAutomaticoPH = piscinaDTO.controlAutomaticoPH,
             orp = piscinaDTO.orp,
-            placaId = piscinaDTO.placaId,
+            codigoPlaca = piscinaDTO.codigoPlaca,
             notas = piscinaDTO.notas,
         )
     }

@@ -55,13 +55,24 @@ class AdministracionController {
         )
     }
 
-    @GetMapping("/piscina-ficha-tecnica/{piscinaId}/{usuarioId}")
+    @GetMapping("/piscina-ficha-tecnica/{usuarioId}/{piscinaId}")
     fun getPiscinaFichaTecnicaById(@PathVariable piscinaId: Long, @PathVariable usuarioId: Long): ResponseEntity<CustomResponse> {
         administracionService.verificarRol(usuarioId)
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Ficha técnica de la piscina obtenida correctamente",
                 data = PiscinaMapper.buildPiscinaFichaTecnicaDto(piscinaService.findById(piscinaId))
+            )
+        )
+    }
+
+    @GetMapping("/piscina-equipos/{usuarioId}/{piscinaId}")
+    fun getPiscinaEquipoById(@PathVariable piscinaId: Long, @PathVariable usuarioId: Long): ResponseEntity<CustomResponse> {
+        administracionService.verificarRol(usuarioId)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Equipos de la piscina obtenida correctamente",
+                data = PiscinaMapper.buildPiscinaEquiposResponseDto(piscinaService.findById(piscinaId))
             )
         )
     }
