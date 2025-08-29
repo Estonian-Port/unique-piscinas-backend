@@ -1,5 +1,7 @@
 package com.estonianport.unique.dto.response
 
+import com.estonianport.unique.model.Registro
+
 data class PiscinaEquiposDto(
     val id: Long,
     val direccion: String,
@@ -7,5 +9,6 @@ data class PiscinaEquiposDto(
     val filtro: FiltroResponseDto,
     val sistemasGermicidas: List<SistemaGermicidaResponseDto>,
     val valvulas: List<ValvulaResponseDto>,
-    val calefaccion: CalefaccionResponseDto?
+    val calefaccion: CalefaccionResponseDto?,
+    val registros: List<RegistroResponseDto>,
 )

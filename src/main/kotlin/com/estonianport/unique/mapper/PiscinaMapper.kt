@@ -135,11 +135,12 @@ object PiscinaMapper {
         return PiscinaEquiposDto(
             id = piscina.id,
             direccion = piscina.direccion,
-            bomba = piscina.bomba.map { BombaMapper.buildBombaResponseDto(it) },
+            bombas = piscina.bomba.map { BombaMapper.buildBombaResponseDto(it) },
             filtro = FiltroMapper.buildFiltroResponseDto(piscina.filtro),
             sistemasGermicidas = piscina.sistemaGermicida.map { SistemaGermicidaMapper.buildSistemaGermicidaResponseDto(it) },
             valvulas = piscina.valvulas.map { ValvulaMapper.buildValvulaResponseDto(it) },
-            calefaccion = piscina.calefaccion?.let { CalefaccionMapper.buildCalefaccionResponseDto(it) }
+            calefaccion = piscina.calefaccion?.let { CalefaccionMapper.buildCalefaccionResponseDto(it) },
+            registros = piscina.registros.map { RegistroMapper.buildRegistroResponseDto(it) }
         )
     }
 
