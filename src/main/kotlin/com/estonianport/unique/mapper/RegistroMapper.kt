@@ -12,7 +12,7 @@ object RegistroMapper {
             dispositivo = registro.dispositivo,
             accion = registro.accion,
             descripcion = registro.descripcion,
-            nombreTecnico = registro.tecnico.nombre,
+            nombreTecnico = registro.nombreTecnico,
         )
     }
 

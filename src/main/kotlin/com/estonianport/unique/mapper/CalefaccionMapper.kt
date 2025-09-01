@@ -5,12 +5,17 @@ import com.estonianport.unique.dto.response.CalefaccionResponseDto
 import com.estonianport.unique.model.Calefaccion
 import com.estonianport.unique.model.enums.CalefaccionType
 
+
+
 object CalefaccionMapper {
 
     fun buildCalefaccionResponseDto(calefaccion: Calefaccion) : CalefaccionResponseDto {
         return CalefaccionResponseDto(
             id = calefaccion.id,
-            tipo = calefaccion.tipo.toString(),
+            tipo = calefaccion.tipo.toDisplayString(),
+            marca = calefaccion.marca,
+            modelo = calefaccion.modelo,
+            potencia = calefaccion.potencia,
             activa = calefaccion.activa
         )
     }

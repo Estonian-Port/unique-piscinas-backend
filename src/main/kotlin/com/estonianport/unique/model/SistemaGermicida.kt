@@ -1,20 +1,16 @@
 package com.estonianport.unique.model
 
-import com.estonianport.unique.model.enums.SistemaGermicidaType
 import com.estonianport.unique.model.enums.EstadoType
 import jakarta.persistence.*
 
 @Entity
-class SistemaGermicida(
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+abstract class SistemaGermicida(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long,
-
-    @Column
-    @Enumerated(EnumType.STRING)
-    val tipo: SistemaGermicidaType,
-
-    @Column
+    val activo: Boolean,
+    val marca: String,
     @Enumerated(EnumType.STRING)
     val estado: EstadoType
 ) {
@@ -41,4 +37,43 @@ class SistemaGermicida(
             "Reemplazo urgente"
         }
     }
+
+    fun tipo(): String {
+        return when (this) {
+            is UV -> "UV"
+            is Ionizador -> "Ionizador de cobre"
+            is Trasductor -> "Trasductor de ultrasonido"
+            else -> "Desconocido"
+        }
+    }
 }
+
+@DiscriminatorValue("UV")
+@Entity
+class UV(
+    id: Long,
+    activo: Boolean,
+    marca: String,
+    estado: EstadoType,
+    val potencia: Double
+) : SistemaGermicida(id, activo, marca, estado)
+
+@DiscriminatorValue("IONIZADOR")
+@Entity
+class Ionizador(
+    id: Long,
+    activo: Boolean,
+    marca: String,
+    estado: EstadoType,
+    val electrodos: Double
+) : SistemaGermicida(id, activo, marca, estado)
+
+@DiscriminatorValue("TRASDUCTOR")
+@Entity
+class Trasductor(
+    id: Long,
+    activo: Boolean,
+    marca: String,
+    estado: EstadoType,
+    val potencia: Double
+) : SistemaGermicida(id, activo, marca, estado)

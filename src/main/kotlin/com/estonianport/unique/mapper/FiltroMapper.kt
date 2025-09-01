@@ -8,10 +8,23 @@ object FiltroMapper {
 
     fun buildFiltroResponseDto(filtro: Filtro): FiltroResponseDto {
         return FiltroResponseDto(
+            id = filtro.id,
+            tipo = when (filtro) {
+                is FiltroArena -> "Arena"
+                is FiltroVidrio -> "Vidrio"
+                is FiltroCartucho -> "Cartucho"
+                else -> "DESCONOCIDO"
+            },
             marca = filtro.marca,
             modelo = filtro.modelo,
             diametro = filtro.diametro,
-            activo = filtro.activo
+            activo = filtro.activo,
+            datoExtra = when (filtro) {
+                is FiltroArena -> filtro.cantidadArena.toDouble()
+                is FiltroVidrio -> filtro.cantidadVidrio.toDouble()
+                is FiltroCartucho -> filtro.micrasDelCartucho.toDouble()
+                else -> 0.0
+            }
         )
     }
 
