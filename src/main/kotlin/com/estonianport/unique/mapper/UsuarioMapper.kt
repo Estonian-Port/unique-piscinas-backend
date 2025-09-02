@@ -1,5 +1,6 @@
 package com.estonianport.unique.mapper
 
+import com.estonianport.unique.dto.request.UsuarioAltaRequestDto
 import com.estonianport.unique.dto.request.UsuarioRequestDto
 import com.estonianport.unique.dto.response.UsuarioRegistradoResponseDto
 import com.estonianport.unique.dto.response.UsuarioResponseDto
@@ -38,6 +39,16 @@ object UsuarioMapper {
             nombre = usuarioDto.nombre,
             apellido = usuarioDto.apellido,
             celular = usuarioDto.celular,
+            email = usuarioDto.email
+        )
+    }
+
+    fun buildAltaUsuario(usuarioDto: UsuarioAltaRequestDto) : Usuario {
+        return Usuario (
+            id = 0,
+            nombre = "",
+            apellido = "",
+            celular = 0,
             email = usuarioDto.email
         )
     }

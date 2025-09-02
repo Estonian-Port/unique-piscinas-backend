@@ -1,5 +1,8 @@
 package com.estonianport.unique.controller
 
+import com.estonianport.unique.common.codeGeneratorUtil.CodeGeneratorUtil
+import com.estonianport.unique.common.emailService.EmailService
+import com.estonianport.unique.dto.request.UsuarioAltaRequestDto
 import com.estonianport.unique.dto.request.UsuarioRequestDto
 import com.estonianport.unique.mapper.PiscinaMapper
 import com.estonianport.unique.dto.response.CustomResponse
@@ -27,6 +30,9 @@ import kotlin.text.get
 @RequestMapping("/usuario")
 @CrossOrigin("*")
 class UsuarioController {
+
+    @Autowired
+    private lateinit var emailService: EmailService
 
     @Autowired
     lateinit var administracionService: AdministracionService
@@ -63,25 +69,45 @@ class UsuarioController {
         )
     }
 
-    @PostMapping("/alta")
-    fun create(@RequestBody usuarioDto: UsuarioRequestDto): ResponseEntity<CustomResponse> {
-        val newUser = UsuarioMapper.buildUsuario(usuarioDto)
+    @PostMapping("/altaUsuario")
+    fun altaUsuario(@RequestBody usuarioDto: UsuarioAltaRequestDto): ResponseEntity<CustomResponse> {
+        val usuario = UsuarioMapper.buildAltaUsuario(usuarioDto)
 
-        // Si llega por primera vez se encripta la contraseña sino se deja igual
-        // para cambiar contraseña se debe usar editPassword
+        val password = usuarioService.generarPassword()
+        usuario.password = usuarioService.encriptarPassword(password)
 
-        if (usuarioDto.id == 0L) {
-            newUser.password = usuarioService.encriptarPassword(usuarioDto, newUser)
-        } else {
-            newUser.password = usuarioService.findById(usuarioDto.id)!!.password!!
+        usuarioService.save(usuario)
+
+        try {
+            emailService.enviarEmailAltaUsuario(usuario, "Bienvenido a UNIQUE", password);
+        } catch (_: Exception) {
+            // TODO enviar notificacion de fallo al enviar el mail
         }
 
-        // Usamos save porque ya esta en el generics de service, asi no redeclaramos metodos
-        usuarioService.save(newUser)
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Usuario creado correctamente",
-                data = UsuarioMapper.buildUsuarioResponseDto(newUser, mutableListOf<Long>())
+                data = UsuarioMapper.buildUsuarioResponseDto(usuario, mutableListOf<Long>())
+            )
+        )
+    }
+
+
+    @PostMapping("/save")
+    fun save(@RequestBody usuarioDto: UsuarioRequestDto): ResponseEntity<CustomResponse> {
+        val usuario = UsuarioMapper.buildUsuario(usuarioDto)
+
+        // Traemos la password del back para que no viaje por temas de seguridad al editar un usuario
+        // Para editar password usamos el endpoint especifico /editPassword
+        usuario.password = usuarioService.findById(usuarioDto.id)!!.password!!
+
+
+        usuarioService.save(usuario)
+
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Usuario editado correctamente",
+                data = UsuarioMapper.buildUsuarioResponseDto(usuario, mutableListOf<Long>())
             )
         )
     }
@@ -90,8 +116,9 @@ class UsuarioController {
     @PostMapping("/editPassword")
     fun editPassword(@RequestBody usuarioDto: UsuarioRequestDto): ResponseEntity<CustomResponse> {
         val usuario = usuarioService.get(usuarioDto.id)!!
-        usuario.password = usuarioService.encriptarPassword(usuarioDto, usuario)
+        usuario.password = usuarioService.encriptarPassword(usuarioDto.password)
 
+        usuarioService.save(usuario)
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Constraseña actualizada correctamente",

@@ -1,6 +1,7 @@
 package com.estonianport.unique.service
 
 import GenericServiceImpl
+import com.estonianport.unique.common.codeGeneratorUtil.CodeGeneratorUtil
 import com.estonianport.unique.dto.UsuarioAbmDTO
 import com.estonianport.unique.dto.UsuarioPerfilDTO
 import com.estonianport.unique.dto.request.UsuarioRequestDto
@@ -72,8 +73,12 @@ class UsuarioService : GenericServiceImpl<Usuario, Long>() {
         return getAll()!!.filter { !it.esAdministrador }
     }
 
-     fun encriptarPassword(usuarioDto: UsuarioRequestDto, newUser: Usuario) : String {
-        return BCryptPasswordEncoder().encode(usuarioDto.password)
+     fun encriptarPassword(password: String) : String {
+        return BCryptPasswordEncoder().encode(password)
+    }
+
+    fun generarPassword(): String {
+        return CodeGeneratorUtil.base26Only4Letters + CodeGeneratorUtil.base26Only4Letters
     }
 
 }

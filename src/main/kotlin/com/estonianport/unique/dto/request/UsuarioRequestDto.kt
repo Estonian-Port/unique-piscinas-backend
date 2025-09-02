@@ -8,3 +8,7 @@ data class UsuarioRequestDto (
     val email: String,
     val password: String
 )
+
+data class UsuarioAltaRequestDto (
+    val email: String,
+)
