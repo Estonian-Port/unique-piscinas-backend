@@ -4,6 +4,7 @@ data class EstadisticasResponseDto (
     val totalUsuarios: Int,
     val usuariosActivos: Int,
     val usuariosInactivos: Int,
+    val usuariosPendientes: Int,
     val totalPiscinas: Int,
     val piscinasSkimmer: Int,
     val piscinasDesborde: Int,

@@ -77,7 +77,7 @@ class AdministracionController {
         )
     }
 
-    @GetMapping("/usuarios-registradas/{usuarioId}")
+    @GetMapping("/usuarios-registrados/{usuarioId}")
     fun getUsuarioRegistrados(@PathVariable usuarioId: Long): ResponseEntity<CustomResponse> {
         administracionService.verificarRol(usuarioId)
         return ResponseEntity.status(200).body(

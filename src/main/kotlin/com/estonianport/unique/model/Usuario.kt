@@ -27,7 +27,7 @@ class Usuario(
     @Column
     val esAdministrador: Boolean = false,
 
-    @Column
+    @Enumerated(EnumType.STRING)
     var estado: UsuarioType = UsuarioType.PENDIENTE,
 ) {
 

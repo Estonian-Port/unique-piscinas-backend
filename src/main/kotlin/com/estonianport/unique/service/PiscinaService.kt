@@ -50,8 +50,12 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
         return piscinaRepository.count().toInt()
     }
 
-    fun countPiscinasByTipo(tipo: String): Int {
-        return piscinaRepository.countByTipo(tipo)
+    fun countPiscinasDesborde(): Int {
+        return piscinaRepository.countDesbordante()
+    }
+
+    fun countPiscinasSkimmer(): Int {
+        return piscinaRepository.countSkimmer()
     }
 
     fun getVolumenTotal(): Double {

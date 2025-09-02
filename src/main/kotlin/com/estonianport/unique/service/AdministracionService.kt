@@ -23,11 +23,12 @@ class AdministracionService(
     fun getEstadisticas(): EstadisticasResponseDto {
         return EstadisticasResponseDto(
             totalPiscinas = piscinaService.totalPiscinas(),
-            totalUsuarios = usuarioService.count().toInt(),
+            totalUsuarios = usuarioService.totalUsuarios(),
             usuariosActivos = usuarioService.getUsuariosActivos(),
-            usuariosInactivos = usuarioService.count().toInt() - usuarioService.getUsuariosActivos(),
-            piscinasSkimmer = piscinaService.countPiscinasByTipo("Skimmer"),
-            piscinasDesborde = piscinaService.countPiscinasByTipo("Desborde"),
+            usuariosPendientes = usuarioService.getUsuariosPendientes(),
+            usuariosInactivos = usuarioService.getUsuariosInactivos(),
+            piscinasSkimmer = piscinaService.countPiscinasDesborde(),
+            piscinasDesborde = piscinaService.countPiscinasSkimmer(),
             volumenTotal = piscinaService.getVolumenTotal(),
             volumenPromedio = piscinaService.getVolumenPromedio(),
         )

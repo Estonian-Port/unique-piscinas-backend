@@ -52,12 +52,24 @@ class UsuarioService : GenericServiceImpl<Usuario, Long>() {
         return usuarioRepository.findById(id).get()
     }
 
+    fun totalUsuarios() : Int {
+        return usuarioRepository.totalUsuarios()
+    }
+
     fun getUsuariosActivos() : Int {
         return usuarioRepository.countUsuariosActivos()
     }
 
+    fun getUsuariosInactivos() : Int {
+        return usuarioRepository.countUsuariosInactivos()
+    }
+
+    fun getUsuariosPendientes() : Int {
+        return usuarioRepository.countUsuariosPendientes()
+    }
+
     fun getUsuariosRegistrados(): List<Usuario> {
-        return getAll()!!.toList()
+        return getAll()!!.filter { !it.esAdministrador }
     }
 
      fun encriptarPassword(usuarioDto: UsuarioRequestDto, newUser: Usuario) : String {

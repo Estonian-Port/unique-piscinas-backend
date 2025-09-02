@@ -10,30 +10,69 @@ import java.util.*
 @Repository
 interface UsuarioRepository : CrudRepository<Usuario, Long> {
 
-    fun findOneByEmail(email: String) : Usuario?
+    fun findOneByEmail(email: String): Usuario?
 
     // TODO una vez leidos y entendido, borrar los comentarios, y hay q arreglar si vamos a usar "usuarios"
     // o "usuario", al poner "usuarios" seria como decir "all usuario" o "lista usuario" me da igual usar cualquiera de los dos
 
     // TODO Creo que ahi estaria, tiene q ser fecha ultimo ingreso not null, fecha baja null y tener asignada
-    @Query("""
+    @Query(
+        """
         SELECT COUNT(DISTINCT u)  
         FROM Usuario u
         JOIN Piscina p ON p.administrador = u
         WHERE u.ultimoIngreso IS NOT NULL
         AND u.fechaBaja IS NULL
-    """)
+        AND u.esAdministrador = false
+    """
+    )
     fun countUsuariosActivos(): Int
+
+    @Query(
+        """
+    SELECT COUNT(DISTINCT u)
+    FROM Usuario u
+    WHERE u.ultimoIngreso IS NOT NULL
+    AND u.fechaBaja IS NULL
+    AND u.esAdministrador = false
+    AND NOT EXISTS (
+        SELECT 1 FROM Piscina p WHERE p.administrador = u
+    )
+"""
+    )
+    fun countUsuariosInactivos(): Int
+
+    @Query(
+        """
+    SELECT COUNT(u)
+    FROM Usuario u
+    WHERE u.fechaBaja IS NULL
+    AND u.ultimoIngreso IS NULL
+    AND u.esAdministrador = false
+"""
+    )
+    fun countUsuariosPendientes(): Int
+
+    @Query(
+        """
+        SELECT COUNT(u) 
+        FROM Usuario u
+        WHERE u.esAdministrador IS FALSE
+    """
+    )
+    fun totalUsuarios(): Int
 
     // TODO y aca dejo la q devolveria usuarios, seria optimo q si la vas a usar solo para listar en front
     // devuelva usuarioDto
-    @Query("""
+    @Query(
+        """
         SELECT DISTINCT u
         FROM Usuario u
         JOIN Piscina p ON p.administrador = u
         WHERE u.ultimoIngreso IS NOT NULL
         AND u.fechaBaja IS NULL
-    """)
+    """
+    )
     fun getUsuariosActivos(): List<Usuario>
 
     /*
@@ -55,9 +94,9 @@ interface UsuarioRepository : CrudRepository<Usuario, Long> {
     fun getCantidadUsuarioFiltrados(empresaId : Long, buscar: String) : Int
     */
 
-    fun getUsuarioByEmail(email : String): Usuario?
+    fun getUsuarioByEmail(email: String): Usuario?
 
-    fun getUsuarioByCelular(celular : Long) : Usuario?
+    fun getUsuarioByCelular(celular: Long): Usuario?
 
-    override fun findById(id: Long) : Optional<Usuario>
+    override fun findById(id: Long): Optional<Usuario>
 }
