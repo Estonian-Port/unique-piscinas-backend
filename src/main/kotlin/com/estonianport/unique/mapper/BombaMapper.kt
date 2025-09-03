@@ -18,7 +18,7 @@ object BombaMapper {
 
     fun buildBomba(bombaDto: BombaRequestDto) : Bomba {
         return Bomba(
-            id = bombaDto.id,
+            id = bombaDto.id ?: 0,
             marca = bombaDto.marca,
             modelo = bombaDto.modelo,
             potencia = bombaDto.potencia,

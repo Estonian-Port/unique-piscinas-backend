@@ -17,7 +17,7 @@ abstract class Filtro(
     val marca: String,
     val modelo: String,
     val diametro: Double,
-    val activo: Boolean
+    val activo: Boolean = true
 )
 
 @DiscriminatorValue("ARENA")
@@ -27,7 +27,7 @@ class FiltroArena(
     marca: String,
     modelo: String,
     diametro: Double,
-    activo: Boolean,
+    activo: Boolean = true,
     val cantidadArena: Int
 ) : Filtro(id, marca, modelo, diametro, activo)
 
@@ -38,7 +38,7 @@ class FiltroVidrio(
     marca: String,
     modelo: String,
     diametro: Double,
-    activo: Boolean,
+    activo: Boolean = true,
     val cantidadVidrio: Int
 ) : Filtro(id, marca, modelo, diametro, activo)
 
@@ -49,7 +49,7 @@ class FiltroCartucho(
     marca: String,
     modelo: String,
     diametro: Double,
-    activo: Boolean,
+    activo: Boolean = true,
     val micrasDelCartucho: Int
 ) : Filtro(id, marca, modelo, diametro, activo)
 

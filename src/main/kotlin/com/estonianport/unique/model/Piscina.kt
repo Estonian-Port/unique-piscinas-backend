@@ -6,7 +6,6 @@ import jakarta.persistence.*
 
 @Entity
 class Piscina(
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long,
@@ -32,24 +31,17 @@ class Piscina(
     @Column
     val volumen: Double,
 
-    // Solo se usa para piscinas de tipo desbordante.
     @Column
     val volumenTC: Double?,
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     @JoinColumn(name = "piscina_id")
     val bomba: MutableList<Bomba>,
 
-    // Filtro entiendo que es uno solo pero habria que confirmar con Leo.
     @OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY, optional = true)
     @PrimaryKeyJoinColumn
     val filtro: Filtro,
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "piscina_id")
-    val valvulas: MutableSet<Valvula>,
-
-    // Dispositivos de la piscina: Son opcionales y corresponden a UV, Ionizador y Trasductor.
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "piscina_id")
     val sistemaGermicida: MutableSet<SistemaGermicida>,
@@ -58,8 +50,6 @@ class Piscina(
     @PrimaryKeyJoinColumn
     val calefaccion: Calefaccion?,
 
-    // Los siguiente atributos en el prototipo aparecen en el formulario de añadir piscina pero luego esa informacion no se muestra en ningun lado.
-    // Consultar a Leo si quiere mostrarla, por ejemplo junto con los dispostivos, o si los sacamos.
     @Column
     val cloroSalino: Boolean,
 
@@ -69,11 +59,11 @@ class Piscina(
     @Column
     val orp: Boolean,
 
-    @Column
-    val codigoPlaca: Long,
+    @Column(length = 4)
+    val codigoPlaca: String,
 
     @Column(length = 5000)
-    val notas: String?,
+    val notas: String?
 ) {
 
     // Lo puse aca porque entiendo que se deberia poder crear una pileta sin administrador
@@ -162,5 +152,5 @@ class Piscina(
 
     fun tieneCalefaccion() = calefaccion != null
 
-    fun filtroActivo() : Boolean = (entradaAgua.isNotEmpty() and funcionActiva.isNotEmpty())
+    fun filtroActivo(): Boolean = (entradaAgua.isNotEmpty() and funcionActiva.isNotEmpty())
 }

@@ -22,7 +22,7 @@ object CalefaccionMapper {
 
     fun buildCalefaccion (calefaccionDTO : CalefaccionRequestDto) : Calefaccion {
         return Calefaccion(
-            id = calefaccionDTO.id,
+            id = calefaccionDTO.id ?: 0,
             tipo = CalefaccionType.valueOf(calefaccionDTO.tipo),
             potencia = calefaccionDTO.potencia,
             modelo = calefaccionDTO.modelo,

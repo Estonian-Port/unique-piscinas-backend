@@ -53,7 +53,6 @@ object PiscinaMapper {
             presion = presionPiscina,
             bombas = piscina.bomba.map { BombaMapper.buildBombaResponseDto(it) }.toList(),
             filtro = FiltroMapper.buildFiltroResponseDto(piscina.filtro),
-            valvulas = piscina.valvulas.map { ValvulaMapper.buildValvulaResponseDto(it) }.toList(),
             sistemasGermicidas = piscina.sistemaGermicida.map {
                 SistemaGermicidaMapper.buildSistemaGermicidaResponseDto(
                     it
@@ -122,7 +121,6 @@ object PiscinaMapper {
             volumenTC = piscina.volumenTC,
             bomba = piscina.bomba.map { BombaMapper.buildBombaResponseDto(it) },
             filtro = FiltroMapper.buildFiltroResponseDto(piscina.filtro),
-            valvulas = piscina.valvulas.map { ValvulaMapper.buildValvulaResponseDto(it) },
             sistemaGermicida = piscina.sistemaGermicida.map { SistemaGermicidaMapper.buildSistemaGermicidaResponseDto(it) },
             calefaccion = piscina.calefaccion?.let { CalefaccionMapper.buildCalefaccionResponseDto(it) },
             cloroSalino = piscina.cloroSalino,
@@ -138,7 +136,6 @@ object PiscinaMapper {
             bombas = piscina.bomba.map { BombaMapper.buildBombaResponseDto(it) },
             filtro = FiltroMapper.buildFiltroResponseDto(piscina.filtro),
             sistemasGermicidas = piscina.sistemaGermicida.map { SistemaGermicidaMapper.buildSistemaGermicidaResponseDto(it) },
-            valvulas = piscina.valvulas.map { ValvulaMapper.buildValvulaResponseDto(it) },
             calefaccion = piscina.calefaccion?.let { CalefaccionMapper.buildCalefaccionResponseDto(it) },
             registros = piscina.registros.map { RegistroMapper.buildRegistroResponseDto(it) }
         )
@@ -146,7 +143,7 @@ object PiscinaMapper {
 
     fun buildPiscina (piscinaDTO: PiscinaRequestDto) : Piscina {
         return Piscina(
-            id = piscinaDTO.id,
+            id = piscinaDTO.id ?: 0,
             direccion = piscinaDTO.direccion,
             ciudad = piscinaDTO.ciudad,
             esDesbordante = piscinaDTO.esDesbordante,
@@ -157,7 +154,6 @@ object PiscinaMapper {
             volumenTC = piscinaDTO.volumenTC,
             bomba = piscinaDTO.bomba.map { BombaMapper.buildBomba(it) }.toMutableList(),
             filtro = FiltroMapper.buildFiltro(piscinaDTO.filtro),
-            valvulas = piscinaDTO.valvulas.map { ValvulaMapper.buildValvula(it) }.toMutableSet(),
             sistemaGermicida = piscinaDTO.sistemaGermicida.map { SistemaGermicidaMapper.buildSistemaGermicida(it) }.toMutableSet(),
             calefaccion = piscinaDTO.calefaccion?.let { CalefaccionMapper.buildCalefaccion(it) },
             cloroSalino = piscinaDTO.cloroSalino,

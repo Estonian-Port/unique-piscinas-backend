@@ -12,7 +12,6 @@ data class PiscinaResponseDto (
     val volumenTC: Double?,
     val bomba: List<BombaResponseDto>,
     val filtro: FiltroResponseDto,
-    val valvulas: List<ValvulaResponseDto>,
     val sistemaGermicida: List<SistemaGermicidaResponseDto>,
     val calefaccion: CalefaccionResponseDto?,
     val cloroSalino: Boolean,

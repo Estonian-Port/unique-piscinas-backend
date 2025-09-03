@@ -50,13 +50,16 @@ class AdministracionController {
             CustomResponse(
                 message = "Piscinas registradas obtenidas correctamente",
                 data = piscinaService.getPiscinasRegistradas()
-                    .map { PiscinaMapper.buildPiscinaRegistradaListDto(it, piscinaService.getPh(it.id)) }
+                    .map { PiscinaMapper.buildPiscinaRegistradaListDto(it, piscinaService.getPh(it.id!!)) }
             )
         )
     }
 
     @GetMapping("/piscina-ficha-tecnica/{usuarioId}/{piscinaId}")
-    fun getPiscinaFichaTecnicaById(@PathVariable piscinaId: Long, @PathVariable usuarioId: Long): ResponseEntity<CustomResponse> {
+    fun getPiscinaFichaTecnicaById(
+        @PathVariable piscinaId: Long,
+        @PathVariable usuarioId: Long
+    ): ResponseEntity<CustomResponse> {
         administracionService.verificarRol(usuarioId)
         return ResponseEntity.status(200).body(
             CustomResponse(
@@ -67,12 +70,28 @@ class AdministracionController {
     }
 
     @GetMapping("/piscina-equipos/{usuarioId}/{piscinaId}")
-    fun getPiscinaEquipoById(@PathVariable piscinaId: Long, @PathVariable usuarioId: Long): ResponseEntity<CustomResponse> {
+    fun getPiscinaEquipoById(
+        @PathVariable piscinaId: Long,
+        @PathVariable usuarioId: Long
+    ): ResponseEntity<CustomResponse> {
         administracionService.verificarRol(usuarioId)
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Equipos de la piscina obtenida correctamente",
                 data = PiscinaMapper.buildPiscinaEquiposResponseDto(piscinaService.findById(piscinaId))
+            )
+        )
+    }
+
+    @GetMapping("/usuarios-nueva-piscina/{usuarioId}")
+    fun getUsuarioNuevaPiscina(@PathVariable usuarioId: Long): ResponseEntity<CustomResponse> {
+        administracionService.verificarRol(usuarioId)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Usuarios para nueva piscina obtenidos correctamente",
+                data = usuarioService.getUsuariosRegistrados().map {
+                    UsuarioMapper.buildUsuarioNuevaPiscinaResponseDto(it)
+                }
             )
         )
     }

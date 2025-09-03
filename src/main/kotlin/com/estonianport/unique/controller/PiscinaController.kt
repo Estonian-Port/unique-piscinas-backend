@@ -113,7 +113,7 @@ class PiscinaController {
         )
     }
 
-    @PostMapping("")
+    @PostMapping("/alta")
     fun savePiscina(@RequestBody piscinaDto: PiscinaRequestDto): ResponseEntity<CustomResponse> {
         val newPiscina = PiscinaMapper.buildPiscina(piscinaDto)
         if (piscinaDto.administradorId != null) {
@@ -128,7 +128,7 @@ class PiscinaController {
             )
         )
     }
- 
+
     @DeleteMapping("programacion/{piscinaId}/{programacionId}")
     fun getProgramacionPiscina(@PathVariable piscinaId: Long, @PathVariable programacionId: Long): ResponseEntity<CustomResponse> {
         piscinaService.deleteProgramacion(piscinaId, programacionId)

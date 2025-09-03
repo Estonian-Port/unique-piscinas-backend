@@ -9,7 +9,7 @@ abstract class SistemaGermicida(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long,
-    val activo: Boolean,
+    val activo: Boolean =true,
     val marca: String,
     @Enumerated(EnumType.STRING)
     val estado: EstadoType
@@ -52,7 +52,7 @@ abstract class SistemaGermicida(
 @Entity
 class UV(
     id: Long,
-    activo: Boolean,
+    activo: Boolean = true,
     marca: String,
     estado: EstadoType,
     val potencia: Double
@@ -62,7 +62,7 @@ class UV(
 @Entity
 class Ionizador(
     id: Long,
-    activo: Boolean,
+    activo: Boolean = true,
     marca: String,
     estado: EstadoType,
     val electrodos: Double
@@ -72,7 +72,7 @@ class Ionizador(
 @Entity
 class Trasductor(
     id: Long,
-    activo: Boolean,
+    activo: Boolean = true,
     marca: String,
     estado: EstadoType,
     val potencia: Double

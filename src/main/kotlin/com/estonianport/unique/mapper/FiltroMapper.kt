@@ -29,34 +29,28 @@ object FiltroMapper {
     }
 
     fun buildFiltro(filtroDTO: FiltroRequestDto): Filtro {
-        return when {
-            filtroDTO.cantidadArena != null -> FiltroArena(
-                id = filtroDTO.id,
+        return when (filtroDTO.tipo) {
+            "Arena" -> FiltroArena(
+                id = filtroDTO.id ?: 0,
                 marca = filtroDTO.marca,
                 modelo = filtroDTO.modelo,
                 diametro = filtroDTO.diametro,
-                activo = filtroDTO.activo,
-                cantidadArena = filtroDTO.cantidadArena
+                cantidadArena = filtroDTO.datoExtra,
             )
-
-            filtroDTO.cantidadVidrio != null -> FiltroVidrio(
-                id = filtroDTO.id,
+            "Vidrio" -> FiltroVidrio(
+                id = filtroDTO.id ?: 0,
                 marca = filtroDTO.marca,
                 modelo = filtroDTO.modelo,
                 diametro = filtroDTO.diametro,
-                activo = filtroDTO.activo,
-                cantidadVidrio = filtroDTO.cantidadVidrio
+                cantidadVidrio = filtroDTO.datoExtra,
             )
-
-            filtroDTO.micrasDelCartucho != null -> FiltroCartucho(
-                id = filtroDTO.id,
+            "Cartucho" -> FiltroCartucho(
+                id = filtroDTO.id ?: 0,
                 marca = filtroDTO.marca,
                 modelo = filtroDTO.modelo,
                 diametro = filtroDTO.diametro,
-                activo = filtroDTO.activo,
-                micrasDelCartucho = filtroDTO.micrasDelCartucho
+                micrasDelCartucho = filtroDTO.datoExtra
             )
-
             else -> throw IllegalArgumentException("Tipo de filtro no reconocido")
         }
     }

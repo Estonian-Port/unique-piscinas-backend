@@ -8,7 +8,6 @@ data class PiscinaEquiposDto(
     val bombas: List<BombaResponseDto>,
     val filtro: FiltroResponseDto,
     val sistemasGermicidas: List<SistemaGermicidaResponseDto>,
-    val valvulas: List<ValvulaResponseDto>,
     val calefaccion: CalefaccionResponseDto?,
     val registros: List<RegistroResponseDto>,
 )

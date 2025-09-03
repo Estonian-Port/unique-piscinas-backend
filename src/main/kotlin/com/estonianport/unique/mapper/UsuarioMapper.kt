@@ -2,6 +2,7 @@ package com.estonianport.unique.mapper
 
 import com.estonianport.unique.dto.request.UsuarioAltaRequestDto
 import com.estonianport.unique.dto.request.UsuarioRequestDto
+import com.estonianport.unique.dto.response.UsuarioNuevaPiscinaResponseDto
 import com.estonianport.unique.dto.response.UsuarioRegistradoResponseDto
 import com.estonianport.unique.dto.response.UsuarioResponseDto
 import com.estonianport.unique.model.Piscina
@@ -30,6 +31,14 @@ object UsuarioMapper {
             email = usuario.email,
             estado = usuario.estado.name,
             piscinasAsignadas = piscinasAsignadas.map { PiscinaMapper.buildPiscinaAsignadaResponseDto(it) },
+        )
+    }
+
+    fun buildUsuarioNuevaPiscinaResponseDto(usuario: Usuario): UsuarioNuevaPiscinaResponseDto {
+        return UsuarioNuevaPiscinaResponseDto(
+            id = usuario.id,
+            nombre = usuario.nombre,
+            apellido = usuario.apellido,
         )
     }
 

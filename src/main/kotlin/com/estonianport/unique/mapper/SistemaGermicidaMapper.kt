@@ -31,8 +31,7 @@ object SistemaGermicidaMapper {
         when (germicida.tipo) {
             "UV" -> {
                 return UV(
-                    id = germicida.id,
-                    activo = germicida.activo,
+                    id = germicida.id ?: 0,
                     marca = germicida.marca,
                     estado = EstadoType.OPERATIVO,
                     potencia = germicida.datoExtra,
@@ -40,8 +39,7 @@ object SistemaGermicidaMapper {
             }
             "IONIZADOR" -> {
                 return Ionizador(
-                    id = germicida.id,
-                    activo = germicida.activo,
+                    id = germicida.id ?: 0,
                     marca = germicida.marca,
                     estado = EstadoType.OPERATIVO,
                     electrodos = germicida.datoExtra,
@@ -49,8 +47,7 @@ object SistemaGermicidaMapper {
             }
             "TRASDUCTOR" -> {
                 return Trasductor(
-                    id = germicida.id,
-                    activo = germicida.activo,
+                    id = germicida.id ?: 0,
                     marca = germicida.marca,
                     estado = EstadoType.OPERATIVO,
                     potencia = germicida.datoExtra,

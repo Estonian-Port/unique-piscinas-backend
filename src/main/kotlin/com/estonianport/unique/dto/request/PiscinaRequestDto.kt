@@ -1,9 +1,12 @@
 package com.estonianport.unique.dto.request
 
 data class PiscinaRequestDto(
-    val id: Long,
+    val id: Long?,
+    val administradorId: Long?,
     val direccion: String,
     val ciudad: String,
+    val codigoPlaca: String,
+    val notas: String?,
     val esDesbordante: Boolean,
     val largo: Double,
     val ancho: Double,
@@ -12,13 +15,9 @@ data class PiscinaRequestDto(
     val volumenTC: Double?,
     val bomba: List<BombaRequestDto>,
     val filtro: FiltroRequestDto,
-    val valvulas: List<ValvulaRequestDto>,
-    val sistemaGermicida: List<SistemaGermicidaRequestDto>,
-    val calefaccion: CalefaccionRequestDto?,
     val cloroSalino: Boolean,
     val controlAutomaticoPH: Boolean,
     val orp: Boolean,
-    val administradorId: Long?,
-    val codigoPlaca: Long,
-    val notas: String?,
+    val sistemaGermicida: List<SistemaGermicidaRequestDto>,
+    val calefaccion: CalefaccionRequestDto?,
 )

@@ -14,6 +14,5 @@ data class PiscinaEquipamientoResponseDto(
     // val proximoCiclo : String,
     val bombas: List<BombaResponseDto>,
     val filtro: FiltroResponseDto,
-    val valvulas: List<ValvulaResponseDto>,
     val sistemasGermicidas: List<SistemaGermicidaResponseDto>,
 )
