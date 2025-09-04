@@ -24,9 +24,9 @@ class AdministracionService(
         return EstadisticasResponseDto(
             totalPiscinas = piscinaService.totalPiscinas(),
             totalUsuarios = usuarioService.totalUsuarios(),
-            usuariosActivos = usuarioService.getUsuariosActivos(),
-            usuariosPendientes = usuarioService.getUsuariosPendientes(),
-            usuariosInactivos = usuarioService.getUsuariosInactivos(),
+            usuariosActivos = usuarioService.countUsuariosActivos(),
+            usuariosPendientes = usuarioService.countUsuariosPendientes(),
+            usuariosInactivos = usuarioService.countUsuariosInactivos(),
             piscinasSkimmer = piscinaService.countPiscinasDesborde(),
             piscinasDesborde = piscinaService.countPiscinasSkimmer(),
             volumenTotal = piscinaService.getVolumenTotal(),

@@ -31,8 +31,8 @@ abstract class SistemaGermicida(
         // Dejo planteado una posible implementación con 3 estados: "Optimo", "Atención" y "Reemplazo urgente".
         return if (vidaRestante() > 50) {
             "Optimo"
-        } else if (vidaRestante() in 20..50) {
-            "Atención"
+        } else if (vidaRestante() in 5..50) {
+            "Requiere mantenimiento"
         } else {
             "Reemplazo urgente"
         }

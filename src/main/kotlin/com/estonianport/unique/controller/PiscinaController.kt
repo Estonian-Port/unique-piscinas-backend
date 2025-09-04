@@ -37,7 +37,7 @@ class PiscinaController {
             CustomResponse(
                 message = "Piscinas obtenidas correctamente",
                 data = piscinaService.getPiscinasByUsuarioId(usuarioId)
-                    .map { PiscinaMapper.buildPiscinaListResponseDto(it) }
+                    .map { PiscinaMapper.buildPiscinaHeaderResponseDto(it) }
             )
         )
     }

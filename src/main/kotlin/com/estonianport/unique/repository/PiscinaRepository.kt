@@ -83,4 +83,9 @@ interface PiscinaRepository : JpaRepository<Piscina, Int> {
        SELECT ROUND(AVG(p.volumen), 2) FROM Piscina p
     """)
     fun getPromedioVolumen(): Double
+
+    @Query("""
+    SELECT CASE WHEN COUNT(p) > 0 THEN TRUE ELSE FALSE END FROM Piscina p WHERE p.administrador IS NOT NULL AND p.administrador.id = :usuarioId
+""")
+    fun existsByAdministradorId(usuarioId: Long): Boolean
 }

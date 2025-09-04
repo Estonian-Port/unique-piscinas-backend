@@ -7,13 +7,6 @@ import com.estonianport.unique.model.enums.toCapitalized
 
 object PiscinaMapper {
 
-    fun buildPiscinaListResponseDto(piscina: Piscina): PiscinaListResponseDto {
-        return PiscinaListResponseDto(
-            id = piscina.id.toString(),
-            direccion = piscina.direccion
-        )
-    }
-
     fun buildPiscinaHeaderResponseDto(piscina: Piscina): PiscinaListResponseDto {
         return PiscinaListResponseDto(
             id = piscina.id.toString(),

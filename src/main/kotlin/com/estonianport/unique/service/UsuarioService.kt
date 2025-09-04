@@ -5,6 +5,8 @@ import com.estonianport.unique.common.codeGeneratorUtil.CodeGeneratorUtil
 import com.estonianport.unique.dto.request.UsuarioRegistroRequestDto
 import com.estonianport.unique.repository.UsuarioRepository
 import com.estonianport.unique.model.Usuario
+import com.estonianport.unique.model.enums.EstadoType
+import com.estonianport.unique.model.enums.UsuarioType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.CrudRepository
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
@@ -55,20 +57,24 @@ class UsuarioService : GenericServiceImpl<Usuario, Long>() {
         return usuarioRepository.totalUsuarios()
     }
 
-    fun getUsuariosActivos(): Int {
+    fun countUsuariosActivos(): Int {
         return usuarioRepository.countUsuariosActivos()
     }
 
-    fun getUsuariosInactivos(): Int {
+    fun countUsuariosInactivos(): Int {
         return usuarioRepository.countUsuariosInactivos()
     }
 
-    fun getUsuariosPendientes(): Int {
+    fun countUsuariosPendientes(): Int {
         return usuarioRepository.countUsuariosPendientes()
     }
 
     fun getUsuariosRegistrados(): List<Usuario> {
-        return getAll()!!.filter { !it.esAdministrador }
+        return getAll()!!.filter { !it.esAdministrador && it.estado.name != "PENDIENTE" }
+    }
+
+    fun getUsuariosPendientes(): List<Usuario> {
+        return getAll()!!.filter { it.estado.name == "PENDIENTE" }
     }
 
     fun verificarEmailNoExiste(email: String) {
@@ -101,6 +107,19 @@ class UsuarioService : GenericServiceImpl<Usuario, Long>() {
             usuario.apellido = usuarioDto.apellido
             usuario.celular = usuarioDto.celular
             usuario.confirmarPrimerLogin()
+            save(usuario)
+        }
+    }
+
+    fun piscinaAsignada(usuario: Usuario) {
+        usuario.piscinaAsignada()
+        save(usuario)
+    }
+
+    fun desvincularPiscina(usuarioId: Long, tienePiscinaAsignada: Boolean) {
+        val usuario = findById(usuarioId) ?: throw NoSuchElementException("No se encontró un usuario con el ID proporcionado")
+        if (!tienePiscinaAsignada) {
+            usuario.estado = UsuarioType.INACTIVO
             save(usuario)
         }
     }

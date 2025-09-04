@@ -3,12 +3,14 @@ package com.estonianport.unique.mapper
 import com.estonianport.unique.dto.request.UsuarioAltaRequestDto
 import com.estonianport.unique.dto.request.UsuarioRequestDto
 import com.estonianport.unique.dto.response.UsuarioNuevaPiscinaResponseDto
+import com.estonianport.unique.dto.response.UsuarioPendienteResponseDto
 import com.estonianport.unique.dto.response.UsuarioRegistradoResponseDto
 import com.estonianport.unique.dto.response.UsuarioResponseDto
 import com.estonianport.unique.model.Piscina
 import com.estonianport.unique.model.Usuario
 import com.estonianport.unique.model.enums.UsuarioType
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 object UsuarioMapper {
 
@@ -33,6 +35,14 @@ object UsuarioMapper {
             email = usuario.email,
             estado = usuario.estado.name,
             piscinasAsignadas = piscinasAsignadas.map { PiscinaMapper.buildPiscinaAsignadaResponseDto(it) },
+        )
+    }
+
+    fun buildUsuarioPendienteResponseDto(usuario: Usuario): UsuarioPendienteResponseDto {
+        return UsuarioPendienteResponseDto(
+            id = usuario.id,
+            email = usuario.email,
+            fechaAlta = usuario.fechaAlta.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
         )
     }
 
