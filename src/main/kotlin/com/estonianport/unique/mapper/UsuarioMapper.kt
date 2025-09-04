@@ -7,6 +7,7 @@ import com.estonianport.unique.dto.response.UsuarioRegistradoResponseDto
 import com.estonianport.unique.dto.response.UsuarioResponseDto
 import com.estonianport.unique.model.Piscina
 import com.estonianport.unique.model.Usuario
+import com.estonianport.unique.model.enums.UsuarioType
 import java.time.LocalDateTime
 
 object UsuarioMapper {
@@ -18,7 +19,8 @@ object UsuarioMapper {
             apellido = usuario.apellido,
             email = usuario.email,
             isAdmin = usuario.esAdministrador,
-            piscinasId = listaPiscinasId
+            piscinasId = listaPiscinasId,
+            primerLogin = usuario.estado == UsuarioType.PENDIENTE
         )
     }
 

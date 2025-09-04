@@ -117,7 +117,17 @@ class PiscinaController {
     fun savePiscina(@RequestBody piscinaDto: PiscinaRequestDto): ResponseEntity<CustomResponse> {
         val newPiscina = PiscinaMapper.buildPiscina(piscinaDto)
         if (piscinaDto.administradorId != null) {
-            newPiscina.administrador = usuarioService.findById(piscinaDto.administradorId)
+            newPiscina.administrador = usuarioService.findById(piscinaDto.administradorId).apply {
+                if (this == null) {
+                    return ResponseEntity.status(400).body(
+                        CustomResponse(
+                            message = "No se encontró el administrador con id ${piscinaDto.administradorId}",
+                            data = null
+                        )
+                    )
+                }
+                this.piscinaAsignada()
+            }
         }
         
         piscinaService.create(newPiscina)

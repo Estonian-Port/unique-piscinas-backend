@@ -3,6 +3,7 @@ package com.estonianport.unique.controller
 import com.estonianport.unique.common.codeGeneratorUtil.CodeGeneratorUtil
 import com.estonianport.unique.common.emailService.EmailService
 import com.estonianport.unique.dto.request.UsuarioAltaRequestDto
+import com.estonianport.unique.dto.request.UsuarioRegistroRequestDto
 import com.estonianport.unique.dto.request.UsuarioRequestDto
 import com.estonianport.unique.mapper.PiscinaMapper
 import com.estonianport.unique.dto.response.CustomResponse
@@ -24,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
+import java.time.LocalDate
+import java.time.LocalDateTime
 import kotlin.text.get
 
 @RestController
@@ -44,7 +47,7 @@ class UsuarioController {
     lateinit var piscinaService: PiscinaService
 
     @GetMapping("/me")
-    fun getCurrent(principal : Principal): ResponseEntity<CustomResponse> {
+    fun getCurrent(principal: Principal): ResponseEntity<CustomResponse> {
         val email = principal.name
         val usuario = usuarioService.getUsuarioByEmail(email)
         val cantPiscinas = piscinaService.getPiscinasByUsuarioId(usuario.id).map { it.id }
@@ -71,10 +74,12 @@ class UsuarioController {
 
     @PostMapping("/altaUsuario")
     fun altaUsuario(@RequestBody usuarioDto: UsuarioAltaRequestDto): ResponseEntity<CustomResponse> {
+        usuarioService.verificarEmailNoExiste(usuarioDto.email)
         val usuario = UsuarioMapper.buildAltaUsuario(usuarioDto)
 
         val password = usuarioService.generarPassword()
         usuario.password = usuarioService.encriptarPassword(password)
+        usuario.fechaAlta = LocalDate.now()
 
         usuarioService.save(usuario)
 
@@ -88,6 +93,19 @@ class UsuarioController {
             CustomResponse(
                 message = "Usuario creado correctamente",
                 data = UsuarioMapper.buildUsuarioResponseDto(usuario, mutableListOf<Long>())
+            )
+        )
+    }
+
+    @PutMapping("/registro")
+    fun registro(@RequestBody usuarioDto: UsuarioRegistroRequestDto): ResponseEntity<CustomResponse> {
+        usuarioService.primerLogin(usuarioDto)
+        val usuario = usuarioService.findById(usuarioDto.id)
+        val cantPiscinas = piscinaService.getPiscinasByUsuarioId(usuario!!.id).map { it.id }
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Registro realizado correctamente",
+                data = UsuarioMapper.buildUsuarioResponseDto(usuario, cantPiscinas)
             )
         )
     }
