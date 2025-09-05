@@ -1,8 +1,10 @@
 package com.estonianport.unique.service
 
 import com.estonianport.unique.dto.response.LecturaConErrorResponseDto
+import com.estonianport.unique.common.errors.NotFoundException
 import com.estonianport.unique.model.Piscina
-import com.estonianport.unique.model.Programacion
+import com.estonianport.unique.model.ProgramacionFiltrado
+import com.estonianport.unique.model.ProgramacionIluminacion
 import com.estonianport.unique.repository.PiscinaRepository
 import org.springframework.stereotype.Service
 
@@ -11,13 +13,13 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
 
     fun getPiscinasByUsuarioId(usuarioId: Long): List<Piscina> {
         usuarioService.findById(usuarioId)
-            ?: throw IllegalArgumentException("Usuario no encontrado con ID: $usuarioId")
+            ?: throw NotFoundException("Usuario no encontrado con ID: $usuarioId")
         return piscinaRepository.findByAdministradorId(usuarioId)
     }
 
     fun findById(piscinaId: Long): Piscina {
         return piscinaRepository.findById(piscinaId)
-            ?: throw IllegalArgumentException("Piscina no encontrada con ID: $piscinaId")
+            ?: throw NotFoundException("Piscina no encontrada con ID: $piscinaId")
     }
 
     fun getLecturasPiscina(piscinaId: Long): List<LecturaConErrorResponseDto> {
@@ -26,17 +28,21 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
 
     fun getPresion(piscinaId: Long): Double {
         return piscinaRepository.getPresion(piscinaId)
-            ?: throw IllegalArgumentException("Presion de piscina: $piscinaId no encontrado")
+            ?: 0.0
     }
 
     fun getPh(piscinaId: Long): Double {
         return piscinaRepository.getPh(piscinaId)
-            ?: throw IllegalArgumentException("Ph de piscina: $piscinaId no encontrado")
+            ?: 0.0
     }
 
     fun getDiferenciaPh(piscinaId: Long): Double {
         val ultimasDosPh = piscinaRepository.getDiferenciaPh(piscinaId)
-            ?: throw IllegalArgumentException("Ph de piscina: $piscinaId no encontrado")
+            ?: return 0.0
+
+        if (ultimasDosPh.size < 2) {
+            return 0.0
+        }
         return ultimasDosPh[0] - ultimasDosPh[1]
     }
 
@@ -44,16 +50,20 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
         return piscinaRepository.count().toInt()
     }
 
-    fun countPiscinasByTipo(tipo: String): Int {
-        return piscinaRepository.countByTipo(tipo)
+    fun countPiscinasDesborde(): Int {
+        return piscinaRepository.countDesbordante()
+    }
+
+    fun countPiscinasSkimmer(): Int {
+        return piscinaRepository.countSkimmer()
     }
 
     fun getVolumenTotal(): Double {
-        return piscinaRepository.getTotalVolumen() ?: 0.0
+        return piscinaRepository.getTotalVolumen()
     }
 
     fun getVolumenPromedio(): Double {
-        return piscinaRepository.getPromedioVolumen() ?: 0.0
+        return piscinaRepository.getPromedioVolumen()
     }
 
     fun getPiscinasRegistradas(): List<Piscina> {
@@ -64,16 +74,15 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
         return piscinaRepository.findByAdministradorIsNull()
     }
 
-    fun desasignarAdministrador(usuarioId: Long, piscinaId: Long) {
-        val usuario = usuarioService.findById(usuarioId)
-            ?: throw IllegalArgumentException("Usuario no encontrado con ID: $usuarioId")
+    fun desvincularAdministrador(usuarioId: Long, piscinaId: Long) {
         val piscina = findById(piscinaId)
-        //piscina.administrador.remove(usuario)
-        // Creo que deberiamos tener una lista de administradores en vez de uno solo. Porque Leo debe tener permisos
-        // y tambien el usuario que Leo asigne. Si no hay que crear dos entradas en la tabla de piscina. Una para adminitrador
-        // y otra para usuario a cargo de la piscina.
         piscina.administrador = null
         piscinaRepository.save(piscina)
+        usuarioService.desvincularPiscina(usuarioId, tienePiscinaAsignada(usuarioId))
+    }
+
+    fun tienePiscinaAsignada(usuarioId: Long): Boolean {
+        return piscinaRepository.existsByAdministradorId(usuarioId)
     }
 
 
@@ -83,38 +92,67 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
  
     fun deleteProgramacion(piscinaId: Long, programacionId: Long) {
         val piscina = findById(piscinaId)
-        piscina.programacionLuces.removeIf { it.id == programacionId }
+        piscina.programacionIluminacion.removeIf { it.id == programacionId }
         piscina.programacionFiltrado.removeIf { it.id == programacionId }
         piscinaRepository.save(piscina)
     }
 
-    fun agregarProgramacion(piscinaId: Long, programacion: Programacion, filtrado: Boolean) {
+    fun agregarProgramacionLuces(piscinaId: Long, programacion: ProgramacionIluminacion) {
         val piscina = findById(piscinaId)
-        if (filtrado) piscina.agregarProgramacionFiltrado(programacion)
-        if (!filtrado) piscina.agregarProgramacionLuces(programacion)
+        piscina.agregarProgramacionIluminacion(programacion)
         piscinaRepository.save(piscina)
     }
 
-    fun updateProgramacion(
+    fun agregarProgramacionFiltrado(piscinaId: Long, programacion: ProgramacionFiltrado) {
+        val piscina = findById(piscinaId)
+        piscina.agregarProgramacionFiltrado(programacion)
+        piscinaRepository.save(piscina)
+    }
+
+    fun updateProgramacionLuces(
         piscinaId: Long,
-        programacion: Programacion,
-        filtrado: Boolean
+        programacion: ProgramacionIluminacion,
     ) {
         val piscina = findById(piscinaId)
-        val lista = if (filtrado) piscina.programacionFiltrado else piscina.programacionLuces
-        actualizarListaProgramacion(lista.toList(), programacion)
-        piscinaRepository.save(piscina)
-    }
-
-    private fun actualizarListaProgramacion(
-        lista: List<Programacion>,
-        programacion: Programacion
-    ) {
-        lista.find { it.id == programacion.id }?.apply {
+        piscina.programacionIluminacion.find { it.id == programacion.id}?.apply {
             horaInicio = programacion.horaInicio
             horaFin = programacion.horaFin
             dias = programacion.dias
-            estaActivo = programacion.estaActivo
+            activa = programacion.activa
+        }
+        piscinaRepository.save(piscina)
+    }
+
+    fun updateProgramacionFiltrado(
+        piscinaId: Long,
+        programacion: ProgramacionFiltrado,
+    ) {
+        val piscina = findById(piscinaId)
+        piscina.programacionFiltrado.find { it.id == programacion.id}?.apply {
+            horaInicio = programacion.horaInicio
+            horaFin = programacion.horaFin
+            dias = programacion.dias
+            activa = programacion.activa
+            funcionFiltro = programacion.funcionFiltro
+        }
+        piscinaRepository.save(piscina)
+    }
+
+    fun asignarAdministrador(usuarioId: Long, piscinaId: Long) {
+        val usuario =
+            usuarioService.findById(usuarioId) ?: throw NotFoundException("Usuario no encontrado con ID: $usuarioId")
+        val piscina = findById(piscinaId)
+        piscina.administrador = usuario
+        usuarioService.piscinaAsignada(usuario)
+        piscinaRepository.save(piscina)
+    }
+
+    fun usuarioEliminado(usuarioId: Long) {
+        val piscinas = getPiscinasByUsuarioId(usuarioId)
+        piscinas.forEach {
+            it.administrador = null
+            piscinaRepository.save(it)
         }
     }
+
 }

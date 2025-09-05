@@ -1,21 +1,23 @@
 package com.estonianport.unique.model
 
-import com.estonianport.unique.model.enums.SistemaGermicidaType
+import com.estonianport.unique.model.enums.EstadoType
 import jakarta.persistence.*
 
 @Entity
-class SistemaGermicida(
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+abstract class SistemaGermicida(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long,
-
-    @Column
-    val tipo: SistemaGermicidaType,
+    val activo: Boolean =true,
+    val marca: String,
+    @Enumerated(EnumType.STRING)
+    val estado: EstadoType
 ) {
     fun vidaRestante(): Int {
         // Implementación de la lógica para calcular la vida restante del sistema germicida
         // Entiendo que la placa controladora es la que dara esta información.
-        return 0
+        return 50
     }
 
     fun resetearVida() {
@@ -29,10 +31,49 @@ class SistemaGermicida(
         // Dejo planteado una posible implementación con 3 estados: "Optimo", "Atención" y "Reemplazo urgente".
         return if (vidaRestante() > 50) {
             "Optimo"
-        } else if (vidaRestante() in 20..50) {
-            "Atención"
+        } else if (vidaRestante() in 5..50) {
+            "Requiere mantenimiento"
         } else {
             "Reemplazo urgente"
         }
     }
+
+    fun tipo(): String {
+        return when (this) {
+            is UV -> "UV"
+            is Ionizador -> "Ionizador de cobre"
+            is Trasductor -> "Trasductor de ultrasonido"
+            else -> "Desconocido"
+        }
+    }
 }
+
+@DiscriminatorValue("UV")
+@Entity
+class UV(
+    id: Long,
+    activo: Boolean = true,
+    marca: String,
+    estado: EstadoType,
+    val potencia: Double
+) : SistemaGermicida(id, activo, marca, estado)
+
+@DiscriminatorValue("IONIZADOR")
+@Entity
+class Ionizador(
+    id: Long,
+    activo: Boolean = true,
+    marca: String,
+    estado: EstadoType,
+    val electrodos: Double
+) : SistemaGermicida(id, activo, marca, estado)
+
+@DiscriminatorValue("TRASDUCTOR")
+@Entity
+class Trasductor(
+    id: Long,
+    activo: Boolean = true,
+    marca: String,
+    estado: EstadoType,
+    val potencia: Double
+) : SistemaGermicida(id, activo, marca, estado)

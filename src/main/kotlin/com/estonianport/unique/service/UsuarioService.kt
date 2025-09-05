@@ -1,14 +1,18 @@
 package com.estonianport.unique.service
 
 import GenericServiceImpl
-import com.estonianport.unique.dto.UsuarioAbmDTO
-import com.estonianport.unique.dto.UsuarioPerfilDTO
+import com.estonianport.unique.common.codeGeneratorUtil.CodeGeneratorUtil
+import com.estonianport.unique.dto.request.UsuarioRegistroRequestDto
 import com.estonianport.unique.repository.UsuarioRepository
 import com.estonianport.unique.model.Usuario
+import com.estonianport.unique.model.enums.EstadoType
+import com.estonianport.unique.model.enums.UsuarioType
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.CrudRepository
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Service
 class UsuarioService : GenericServiceImpl<Usuario, Long>() {
@@ -19,72 +23,113 @@ class UsuarioService : GenericServiceImpl<Usuario, Long>() {
     override val dao: CrudRepository<Usuario, Long>
         get() = usuarioRepository
 
-    fun getUsuarioIdByUsername(username: String): Long {
-        return usuarioRepository.getByUsername(username).id
-    }
+    /*
+        fun getAllUsuario(id : Long, pageNumber : Int): List<UsuarioAbmDTO> {
+            return usuarioRepository.getAllUsuario(id, PageRequest.of(pageNumber,10)).content
+        }
 
+        fun getAllUsuarioFiltrados(id : Long, pageNumber : Int, buscar: String): List<UsuarioAbmDTO>{
+            return usuarioRepository.getAllUsuarioFiltrados(id, buscar, PageRequest.of(pageNumber,10)).content
+        }
 
-/*
-    fun getAllUsuario(id : Long, pageNumber : Int): List<UsuarioAbmDTO> {
-        return usuarioRepository.getAllUsuario(id, PageRequest.of(pageNumber,10)).content
-    }
+        fun getCantidadUsuario(id : Long): Int {
+            return usuarioRepository.getCantidadUsuario(id)
+        }
 
-    fun getAllUsuarioFiltrados(id : Long, pageNumber : Int, buscar: String): List<UsuarioAbmDTO>{
-        return usuarioRepository.getAllUsuarioFiltrados(id, buscar, PageRequest.of(pageNumber,10)).content
-    }
+        fun getCantidadUsuarioFiltrados(id : Long, buscar : String): Int {
+            return usuarioRepository.getCantidadUsuarioFiltrados(id,buscar)
+        }
 
-    fun getCantidadUsuario(id : Long): Int {
-        return usuarioRepository.getCantidadUsuario(id)
-    }
-
-    fun getCantidadUsuarioFiltrados(id : Long, buscar : String): Int {
-        return usuarioRepository.getCantidadUsuarioFiltrados(id,buscar)
-    }
-
-    fun getAllCliente(id : Long, pageNumber : Int): List<UsuarioAbmDTO> {
-        return usuarioRepository.getAllCliente(id, PageRequest.of(pageNumber,10)).content
-    }
-
-    fun getAllClienteFiltrados(id : Long, pageNumber : Int, buscar: String): List<UsuarioAbmDTO>{
-        return usuarioRepository.getAllClienteFiltrados(id, buscar, PageRequest.of(pageNumber,10)).content
-    }
-
-    fun getCantidadCliente(id : Long): Int {
-        return usuarioRepository.getCantidadCliente(id)
-    }
-
-    fun getCantidadClienteFiltrados(id : Long, buscar : String): Int {
-        return usuarioRepository.getCantidadClienteFiltrados(id,buscar)
-    }
-*/
+    */
     fun getUsuarioByEmail(email: String): Usuario {
         return usuarioRepository.getUsuarioByEmail(email)
             ?: throw NoSuchElementException("No se encontró un usuario con el email proporcionado")
     }
 
-    fun getUsuarioByCelular(celular : Long): Usuario?{
+    fun getUsuarioByCelular(celular: Long): Usuario? {
         return usuarioRepository.getUsuarioByCelular(celular)
     }
 
-    fun findById(id : Long) : Usuario? {
+    fun findById(id: Long): Usuario? {
         return usuarioRepository.findById(id).get()
     }
 
-    fun getUsuariosActivos() : Int {
+    fun totalUsuarios(): Int {
+        return usuarioRepository.totalUsuarios()
+    }
+
+    fun countUsuariosActivos(): Int {
         return usuarioRepository.countUsuariosActivos()
     }
 
-    fun getUsuariosRegistrados(): List<Usuario> {
-        return usuarioRepository.getAllUsuarios()
+    fun countUsuariosInactivos(): Int {
+        return usuarioRepository.countUsuariosInactivos()
     }
 
-    fun create(usuario: Usuario): Usuario {
-        return usuarioRepository.save(usuario)
+    fun countUsuariosPendientes(): Int {
+        return usuarioRepository.countUsuariosPendientes()
     }
-/*
-    fun getUsuarioPerfil(usuarioId: Long): UsuarioPerfilDTO {
-        return usuarioRepository.getUsuarioPerfil(usuarioId)
+
+    fun getUsuariosRegistrados(): List<Usuario> {
+        return getAll()!!.filter { !it.esAdministrador && it.estado.name != "PENDIENTE" && it.estado.name != "BAJA" }
     }
-    */
+
+    fun getUsuariosPendientes(): List<Usuario> {
+        return getAll()!!.filter { it.estado.name == "PENDIENTE" }
+    }
+
+    fun verificarEmailNoExiste(email: String) {
+        val usuario = usuarioRepository.getUsuarioByEmail(email)
+        println(usuario?.email)
+        if (usuario != null) {
+            throw IllegalArgumentException("Ya existe un usuario registrado con el email proporcionado")
+        }
+    }
+
+    fun encriptarPassword(password: String): String {
+        return BCryptPasswordEncoder().encode(password)
+    }
+
+    fun generarPassword(): String {
+        return CodeGeneratorUtil.base26Only4Letters + CodeGeneratorUtil.base26Only4Letters
+    }
+
+    fun actualizarFechaUltimoAcceso(email: String, fecha: LocalDate) {
+        val usuario = getUsuarioByEmail(email)
+        usuario.ultimoIngreso = fecha
+        save(usuario)
+    }
+
+    fun primerLogin(usuarioDto: UsuarioRegistroRequestDto) {
+        val usuario = findById(usuarioDto.id)
+        if (usuario != null) {
+            usuario.password = encriptarPassword(usuarioDto.nuevoPassword)
+            usuario.nombre = usuarioDto.nombre
+            usuario.apellido = usuarioDto.apellido
+            usuario.celular = usuarioDto.celular
+            usuario.confirmarPrimerLogin()
+            save(usuario)
+        }
+    }
+
+    fun piscinaAsignada(usuario: Usuario) {
+        usuario.piscinaAsignada()
+        save(usuario)
+    }
+
+    fun desvincularPiscina(usuarioId: Long, tienePiscinaAsignada: Boolean) {
+        val usuario = findById(usuarioId) ?: throw NoSuchElementException("No se encontró un usuario con el ID proporcionado")
+        if (!tienePiscinaAsignada) {
+            usuario.estado = UsuarioType.INACTIVO
+            save(usuario)
+        }
+    }
+
+    fun darDeBaja(usuarioId: Long) {
+        val usuario = findById(usuarioId) ?: throw NoSuchElementException("No se encontró un usuario con el ID proporcionado")
+        usuario.estado = UsuarioType.BAJA
+        usuario.fechaBaja = LocalDate.now()
+        save(usuario)
+    }
 
 }

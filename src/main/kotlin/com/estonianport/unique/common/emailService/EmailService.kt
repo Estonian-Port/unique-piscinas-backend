@@ -1,6 +1,8 @@
 package com.estonianport.unique.common.emailService
 
 import com.estonianport.unique.common.errors.BusinessException
+import com.estonianport.unique.dto.request.UsuarioRequestDto
+import com.estonianport.unique.model.Usuario
 import jakarta.mail.MessagingException
 import jakarta.mail.internet.MimeMessage
 import org.springframework.beans.factory.annotation.Autowired
@@ -52,6 +54,38 @@ class EmailService {
             result = result.replace("{{${key}}}", value)
         }
         return result
+    }
+
+    fun enviarEmailAltaUsuario(usuario: Usuario, action: String, password : String) {
+
+        if(!isEmailValid(usuario.email)){
+            throw BusinessException("Email Invalido")
+        }
+
+        // ----------------- Armado email -------------------------
+        val emailBody = Email(
+            usuario.email,
+            action
+        )
+
+        // ----------------- Content email -------------------------
+        val template = loadHtmlTemplate("alta_usuario.html")
+        emailBody.content = renderTemplate(template, mapOf(
+            "empresa_logo" to "https://iili.io/KqONvFj.png",
+            "usuario" to usuario.email,
+            "password" to password,
+            "action" to action,
+            "url_instagram" to "https://www.instagram.com/agendaza",
+            "url_web" to "https://estonian-port.github.io/estonianport-landingpage/",
+            "url_linkedin" to "https://www.linkedin.com/company/estonianport",
+            "imagen_ig" to "https://iili.io/3USINa4.png",
+            "imagen_web" to "https://iili.io/3USIh6G.png",
+            "imagen_linkedin" to "https://iili.io/3USIwFf.png",
+        ))
+
+        // ----------------- Envio email -------------------------
+        sendEmail(emailBody)
+
     }
 
 

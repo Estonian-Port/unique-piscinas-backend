@@ -9,7 +9,6 @@ import com.estonianport.unique.service.UsuarioService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CrossOrigin
-import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
@@ -22,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController
 class AdministracionController {
 
     @Autowired
-    private lateinit var piscinaService: PiscinaService
+    lateinit var piscinaService: PiscinaService
 
     @Autowired
     lateinit var administracionService: AdministracionService
@@ -51,12 +50,53 @@ class AdministracionController {
             CustomResponse(
                 message = "Piscinas registradas obtenidas correctamente",
                 data = piscinaService.getPiscinasRegistradas()
-                    .map { PiscinaMapper.buildPiscinaRegistradaListDto(it, piscinaService.getPh(it.id)) }
+                    .map { PiscinaMapper.buildPiscinaRegistradaListDto(it, piscinaService.getPh(it.id!!)) }
             )
         )
     }
 
-    @GetMapping("/usuarios-registradas/{usuarioId}")
+    @GetMapping("/piscina-ficha-tecnica/{usuarioId}/{piscinaId}")
+    fun getPiscinaFichaTecnicaById(
+        @PathVariable piscinaId: Long,
+        @PathVariable usuarioId: Long
+    ): ResponseEntity<CustomResponse> {
+        administracionService.verificarRol(usuarioId)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Ficha técnica de la piscina obtenida correctamente",
+                data = PiscinaMapper.buildPiscinaFichaTecnicaDto(piscinaService.findById(piscinaId))
+            )
+        )
+    }
+
+    @GetMapping("/piscina-equipos/{usuarioId}/{piscinaId}")
+    fun getPiscinaEquipoById(
+        @PathVariable piscinaId: Long,
+        @PathVariable usuarioId: Long
+    ): ResponseEntity<CustomResponse> {
+        administracionService.verificarRol(usuarioId)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Equipos de la piscina obtenida correctamente",
+                data = PiscinaMapper.buildPiscinaEquiposResponseDto(piscinaService.findById(piscinaId))
+            )
+        )
+    }
+
+    @GetMapping("/usuarios-nueva-piscina/{usuarioId}")
+    fun getUsuarioNuevaPiscina(@PathVariable usuarioId: Long): ResponseEntity<CustomResponse> {
+        administracionService.verificarRol(usuarioId)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Usuarios para nueva piscina obtenidos correctamente",
+                data = usuarioService.getUsuariosRegistrados().map {
+                    UsuarioMapper.buildUsuarioNuevaPiscinaResponseDto(it)
+                }
+            )
+        )
+    }
+
+    @GetMapping("/usuarios-registrados/{usuarioId}")
     fun getUsuarioRegistrados(@PathVariable usuarioId: Long): ResponseEntity<CustomResponse> {
         administracionService.verificarRol(usuarioId)
         return ResponseEntity.status(200).body(
@@ -72,29 +112,56 @@ class AdministracionController {
         )
     }
 
+    @GetMapping("/usuarios-pendientes/{usuarioId}")
+    fun getUsuarioPendientes(@PathVariable usuarioId: Long): ResponseEntity<CustomResponse> {
+        administracionService.verificarRol(usuarioId)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Usuarios pendientes obtenidas correctamente",
+                data = usuarioService.getUsuariosPendientes().map {
+                    UsuarioMapper.buildUsuarioPendienteResponseDto(
+                        it
+                    )
+                }
+            )
+        )
+    }
+
     @GetMapping("/no-asignadas")
     fun getPiscinasNoAsignadas(): ResponseEntity<CustomResponse> {
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Piscinas sin asignar obtenidas correctamente",
                 data = piscinaService.getPiscinasSinAdministrador()
-                    .map { PiscinaMapper.buildPiscinaListResponseDto(it) }
+                    .map { PiscinaMapper.buildPiscinaHeaderResponseDto(it) }
             )
         )
     }
 
-    @PutMapping("/desasginar-piscina/{piscinaId}/{usuarioId}/{administradorId}")
-    fun desasignarAdministrador(
+    @PutMapping("/asignar-piscina/{piscinaId}/{usuarioId}")
+    fun asignarPiscina(
         @PathVariable piscinaId: Long,
-        @PathVariable usuarioId: Long,
-        @PathVariable administradorId: Long
+        @PathVariable usuarioId: Long
     ): ResponseEntity<CustomResponse> {
-        administracionService.verificarRol(administradorId)
-        piscinaService.desasignarAdministrador(usuarioId, piscinaId)
+        piscinaService.asignarAdministrador(usuarioId, piscinaId)
         return ResponseEntity.status(200).body(
             CustomResponse(
-                message = "Usuario desasignado correctamente",
-                data = PiscinaMapper.buildPiscinaListResponseDto(piscinaService.findById(piscinaId))
+                message = "Piscina asignada correctamente",
+                data = UsuarioMapper.buildUsuarioRegistradoResponseDto(usuarioService.findById(usuarioId)!!, piscinaService.getPiscinasByUsuarioId(usuarioId))
+            )
+        )
+    }
+
+    @PutMapping("/desvincular-piscina/{piscinaId}/{usuarioId}")
+    fun devincularAdministrador(
+        @PathVariable piscinaId: Long,
+        @PathVariable usuarioId: Long,
+    ): ResponseEntity<CustomResponse> {
+        piscinaService.desvincularAdministrador(usuarioId, piscinaId)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Usuario desvinculado correctamente",
+                data = UsuarioMapper.buildUsuarioRegistradoResponseDto(usuarioService.findById(usuarioId)!!, piscinaService.getPiscinasByUsuarioId(usuarioId))
             )
         )
     }

@@ -1,16 +1,20 @@
 package com.estonianport.unique.common.security
 
-import com.estonianport.unique.common.security.UserDetailImpl
+import com.estonianport.unique.service.UsuarioService
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import java.io.IOException
+import java.time.LocalDate
 
-class JWTAuthenticationFilter : UsernamePasswordAuthenticationFilter() {
+class JWTAuthenticationFilter(
+    private val usuarioService: UsuarioService
+) : UsernamePasswordAuthenticationFilter() {
 
     override fun attemptAuthentication(request: HttpServletRequest, response: HttpServletResponse?): Authentication? {
         var authCredentials = AuthCredentials()
@@ -31,7 +35,10 @@ class JWTAuthenticationFilter : UsernamePasswordAuthenticationFilter() {
     }
 
     override fun successfulAuthentication(request: HttpServletRequest?, response: HttpServletResponse?, chain: FilterChain?, authResult: Authentication?) {
-        val userDetails : UserDetailImpl = authResult?.principal as UserDetailImpl
+        val email = authResult?.name ?: return
+        usuarioService.actualizarFechaUltimoAcceso(email, LocalDate.now())
+
+        val userDetails : UserDetailImpl = authResult.principal as UserDetailImpl
 
         val token : String = TokenUtils.createToken(userDetails.getNombre(), userDetails.username)
 

@@ -63,10 +63,29 @@ interface PiscinaRepository : JpaRepository<Piscina, Int> {
     )
     fun findTodasLecturasConError(piscinaId: Long): List<LecturaConErrorResponseDto>
 
-    // Estas tres queires son para las estadisticas de administracion. Habria que ver si JPA infiere o hay que codearlas a mano
-    fun countByTipo(tipo: String): Int
 
+    @Query("""
+        SELECT COUNT(p) FROM Piscina p WHERE p.esDesbordante IS TRUE
+    """)
+    fun countDesbordante(): Int
+
+    @Query("""
+        SELECT COUNT(p) FROM Piscina p WHERE p.esDesbordante IS FALSE
+    """)
+    fun countSkimmer(): Int
+
+    @Query("""
+        SELECT SUM(p.volumen) FROM Piscina p
+    """)
     fun getTotalVolumen(): Double
 
+    @Query("""
+       SELECT ROUND(AVG(p.volumen), 2) FROM Piscina p
+    """)
     fun getPromedioVolumen(): Double
+
+    @Query("""
+    SELECT CASE WHEN COUNT(p) > 0 THEN TRUE ELSE FALSE END FROM Piscina p WHERE p.administrador IS NOT NULL AND p.administrador.id = :usuarioId
+""")
+    fun existsByAdministradorId(usuarioId: Long): Boolean
 }

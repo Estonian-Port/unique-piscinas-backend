@@ -1,11 +1,11 @@
 package com.estonianport.unique.dto.request
 
-data class FiltroRequestDto (
-    val id: Long,
+data class FiltroRequestDto(
+    val id: Long?,
+    val tipo: String,
     val marca: String,
     val modelo: String,
     val diametro: Double,
-    val cantidadArena: Int?,
-    val cantidadVidrio: Int?,
-    val micrasDelCartucho: Int?,
+    val datoExtra: Int,
+    val tiempoDeVidaUtil: Int
 )

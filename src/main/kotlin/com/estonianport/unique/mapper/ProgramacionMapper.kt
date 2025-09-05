@@ -1,33 +1,59 @@
 package com.estonianport.unique.mapper
 
-import com.estonianport.unique.dto.request.ProgramacionRequestDto
-import com.estonianport.unique.dto.response.ProgramacionResponseDto
-import com.estonianport.unique.model.Programacion
+import com.estonianport.unique.dto.request.ProgramacionFiltradoRequestDto
+import com.estonianport.unique.dto.request.ProgramacionLucesRequestDto
+import com.estonianport.unique.dto.response.ProgramacionFiltradoResponseDto
+import com.estonianport.unique.dto.response.ProgramacionIluminacionResponseDto
+import com.estonianport.unique.model.ProgramacionFiltrado
+import com.estonianport.unique.model.ProgramacionIluminacion
 import java.time.DayOfWeek
-import java.time.LocalDate
 import java.time.LocalTime
 
 object ProgramacionMapper {
 
-    fun buildProgramacionResponseDto(
-        programacion: Programacion
-    ): ProgramacionResponseDto {
-        return ProgramacionResponseDto(
+    fun buildProgramacionIluminacionResponseDto(
+        programacion: ProgramacionIluminacion
+    ): ProgramacionIluminacionResponseDto {
+        return ProgramacionIluminacionResponseDto(
             id = programacion.id.toString(),
             horaInicio = programacion.horaInicio.toString(),
             horaFin = programacion.horaFin.toString(),
             dias = programacion.dias.map { it.toString() },
-            estaActivo = programacion.estaActivo
+            activa = programacion.activa,
         )
     }
 
-    fun buildProgramacion(programacionRequestDto: ProgramacionRequestDto): Programacion {
-        return Programacion(
+    fun buildProgramacionFiltradoResponseDto(
+        programacion: ProgramacionFiltrado
+    ): ProgramacionFiltradoResponseDto {
+        return ProgramacionFiltradoResponseDto(
+            id = programacion.id.toString(),
+            horaInicio = programacion.horaInicio.toString(),
+            horaFin = programacion.horaFin.toString(),
+            dias = programacion.dias.map { it.toString() },
+            activa = programacion.activa,
+            funcionFiltro = programacion.funcionFiltro.toString()
+        )
+    }
+
+    fun buildProgramacionIluminacion(programacionRequestDto: ProgramacionLucesRequestDto): ProgramacionIluminacion {
+        return ProgramacionIluminacion(
             id = programacionRequestDto.id,
             horaInicio = LocalTime.parse(programacionRequestDto.horaInicio),
             horaFin = LocalTime.parse(programacionRequestDto.horaFin),
-            dias = programacionRequestDto.dias.map { DayOfWeek.valueOf(it.uppercase()) },
-            estaActivo = programacionRequestDto.estaActivo,
+            dias = programacionRequestDto.dias.map { DayOfWeek.valueOf(it.uppercase()) }.toMutableList(),
+            activa = programacionRequestDto.activa,
+        )
+    }
+
+    fun buildProgramacionFiltrado(programacionRequestDto: ProgramacionFiltradoRequestDto): ProgramacionFiltrado {
+        return ProgramacionFiltrado(
+            id = programacionRequestDto.id,
+            horaInicio = LocalTime.parse(programacionRequestDto.horaInicio),
+            horaFin = LocalTime.parse(programacionRequestDto.horaFin),
+            dias = programacionRequestDto.dias.map { DayOfWeek.valueOf(it.uppercase()) }.toMutableList(),
+            activa = programacionRequestDto.activa,
+            funcionFiltro = programacionRequestDto.funcionFiltro
         )
     }
 

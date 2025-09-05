@@ -5,24 +5,29 @@ import com.estonianport.unique.dto.response.CalefaccionResponseDto
 import com.estonianport.unique.model.Calefaccion
 import com.estonianport.unique.model.enums.CalefaccionType
 
+
+
 object CalefaccionMapper {
 
     fun buildCalefaccionResponseDto(calefaccion: Calefaccion) : CalefaccionResponseDto {
         return CalefaccionResponseDto(
             id = calefaccion.id,
-            tipo = calefaccion.tipo.toString(),
-            estado = calefaccion.estado.toString()
+            tipo = calefaccion.tipo.toDisplayString(),
+            marca = calefaccion.marca,
+            modelo = calefaccion.modelo,
+            potencia = calefaccion.potencia,
+            activa = calefaccion.activa
         )
     }
 
     fun buildCalefaccion (calefaccionDTO : CalefaccionRequestDto) : Calefaccion {
         return Calefaccion(
-            id = calefaccionDTO.id,
+            id = calefaccionDTO.id ?: 0,
             tipo = CalefaccionType.valueOf(calefaccionDTO.tipo),
             potencia = calefaccionDTO.potencia,
             modelo = calefaccionDTO.modelo,
             marca = calefaccionDTO.marca,
-            estado = calefaccionDTO.estado
+            activa = calefaccionDTO.activa
         )
     }
 }

@@ -1,5 +1,6 @@
 package com.estonianport.unique.common.security
 
+import com.estonianport.unique.service.UsuarioService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -24,8 +25,8 @@ class SecurityConfig(
 ) {
 
     @Bean
-    fun filterChain(http: HttpSecurity, authenticationManager: AuthenticationManager): SecurityFilterChain {
-        val jwtAuthenticationFilter = JWTAuthenticationFilter()
+    fun filterChain(http: HttpSecurity, authenticationManager: AuthenticationManager, usuarioService: UsuarioService): SecurityFilterChain {
+        val jwtAuthenticationFilter = JWTAuthenticationFilter(usuarioService)
         jwtAuthenticationFilter.setAuthenticationManager(authenticationManager)
         jwtAuthenticationFilter.setFilterProcessesUrl("/login")
 

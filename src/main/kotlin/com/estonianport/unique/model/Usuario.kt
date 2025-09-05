@@ -13,13 +13,13 @@ class Usuario(
     val id: Long,
 
     @Column
-    val nombre: String,
+    var nombre: String,
 
     @Column
-    val apellido: String,
+    var apellido: String,
 
     @Column
-    val celular: Long,
+    var celular: Long,
 
     @Column
     val email: String,
@@ -27,7 +27,7 @@ class Usuario(
     @Column
     val esAdministrador: Boolean = false,
 
-    @Column
+    @Enumerated(EnumType.STRING)
     var estado: UsuarioType = UsuarioType.PENDIENTE,
 ) {
 
@@ -35,7 +35,7 @@ class Usuario(
     var password: String? = null
 
     @Column
-    val fechaAlta: LocalDate = LocalDate.now()
+    var fechaAlta: LocalDate = LocalDate.now()
 
     @Column
     var fechaBaja: LocalDate? = null
@@ -47,9 +47,15 @@ class Usuario(
         return UsuarioAbmDTO(id, nombre, apellido)
     }
 
-    fun confirmarPrimerLoguin() {
+    fun confirmarPrimerLogin() {
         if (ultimoIngreso != null) {
             estado = UsuarioType.INACTIVO
+        }
+    }
+
+    fun piscinaAsignada() {
+        if (ultimoIngreso != null) {
+            estado = UsuarioType.ACTIVO // Pasa a ACTIVO cuando se le asigna una piscina y ya ingresó al sistema
         }
     }
 }

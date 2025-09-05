@@ -1,11 +1,16 @@
 package com.estonianport.unique.mapper
 
+import com.estonianport.unique.dto.request.UsuarioAltaRequestDto
 import com.estonianport.unique.dto.request.UsuarioRequestDto
+import com.estonianport.unique.dto.response.UsuarioNuevaPiscinaResponseDto
+import com.estonianport.unique.dto.response.UsuarioPendienteResponseDto
 import com.estonianport.unique.dto.response.UsuarioRegistradoResponseDto
 import com.estonianport.unique.dto.response.UsuarioResponseDto
 import com.estonianport.unique.model.Piscina
 import com.estonianport.unique.model.Usuario
+import com.estonianport.unique.model.enums.UsuarioType
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 object UsuarioMapper {
 
@@ -16,7 +21,8 @@ object UsuarioMapper {
             apellido = usuario.apellido,
             email = usuario.email,
             isAdmin = usuario.esAdministrador,
-            piscinasId = listaPiscinasId
+            piscinasId = listaPiscinasId,
+            primerLogin = usuario.estado == UsuarioType.PENDIENTE
         )
     }
 
@@ -32,6 +38,22 @@ object UsuarioMapper {
         )
     }
 
+    fun buildUsuarioPendienteResponseDto(usuario: Usuario): UsuarioPendienteResponseDto {
+        return UsuarioPendienteResponseDto(
+            id = usuario.id,
+            email = usuario.email,
+            fechaAlta = usuario.fechaAlta.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+        )
+    }
+
+    fun buildUsuarioNuevaPiscinaResponseDto(usuario: Usuario): UsuarioNuevaPiscinaResponseDto {
+        return UsuarioNuevaPiscinaResponseDto(
+            id = usuario.id,
+            nombre = usuario.nombre,
+            apellido = usuario.apellido,
+        )
+    }
+
     fun buildUsuario(usuarioDto: UsuarioRequestDto) : Usuario {
         return Usuario (
             id = usuarioDto.id,
@@ -39,9 +61,17 @@ object UsuarioMapper {
             apellido = usuarioDto.apellido,
             celular = usuarioDto.celular,
             email = usuarioDto.email
-        ).apply {
-            password = "unique"
-        }
+        )
+    }
+
+    fun buildAltaUsuario(usuarioDto: UsuarioAltaRequestDto) : Usuario {
+        return Usuario (
+            id = 0,
+            nombre = "",
+            apellido = "",
+            celular = 0,
+            email = usuarioDto.email
+        )
     }
 
 }

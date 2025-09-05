@@ -2,11 +2,8 @@ package com.estonianport.unique.dto.response
 
 data class PiscinaResumenResponseDto (
     val id: String,
-    val nombre: String,
     val direccion: String,
     val volumen: String,
-    val ph: String,
-    val diferenciaPh: String,
     val clima: String,
     val entradaAgua: List<String>,
     val funcionActiva: List<String>,

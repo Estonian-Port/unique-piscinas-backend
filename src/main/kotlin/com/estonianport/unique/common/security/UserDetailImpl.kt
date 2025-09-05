@@ -16,7 +16,7 @@ class UserDetailImpl(var usuario : Usuario) : UserDetails{
     }
 
     override fun getUsername(): String? {
-        return usuario.username
+        return usuario.email
     }
 
     override fun isAccountNonExpired(): Boolean {

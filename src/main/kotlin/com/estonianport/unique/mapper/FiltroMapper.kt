@@ -8,44 +8,50 @@ object FiltroMapper {
 
     fun buildFiltroResponseDto(filtro: Filtro): FiltroResponseDto {
         return FiltroResponseDto(
+            id = filtro.id,
+            tipo = when (filtro) {
+                is FiltroArena -> "Arena"
+                is FiltroVidrio -> "Vidrio"
+                is FiltroCartucho -> "Cartucho"
+                else -> "DESCONOCIDO"
+            },
             marca = filtro.marca,
             modelo = filtro.modelo,
-            diametro = filtro.diametro
+            diametro = filtro.diametro,
+            activo = filtro.activo,
+            datoExtra = when (filtro) {
+                is FiltroArena -> filtro.cantidadArena.toDouble()
+                is FiltroVidrio -> filtro.cantidadVidrio.toDouble()
+                is FiltroCartucho -> filtro.micrasDelCartucho.toDouble()
+                else -> 0.0
+            }
         )
     }
 
     fun buildFiltro(filtroDTO: FiltroRequestDto): Filtro {
-        return when {
-            filtroDTO.cantidadArena != null -> FiltroArena(
-                id = filtroDTO.id,
+        return when (filtroDTO.tipo) {
+            "Arena" -> FiltroArena(
+                id = filtroDTO.id ?: 0,
                 marca = filtroDTO.marca,
                 modelo = filtroDTO.modelo,
                 diametro = filtroDTO.diametro,
-                cantidadArena = filtroDTO.cantidadArena
+                cantidadArena = filtroDTO.datoExtra,
             )
-
-            filtroDTO.cantidadVidrio != null -> FiltroVidrio(
-                id = filtroDTO.id,
+            "Vidrio" -> FiltroVidrio(
+                id = filtroDTO.id ?: 0,
                 marca = filtroDTO.marca,
                 modelo = filtroDTO.modelo,
                 diametro = filtroDTO.diametro,
-                cantidadVidrio = filtroDTO.cantidadVidrio
+                cantidadVidrio = filtroDTO.datoExtra,
             )
-
-            filtroDTO.micrasDelCartucho != null -> FiltroCartucho(
-                id = filtroDTO.id,
+            "Cartucho" -> FiltroCartucho(
+                id = filtroDTO.id ?: 0,
                 marca = filtroDTO.marca,
                 modelo = filtroDTO.modelo,
                 diametro = filtroDTO.diametro,
-                micrasDelCartucho = filtroDTO.micrasDelCartucho
+                micrasDelCartucho = filtroDTO.datoExtra
             )
-
-            else -> FiltroDiatomea(
-                id = filtroDTO.id,
-                marca = filtroDTO.marca,
-                modelo = filtroDTO.modelo,
-                diametro = filtroDTO.diametro,
-            )
+            else -> throw IllegalArgumentException("Tipo de filtro no reconocido")
         }
     }
 }

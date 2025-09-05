@@ -1,5 +1,6 @@
 package com.estonianport.unique.model
 
+import com.estonianport.unique.model.enums.EstadoType
 import com.estonianport.unique.model.enums.ValvulaType
 import jakarta.persistence.*
 
@@ -10,7 +11,12 @@ class Valvula(
     val id: Long,
 
     @Column
+    @Enumerated(EnumType.STRING)
     val tipo: ValvulaType,
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    val estado: EstadoType,
 ) {
 
     fun notificarReemplazo() {

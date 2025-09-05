@@ -1,19 +1,14 @@
 package com.estonianport.unique.model
 
-import com.estonianport.unique.common.errors.BusinessException
 import com.estonianport.unique.model.enums.EntradaAgua
 import com.estonianport.unique.model.enums.FuncionFiltro
 import jakarta.persistence.*
 
 @Entity
 class Piscina(
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long,
-
-    @Column
-    val nombre: String,
 
     @Column
     val direccion: String,
@@ -36,24 +31,17 @@ class Piscina(
     @Column
     val volumen: Double,
 
-    // Solo se usa para piscinas de tipo desbordante.
     @Column
     val volumenTC: Double?,
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     @JoinColumn(name = "piscina_id")
     val bomba: MutableList<Bomba>,
 
-    // Filtro entiendo que es uno solo pero habria que confirmar con Leo.
     @OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY, optional = true)
     @PrimaryKeyJoinColumn
     val filtro: Filtro,
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "piscina_id")
-    val valvulas: MutableSet<Valvula>,
-
-    // Dispositivos de la piscina: Son opcionales y corresponden a UV, Ionizador y Trasductor.
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "piscina_id")
     val sistemaGermicida: MutableSet<SistemaGermicida>,
@@ -62,8 +50,6 @@ class Piscina(
     @PrimaryKeyJoinColumn
     val calefaccion: Calefaccion?,
 
-    // Los siguiente atributos en el prototipo aparecen en el formulario de añadir piscina pero luego esa informacion no se muestra en ningun lado.
-    // Consultar a Leo si quiere mostrarla, por ejemplo junto con los dispostivos, o si los sacamos.
     @Column
     val cloroSalino: Boolean,
 
@@ -72,6 +58,12 @@ class Piscina(
 
     @Column
     val orp: Boolean,
+
+    @Column(length = 4)
+    val codigoPlaca: String,
+
+    @Column(length = 5000)
+    val notas: String?
 ) {
 
     // Lo puse aca porque entiendo que se deberia poder crear una pileta sin administrador
@@ -99,14 +91,14 @@ class Piscina(
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "piscina_id")
-    val programacionFiltrado: MutableSet<Programacion> = mutableSetOf()
+    val programacionFiltrado: MutableSet<ProgramacionFiltrado> = mutableSetOf()
 
     @Column
     val lucesManual: Boolean = false
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "piscina_id")
-    val programacionLuces: MutableSet<Programacion> = mutableSetOf()
+    val programacionIluminacion: MutableSet<ProgramacionIluminacion> = mutableSetOf()
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "piscina_id")
@@ -124,48 +116,20 @@ class Piscina(
         // Implementación de la función clima pegandole a una API externa
     }
 
-    // Las hacemos todas por consulta querry SQL
-    /*
-    fun ph(): Double {
-        // Implementación de la función para obtener el pH de la piscina. Dato que nos dara la placa de control.
-        // Pienso que se puede buscar la ultima lectura de pH en la lista de lecturas y retornar ese valor.
-        if (lecturas.isEmpty()) {
-            throw BusinessException("No hay lecturas de pH disponibles.")
-        }
-        return lecturas.last().ph
-    }
-
-    fun presion(): Double {
-        // Implementación de la función para obtener la presion de la piscina. Dato que nos dara la placa de control.
-        // Pienso que se puede buscar la ultima lectura de presion en la lista de lecturas y retornar ese valor.
-        if (lecturas.isEmpty()) {
-            throw BusinessException("No hay lecturas de presion disponibles.")
-        }
-        return lecturas.last().presion
-    }
-
-    fun diferenciaPh(): Double {
-        if (lecturas.size > 1) {
-            val penultimaLectura = lecturas.elementAt(lecturas.size - 2)
-            return ph() - penultimaLectura.ph
-        }
-        return 0.0
-    }*/
-
-    fun agregarProgramacionFiltrado(programacion: Programacion) {
+    fun agregarProgramacionFiltrado(programacion: ProgramacionFiltrado) {
         programacionFiltrado.add(programacion)
     }
 
-    fun agregarProgramacionLuces(programacion: Programacion) {
-        programacionLuces.add(programacion)
+    fun agregarProgramacionIluminacion(programacion: ProgramacionIluminacion) {
+        programacionIluminacion.add(programacion)
     }
 
-    fun eliminarProgramacionFiltrado(programacion: Programacion) {
+    fun eliminarProgramacionFiltrado(programacion: ProgramacionFiltrado) {
         programacionFiltrado.remove(programacion)
     }
 
-    fun eliminarProgramacionLuces(programacion: Programacion) {
-        programacionLuces.remove(programacion)
+    fun eliminarProgramacionLuces(programacion: ProgramacionIluminacion) {
+        programacionIluminacion.remove(programacion)
     }
 
     fun agregarRegistro(registro: Registro) {
@@ -188,5 +152,5 @@ class Piscina(
 
     fun tieneCalefaccion() = calefaccion != null
 
-    fun filtroActivo() : Boolean = (entradaAgua.isNotEmpty() and funcionActiva.isNotEmpty())
+    fun filtroActivo(): Boolean = (entradaAgua.isNotEmpty() and funcionActiva.isNotEmpty())
 }
