@@ -60,10 +60,11 @@ class UsuarioController {
         )
     }
 
-    @DeleteMapping("/{usuarioId}/{administradorId}")
+    @DeleteMapping("delete/{usuarioId}/{administradorId}")
     fun delete(@PathVariable usuarioId: Long, @PathVariable administradorId: Long): ResponseEntity<CustomResponse> {
         administracionService.verificarRol(administradorId)
-        usuarioService.delete(usuarioId)
+        piscinaService.usuarioEliminado(usuarioId)
+        usuarioService.darDeBaja(usuarioId)
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Usuario eliminado correctamente",

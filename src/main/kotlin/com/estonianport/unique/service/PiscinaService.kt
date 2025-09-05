@@ -147,4 +147,12 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
         piscinaRepository.save(piscina)
     }
 
+    fun usuarioEliminado(usuarioId: Long) {
+        val piscinas = getPiscinasByUsuarioId(usuarioId)
+        piscinas.forEach {
+            it.administrador = null
+            piscinaRepository.save(it)
+        }
+    }
+
 }

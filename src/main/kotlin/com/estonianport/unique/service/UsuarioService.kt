@@ -12,6 +12,7 @@ import org.springframework.data.repository.CrudRepository
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Service
 class UsuarioService : GenericServiceImpl<Usuario, Long>() {
@@ -70,7 +71,7 @@ class UsuarioService : GenericServiceImpl<Usuario, Long>() {
     }
 
     fun getUsuariosRegistrados(): List<Usuario> {
-        return getAll()!!.filter { !it.esAdministrador && it.estado.name != "PENDIENTE" }
+        return getAll()!!.filter { !it.esAdministrador && it.estado.name != "PENDIENTE" && it.estado.name != "BAJA" }
     }
 
     fun getUsuariosPendientes(): List<Usuario> {
@@ -122,6 +123,13 @@ class UsuarioService : GenericServiceImpl<Usuario, Long>() {
             usuario.estado = UsuarioType.INACTIVO
             save(usuario)
         }
+    }
+
+    fun darDeBaja(usuarioId: Long) {
+        val usuario = findById(usuarioId) ?: throw NoSuchElementException("No se encontró un usuario con el ID proporcionado")
+        usuario.estado = UsuarioType.BAJA
+        usuario.fechaBaja = LocalDate.now()
+        save(usuario)
     }
 
 }
