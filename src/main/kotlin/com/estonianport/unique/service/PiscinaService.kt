@@ -2,11 +2,17 @@ package com.estonianport.unique.service
 
 import com.estonianport.unique.dto.response.LecturaConErrorResponseDto
 import com.estonianport.unique.common.errors.NotFoundException
+import com.estonianport.unique.dto.request.CalefaccionRequestDto
 import com.estonianport.unique.model.Bomba
+import com.estonianport.unique.model.Calefaccion
 import com.estonianport.unique.model.Filtro
+import com.estonianport.unique.model.Ionizador
 import com.estonianport.unique.model.Piscina
 import com.estonianport.unique.model.ProgramacionFiltrado
 import com.estonianport.unique.model.ProgramacionIluminacion
+import com.estonianport.unique.model.SistemaGermicida
+import com.estonianport.unique.model.Trasductor
+import com.estonianport.unique.model.UV
 import com.estonianport.unique.repository.PiscinaRepository
 import org.springframework.stereotype.Service
 
@@ -174,6 +180,52 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
             throw NotFoundException("El filtro con ID: ${filtroActualizado.id} no pertenece a la piscina con ID: $piscinaId")
         }
         piscina.filtro = filtroActualizado //REVISAR ESTO!
+        piscinaRepository.save(piscina)
+    }
+
+    fun updateGermicida(piscinaId: Long, germicidaActualizada: SistemaGermicida) {
+        val piscina = findById(piscinaId)
+        val germicida = piscina.sistemaGermicida.find { it.id == germicidaActualizada.id }
+            ?: throw NotFoundException("El sistema germicida con ID: ${germicidaActualizada.id} no pertenece a la piscina con ID: $piscinaId")
+        germicida.apply {
+            marca = germicidaActualizada.marca
+        }
+        if (germicidaActualizada is UV && germicida is UV) {
+            germicida.potencia = germicidaActualizada.potencia
+        }
+        if (germicidaActualizada is Ionizador && germicida is Ionizador) {
+            germicida.electrodos = germicidaActualizada.electrodos
+        }
+        if (germicidaActualizada is Trasductor && germicida is Trasductor) {
+            germicida.potencia = germicidaActualizada.potencia
+        }
+        piscinaRepository.save(piscina)
+    }
+
+    fun updateCalefaccion(piscinaId: Long, calefaccionActualizada: Calefaccion) {
+        val piscina = findById(piscinaId)
+        piscina.calefaccion?.apply {
+            this.modelo = calefaccionActualizada.modelo
+            this.marca = calefaccionActualizada.marca
+            this.potencia = calefaccionActualizada.potencia
+        } ?: throw NotFoundException("La piscina con ID: $piscinaId no tiene calefacción asignada")
+        piscinaRepository.save(piscina)
+    }
+
+    fun deleteCalefaccion(piscinaId: Long) {
+        val piscina = findById(piscinaId)
+        if (piscina.calefaccion == null) {
+            throw NotFoundException("La piscina con ID: $piscinaId no tiene calefacción asignada")
+        }
+        piscina.calefaccion = null
+        piscinaRepository.save(piscina)
+    }
+
+    fun deleteGermicida(piscinaId: Long, germicidaId: Long) {
+        val piscina = findById(piscinaId)
+        val germicida = piscina.sistemaGermicida.find { it.id == germicidaId }
+            ?: throw NotFoundException("El sistema germicida con ID: $germicidaId no pertenece a la piscina con ID: $piscinaId")
+        piscina.sistemaGermicida.remove(germicida)
         piscinaRepository.save(piscina)
     }
 

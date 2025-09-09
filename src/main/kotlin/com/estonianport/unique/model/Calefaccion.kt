@@ -15,13 +15,13 @@ class Calefaccion(
     val tipo: CalefaccionType,
 
     @Column
-    val potencia: Double,
+    var potencia: Double,
 
     @Column
-    val modelo: String,
+    var modelo: String,
 
     @Column
-    val marca: String,
+    var marca: String,
 
     @Column
     var activa: Boolean,

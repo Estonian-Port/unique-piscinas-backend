@@ -46,9 +46,9 @@ class Piscina(
     @JoinColumn(name = "piscina_id")
     val sistemaGermicida: MutableSet<SistemaGermicida>,
 
-    @OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY, optional = true)
+    @OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY, optional = true, orphanRemoval = true)
     @PrimaryKeyJoinColumn
-    val calefaccion: Calefaccion?,
+    var calefaccion: Calefaccion?,
 
     @Column
     val cloroSalino: Boolean,

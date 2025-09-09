@@ -1,15 +1,19 @@
 package com.estonianport.unique.controller
 
 import com.estonianport.unique.dto.request.BombaRequestDto
+import com.estonianport.unique.dto.request.CalefaccionRequestDto
 import com.estonianport.unique.dto.request.FiltroRequestDto
 import com.estonianport.unique.dto.request.PiscinaRequestDto
 import com.estonianport.unique.dto.request.ProgramacionFiltradoRequestDto
 import com.estonianport.unique.dto.request.ProgramacionLucesRequestDto
+import com.estonianport.unique.dto.request.SistemaGermicidaRequestDto
 import com.estonianport.unique.mapper.PiscinaMapper
 import com.estonianport.unique.dto.response.CustomResponse
 import com.estonianport.unique.mapper.BombaMapper
+import com.estonianport.unique.mapper.CalefaccionMapper
 import com.estonianport.unique.mapper.FiltroMapper
 import com.estonianport.unique.mapper.ProgramacionMapper
+import com.estonianport.unique.mapper.SistemaGermicidaMapper
 import com.estonianport.unique.service.PiscinaService
 import com.estonianport.unique.service.UsuarioService
 import org.springframework.beans.factory.annotation.Autowired
@@ -225,5 +229,52 @@ class PiscinaController {
             )
         )
     }
+
+    @PutMapping("/update-germicida/{piscinaId}")
+    fun updateGermicidaPiscina(@PathVariable piscinaId: Long, @RequestBody germicidaDto: SistemaGermicidaRequestDto) : ResponseEntity<CustomResponse> {
+        val germicidaActualizado = SistemaGermicidaMapper.buildSistemaGermicida(germicidaDto)
+        piscinaService.updateGermicida(piscinaId, germicidaActualizado)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Sistema germicida actualizado correctamente",
+                data = null
+            )
+        )
+    }
+
+    @PutMapping("/update-calefaccion/{piscinaId}")
+    fun updateCalefaccionPiscina(@PathVariable piscinaId: Long, @RequestBody calefaccionDto : CalefaccionRequestDto): ResponseEntity<CustomResponse> {
+        val calefaccionActualizada = CalefaccionMapper.buildCalefaccion(calefaccionDto)
+        piscinaService.updateCalefaccion(piscinaId, calefaccionActualizada)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Calefacción actualizada correctamente",
+                data = null
+            )
+        )
+    }
+
+    @DeleteMapping("/delete-calefaccion/{piscinaId}")
+    fun deleteCalefaccion(@PathVariable piscinaId: Long): ResponseEntity<CustomResponse> {
+        piscinaService.deleteCalefaccion(piscinaId)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Calefacción eliminada correctamente",
+                data = null
+            )
+        )
+    }
+
+    @DeleteMapping("/delete-germicida/{piscinaId}/{germicidaId}")
+    fun deleteGermicida(@PathVariable piscinaId: Long, @PathVariable germicidaId : Long): ResponseEntity<CustomResponse> {
+        piscinaService.deleteGermicida(piscinaId, germicidaId)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Germicida eliminado correctamente",
+                data = null
+            )
+        )
+    }
+
 
 }
