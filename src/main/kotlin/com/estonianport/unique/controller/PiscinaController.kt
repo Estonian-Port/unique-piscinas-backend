@@ -1,10 +1,14 @@
 package com.estonianport.unique.controller
 
+import com.estonianport.unique.dto.request.BombaRequestDto
+import com.estonianport.unique.dto.request.FiltroRequestDto
 import com.estonianport.unique.dto.request.PiscinaRequestDto
 import com.estonianport.unique.dto.request.ProgramacionFiltradoRequestDto
 import com.estonianport.unique.dto.request.ProgramacionLucesRequestDto
 import com.estonianport.unique.mapper.PiscinaMapper
 import com.estonianport.unique.dto.response.CustomResponse
+import com.estonianport.unique.mapper.BombaMapper
+import com.estonianport.unique.mapper.FiltroMapper
 import com.estonianport.unique.mapper.ProgramacionMapper
 import com.estonianport.unique.service.PiscinaService
 import com.estonianport.unique.service.UsuarioService
@@ -194,6 +198,30 @@ class PiscinaController {
             CustomResponse(
                 message = "Programación filtrado de la piscina actualizada correctamente",
                 data = ProgramacionMapper.buildProgramacionFiltradoResponseDto(programacionActualizada)
+            )
+        )
+    }
+
+    @PutMapping("/update-bomba/{piscinaId}")
+    fun updateBombaPiscina(@PathVariable piscinaId: Long, @RequestBody bombaRequestDto: BombaRequestDto): ResponseEntity<CustomResponse> {
+        val bombaActualizada = BombaMapper.buildBomba(bombaRequestDto)
+        piscinaService.updateBomba(piscinaId, bombaActualizada)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Bomba actualizada correctamente",
+                data = null
+            )
+        )
+    }
+
+    @PutMapping("/update-filtro/{piscinaId}")
+    fun updateFiltroPiscina(@PathVariable piscinaId: Long, @RequestBody filtroDto : FiltroRequestDto): ResponseEntity<CustomResponse> {
+        val filtroActualizado = FiltroMapper.buildFiltro(filtroDto)
+        piscinaService.updateFiltro(piscinaId, filtroActualizado)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Filtro actualizado correctamente",
+                data = null
             )
         )
     }

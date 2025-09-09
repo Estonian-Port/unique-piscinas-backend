@@ -5,6 +5,7 @@ data class FiltroRequestDto(
     val tipo: String,
     val marca: String,
     val modelo: String,
+    val activo: Boolean,
     val diametro: Double,
     val datoExtra: Int,
     val tiempoDeVidaUtil: Int

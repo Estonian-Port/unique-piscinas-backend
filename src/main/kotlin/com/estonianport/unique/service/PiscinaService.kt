@@ -2,6 +2,8 @@ package com.estonianport.unique.service
 
 import com.estonianport.unique.dto.response.LecturaConErrorResponseDto
 import com.estonianport.unique.common.errors.NotFoundException
+import com.estonianport.unique.model.Bomba
+import com.estonianport.unique.model.Filtro
 import com.estonianport.unique.model.Piscina
 import com.estonianport.unique.model.ProgramacionFiltrado
 import com.estonianport.unique.model.ProgramacionIluminacion
@@ -153,6 +155,26 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
             it.administrador = null
             piscinaRepository.save(it)
         }
+    }
+
+    fun updateBomba(piscinaId : Long, bombaActualizada : Bomba) {
+        val piscina = findById(piscinaId)
+        piscina.bomba.find { it.id == bombaActualizada.id }?.apply {
+            marca = bombaActualizada.marca
+            modelo = bombaActualizada.modelo
+            potencia = bombaActualizada.potencia
+            activa = bombaActualizada.activa
+        }
+        piscinaRepository.save(piscina)
+    }
+
+    fun updateFiltro(piscinaId : Long, filtroActualizado : Filtro) {
+        val piscina = findById(piscinaId)
+        if (piscina.filtro.id != filtroActualizado.id){
+            throw NotFoundException("El filtro con ID: ${filtroActualizado.id} no pertenece a la piscina con ID: $piscinaId")
+        }
+        piscina.filtro = filtroActualizado //REVISAR ESTO!
+        piscinaRepository.save(piscina)
     }
 
 }

@@ -40,7 +40,7 @@ class Piscina(
 
     @OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY, optional = true)
     @PrimaryKeyJoinColumn
-    val filtro: Filtro,
+    var filtro: Filtro,
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "piscina_id")
