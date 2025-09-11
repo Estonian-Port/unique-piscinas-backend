@@ -3,6 +3,7 @@ package com.estonianport.unique.controller
 import com.estonianport.unique.dto.request.BombaRequestDto
 import com.estonianport.unique.dto.request.CalefaccionRequestDto
 import com.estonianport.unique.dto.request.FiltroRequestDto
+import com.estonianport.unique.dto.request.PiscinaCompuestosRequestDto
 import com.estonianport.unique.dto.request.PiscinaRequestDto
 import com.estonianport.unique.dto.request.ProgramacionFiltradoRequestDto
 import com.estonianport.unique.dto.request.ProgramacionLucesRequestDto
@@ -271,6 +272,53 @@ class PiscinaController {
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Germicida eliminado correctamente",
+                data = null
+            )
+        )
+    }
+
+    @PostMapping("/add-calefaccion/{piscinaId}")
+    fun addCalefaccion(@PathVariable piscinaId: Long, @RequestBody calefaccionDto : CalefaccionRequestDto): ResponseEntity<CustomResponse> {
+        val nuevaCalefaccion = CalefaccionMapper.buildCalefaccion(calefaccionDto)
+        piscinaService.addCalefaccion(piscinaId, nuevaCalefaccion)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Calefacción agregada correctamente",
+                data = null
+            )
+        )
+    }
+
+    @PostMapping("/add-germicida/{piscinaId}")
+    fun addGermicida(@PathVariable piscinaId: Long, @RequestBody germicidaDto: SistemaGermicidaRequestDto): ResponseEntity<CustomResponse> {
+        val nuevoGermicida = SistemaGermicidaMapper.buildSistemaGermicida(germicidaDto)
+        piscinaService.addGermicida(piscinaId, nuevoGermicida)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Germicida agregado correctamente",
+                data = null
+            )
+        )
+    }
+
+    @PostMapping("/add-bomba/{piscinaId}")
+    fun addBomba(@PathVariable piscinaId: Long, @RequestBody bombaRequestDto: BombaRequestDto): ResponseEntity<CustomResponse> {
+        val nuevaBomba = BombaMapper.buildBomba(bombaRequestDto)
+        piscinaService.addBomba(piscinaId, nuevaBomba)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Bomba agregada correctamente",
+                data = null
+            )
+        )
+    }
+
+    @PutMapping("update-compuestos/{piscinaId}")
+    fun updateCompuestosPiscina(@PathVariable piscinaId: Long, @RequestBody compuestos: PiscinaCompuestosRequestDto): ResponseEntity<CustomResponse> {
+        piscinaService.updateCompuestos(piscinaId, compuestos.orp, compuestos.controlPh, compuestos.cloroSalino)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Compuestos de la piscina actualizados correctamente",
                 data = null
             )
         )

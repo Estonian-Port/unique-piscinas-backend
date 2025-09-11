@@ -97,7 +97,7 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
     fun create(piscina: Piscina): Piscina {
         return piscinaRepository.save(piscina)
     }
- 
+
     fun deleteProgramacion(piscinaId: Long, programacionId: Long) {
         val piscina = findById(piscinaId)
         piscina.programacionIluminacion.removeIf { it.id == programacionId }
@@ -122,7 +122,7 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
         programacion: ProgramacionIluminacion,
     ) {
         val piscina = findById(piscinaId)
-        piscina.programacionIluminacion.find { it.id == programacion.id}?.apply {
+        piscina.programacionIluminacion.find { it.id == programacion.id }?.apply {
             horaInicio = programacion.horaInicio
             horaFin = programacion.horaFin
             dias = programacion.dias
@@ -136,7 +136,7 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
         programacion: ProgramacionFiltrado,
     ) {
         val piscina = findById(piscinaId)
-        piscina.programacionFiltrado.find { it.id == programacion.id}?.apply {
+        piscina.programacionFiltrado.find { it.id == programacion.id }?.apply {
             horaInicio = programacion.horaInicio
             horaFin = programacion.horaFin
             dias = programacion.dias
@@ -163,7 +163,7 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
         }
     }
 
-    fun updateBomba(piscinaId : Long, bombaActualizada : Bomba) {
+    fun updateBomba(piscinaId: Long, bombaActualizada: Bomba) {
         val piscina = findById(piscinaId)
         piscina.bomba.find { it.id == bombaActualizada.id }?.apply {
             marca = bombaActualizada.marca
@@ -174,9 +174,9 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
         piscinaRepository.save(piscina)
     }
 
-    fun updateFiltro(piscinaId : Long, filtroActualizado : Filtro) {
+    fun updateFiltro(piscinaId: Long, filtroActualizado: Filtro) {
         val piscina = findById(piscinaId)
-        if (piscina.filtro.id != filtroActualizado.id){
+        if (piscina.filtro.id != filtroActualizado.id) {
             throw NotFoundException("El filtro con ID: ${filtroActualizado.id} no pertenece a la piscina con ID: $piscinaId")
         }
         piscina.filtro = filtroActualizado //REVISAR ESTO!
@@ -226,6 +226,60 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
         val germicida = piscina.sistemaGermicida.find { it.id == germicidaId }
             ?: throw NotFoundException("El sistema germicida con ID: $germicidaId no pertenece a la piscina con ID: $piscinaId")
         piscina.sistemaGermicida.remove(germicida)
+        piscinaRepository.save(piscina)
+    }
+
+    fun addBomba(piscinaId: Long, bomba: Bomba) {
+        val piscina = findById(piscinaId)
+        if (piscina.bomba.size >= 3) {
+            throw IllegalStateException("La piscina con ID: $piscinaId ya tiene el máximo de bombas permitidas (3)")
+        }
+        piscina.bomba.add(bomba)
+        piscinaRepository.save(piscina)
+    }
+
+    fun addGermicida(piscinaId: Long, germicida: SistemaGermicida) {
+        val piscina = findById(piscinaId)
+        if (piscina.sistemaGermicida.size >= 3) {
+            throw IllegalStateException("La piscina con ID: $piscinaId ya tiene el máximo de sistemas germicidas permitidos (3)")
+        }
+        validarUnicidadGermicida(germicida, piscina)
+        piscina.sistemaGermicida.add(germicida)
+        piscinaRepository.save(piscina)
+    }
+
+    fun addCalefaccion(piscinaId: Long, calefaccion: Calefaccion) {
+        val piscina = findById(piscinaId)
+        if (piscina.calefaccion != null) {
+            throw IllegalStateException("La piscina con ID: $piscinaId ya tiene una calefacción asignada")
+        }
+        piscina.calefaccion = calefaccion
+        piscinaRepository.save(piscina)
+    }
+
+    fun validarUnicidadGermicida(germicida: SistemaGermicida, piscina: Piscina) {
+        if (germicida is UV) {
+            if (piscina.sistemaGermicida.any { it is UV }) {
+                throw IllegalStateException("La piscina con ID: ${piscina.id} ya tiene un sistema germicida UV asignado")
+            }
+        }
+        if (germicida is Ionizador) {
+            if (piscina.sistemaGermicida.any { it is Ionizador }) {
+                throw IllegalStateException("La piscina con ID: ${piscina.id} ya tiene un sistema germicida Ionizador asignado")
+            }
+        }
+        if (germicida is Trasductor) {
+            if (piscina.sistemaGermicida.any { it is Trasductor }) {
+                throw IllegalStateException("La piscina con ID: ${piscina.id} ya tiene un sistema germicida Trasductor asignado")
+            }
+        }
+    }
+
+    fun updateCompuestos (piscinaId: Long, orp: Boolean, controlPh: Boolean, cloroSalino: Boolean) {
+        val piscina = findById(piscinaId)
+        piscina.orp = orp
+        piscina.controlAutomaticoPH = controlPh
+        piscina.cloroSalino = cloroSalino
         piscinaRepository.save(piscina)
     }
 

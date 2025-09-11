@@ -129,6 +129,9 @@ object PiscinaMapper {
             bombas = piscina.bomba.map { BombaMapper.buildBombaResponseDto(it) },
             filtro = FiltroMapper.buildFiltroResponseDto(piscina.filtro),
             sistemasGermicidas = piscina.sistemaGermicida.map { SistemaGermicidaMapper.buildSistemaGermicidaResponseDto(it) },
+            cloroSalino = piscina.cloroSalino,
+            controlAutomaticoPH = piscina.controlAutomaticoPH,
+            orp = piscina.orp,
             calefaccion = piscina.calefaccion?.let { CalefaccionMapper.buildCalefaccionResponseDto(it) },
             registros = piscina.registros.map { RegistroMapper.buildRegistroResponseDto(it) }
         )

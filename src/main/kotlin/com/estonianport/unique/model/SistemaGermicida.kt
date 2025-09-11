@@ -12,7 +12,7 @@ abstract class SistemaGermicida(
     val activo: Boolean =true,
     var marca: String,
     @Enumerated(EnumType.STRING)
-    val estado: EstadoType
+    val estado: EstadoType? = null
 ) {
     fun vidaRestante(): Int {
         // Implementación de la lógica para calcular la vida restante del sistema germicida

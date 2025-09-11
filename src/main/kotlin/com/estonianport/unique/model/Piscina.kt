@@ -42,22 +42,22 @@ class Piscina(
     @PrimaryKeyJoinColumn
     var filtro: Filtro,
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     @JoinColumn(name = "piscina_id")
     val sistemaGermicida: MutableSet<SistemaGermicida>,
 
     @OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY, optional = true, orphanRemoval = true)
-    @PrimaryKeyJoinColumn
+    @JoinColumn(name = "calefaccion_id")
     var calefaccion: Calefaccion?,
 
     @Column
-    val cloroSalino: Boolean,
+    var cloroSalino: Boolean,
 
     @Column
-    val controlAutomaticoPH: Boolean,
+    var controlAutomaticoPH: Boolean,
 
     @Column
-    val orp: Boolean,
+    var orp: Boolean,
 
     @Column(length = 4)
     val codigoPlaca: String,
