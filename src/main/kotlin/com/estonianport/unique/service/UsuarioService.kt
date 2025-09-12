@@ -2,6 +2,7 @@ package com.estonianport.unique.service
 
 import GenericServiceImpl
 import com.estonianport.unique.common.codeGeneratorUtil.CodeGeneratorUtil
+import com.estonianport.unique.dto.request.UsuarioCambioPasswordRequestDto
 import com.estonianport.unique.dto.request.UsuarioRegistroRequestDto
 import com.estonianport.unique.repository.UsuarioRepository
 import com.estonianport.unique.model.Usuario
@@ -130,6 +131,32 @@ class UsuarioService : GenericServiceImpl<Usuario, Long>() {
         usuario.estado = UsuarioType.BAJA
         usuario.fechaBaja = LocalDate.now()
         save(usuario)
+    }
+
+    fun updatePerfil (usuario: Usuario) : Usuario {
+        val usuarioExistente = findById(usuario.id) ?: throw NoSuchElementException("No se encontró un usuario con el ID proporcionado")
+        usuarioExistente.nombre = usuario.nombre
+        usuarioExistente.apellido = usuario.apellido
+        usuarioExistente.email = usuario.email
+        usuarioExistente.celular = usuario.celular
+        save(usuarioExistente)
+        return usuarioExistente
+    }
+
+    fun updatePassword (usuarioDto : UsuarioCambioPasswordRequestDto) : Usuario {
+        val usuario = getUsuarioByEmail(usuarioDto.email)
+        if (!BCryptPasswordEncoder().matches(usuarioDto.passwordActual, usuario.password)) {
+            throw IllegalArgumentException("La contraseña actual es incorrecta")
+        }
+        if (usuarioDto.nuevoPassword != usuarioDto.confirmacionPassword) {
+            throw IllegalArgumentException("La confirmación de la nueva contraseña no coincide")
+        }
+        if (BCryptPasswordEncoder().matches(usuarioDto.nuevoPassword, usuario.password)) {
+            throw IllegalArgumentException("La nueva contraseña no puede ser igual a la actual")
+        }
+        usuario.password = encriptarPassword(usuarioDto.nuevoPassword)
+        save(usuario)
+        return usuario
     }
 
 }

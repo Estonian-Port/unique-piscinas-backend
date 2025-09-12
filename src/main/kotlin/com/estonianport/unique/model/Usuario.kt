@@ -22,7 +22,7 @@ class Usuario(
     var celular: Long,
 
     @Column
-    val email: String,
+    var email: String,
 
     @Column
     val esAdministrador: Boolean = false,
