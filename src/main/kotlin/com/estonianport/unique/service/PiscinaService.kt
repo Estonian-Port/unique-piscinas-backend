@@ -10,6 +10,7 @@ import com.estonianport.unique.model.Ionizador
 import com.estonianport.unique.model.Piscina
 import com.estonianport.unique.model.ProgramacionFiltrado
 import com.estonianport.unique.model.ProgramacionIluminacion
+import com.estonianport.unique.model.Registro
 import com.estonianport.unique.model.SistemaGermicida
 import com.estonianport.unique.model.Trasductor
 import com.estonianport.unique.model.UV
@@ -280,6 +281,34 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
         piscina.orp = orp
         piscina.controlAutomaticoPH = controlPh
         piscina.cloroSalino = cloroSalino
+        piscinaRepository.save(piscina)
+    }
+
+    fun addRegistro (piscinaId: Long, registro: Registro) {
+        val piscina = findById(piscinaId)
+        piscina.agregarRegistro(registro)
+        piscinaRepository.save(piscina)
+    }
+
+    fun updateRegistro(piscinaId: Long, registro: Registro) {
+        val piscina = findById(piscinaId)
+        val registroExistente = piscina.registros.find { it.id == registro.id }
+            ?: throw NotFoundException("El registro con ID: ${registro.id} no pertenece a la piscina con ID: $piscinaId")
+        registroExistente.apply {
+            fecha = registro.fecha
+            dispositivo = registro.dispositivo
+            accion = registro.accion
+            descripcion = registro.descripcion
+            nombreTecnico = registro.nombreTecnico
+        }
+        piscinaRepository.save(piscina)
+    }
+
+    fun deleteRegistro(piscinaId: Long, registroId: Long) {
+        val piscina = findById(piscinaId)
+        val registroExistente = piscina.registros.find { it.id == registroId }
+            ?: throw NotFoundException("El registro con ID: $registroId no pertenece a la piscina con ID: $piscinaId")
+        piscina.eliminarRegistro(registroExistente)
         piscinaRepository.save(piscina)
     }
 

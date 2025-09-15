@@ -10,10 +10,12 @@ import com.estonianport.unique.dto.request.ProgramacionLucesRequestDto
 import com.estonianport.unique.dto.request.SistemaGermicidaRequestDto
 import com.estonianport.unique.mapper.PiscinaMapper
 import com.estonianport.unique.dto.response.CustomResponse
+import com.estonianport.unique.dto.response.RegistroResponseDto
 import com.estonianport.unique.mapper.BombaMapper
 import com.estonianport.unique.mapper.CalefaccionMapper
 import com.estonianport.unique.mapper.FiltroMapper
 import com.estonianport.unique.mapper.ProgramacionMapper
+import com.estonianport.unique.mapper.RegistroMapper
 import com.estonianport.unique.mapper.SistemaGermicidaMapper
 import com.estonianport.unique.service.PiscinaService
 import com.estonianport.unique.service.UsuarioService
@@ -319,6 +321,42 @@ class PiscinaController {
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Compuestos de la piscina actualizados correctamente",
+                data = null
+            )
+        )
+    }
+
+    @PostMapping("/add-registro/{piscinaId}")
+    fun addRegistro(@PathVariable piscinaId: Long, @RequestBody registroDto: RegistroResponseDto): ResponseEntity<CustomResponse> {
+        println(registroDto)
+        val registro = RegistroMapper.buildRegistro(registroDto)
+        piscinaService.addRegistro(piscinaId, registro)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Registro agregado correctamente",
+                data = null
+            )
+        )
+    }
+
+    @PutMapping("/update-registro/{piscinaId}")
+    fun updateRegistro(@PathVariable piscinaId: Long, @RequestBody registroDto: RegistroResponseDto): ResponseEntity<CustomResponse> {
+        val registroActualizado = RegistroMapper.buildRegistro(registroDto)
+        piscinaService.updateRegistro(piscinaId, registroActualizado)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Registro actualizado correctamente",
+                data = null
+            )
+        )
+    }
+
+    @DeleteMapping("/delete-registro/{piscinaId}/{registroId}")
+    fun deleteRegistro(@PathVariable piscinaId: Long, @PathVariable registroId: Long): ResponseEntity<CustomResponse> {
+        piscinaService.deleteRegistro(piscinaId, registroId)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Registro eliminado correctamente",
                 data = null
             )
         )

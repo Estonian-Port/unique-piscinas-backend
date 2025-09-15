@@ -9,22 +9,18 @@ data class Registro(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long,
 
-    @Column
-    val fecha: LocalDate,
+    @Column (nullable = false)
+    var fecha: LocalDate,
 
     @Column
-    val dispositivo : String,
+    var dispositivo : String,
 
     @Column
-    val descripcion: String,
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @PrimaryKeyJoinColumn
-    val tecnico: Usuario,
+    var descripcion: String,
 
     @Column
-    val nombreTecnico : String,
+    var nombreTecnico : String,
 
     @Column
-    val accion: String,
+    var accion: String,
 )

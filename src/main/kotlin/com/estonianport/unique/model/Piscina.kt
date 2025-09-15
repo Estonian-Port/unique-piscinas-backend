@@ -108,7 +108,7 @@ class Piscina(
     @JoinColumn(name = "piscina_id")
     val erroresLectura: MutableSet<ErrorLectura> = mutableSetOf()
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     @JoinColumn(name = "piscina_id")
     val registros: MutableSet<Registro> = mutableSetOf()
 
