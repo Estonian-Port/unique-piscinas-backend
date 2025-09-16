@@ -89,14 +89,14 @@ class Piscina(
     @Column(name = "funcion_activa")
     val funcionActiva: MutableList<FuncionFiltro> = mutableListOf()
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     @JoinColumn(name = "piscina_id")
     val programacionFiltrado: MutableSet<ProgramacionFiltrado> = mutableSetOf()
 
     @Column
     val lucesManual: Boolean = false
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     @JoinColumn(name = "piscina_id")
     val programacionIluminacion: MutableSet<ProgramacionIluminacion> = mutableSetOf()
 
@@ -124,12 +124,12 @@ class Piscina(
         programacionIluminacion.add(programacion)
     }
 
-    fun eliminarProgramacionFiltrado(programacion: ProgramacionFiltrado) {
-        programacionFiltrado.remove(programacion)
+    fun eliminarProgramacionFiltrado(programacionId: Long) {
+        programacionFiltrado.remove(programacionFiltrado.find { it.id == programacionId })
     }
 
-    fun eliminarProgramacionLuces(programacion: ProgramacionIluminacion) {
-        programacionIluminacion.remove(programacion)
+    fun eliminarProgramacionLuces(programacionId: Long) {
+        programacionIluminacion.remove(programacionIluminacion.find { it.id == programacionId })
     }
 
     fun agregarRegistro(registro: Registro) {

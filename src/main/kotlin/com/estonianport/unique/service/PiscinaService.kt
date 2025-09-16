@@ -2,7 +2,6 @@ package com.estonianport.unique.service
 
 import com.estonianport.unique.dto.response.LecturaConErrorResponseDto
 import com.estonianport.unique.common.errors.NotFoundException
-import com.estonianport.unique.dto.request.CalefaccionRequestDto
 import com.estonianport.unique.model.Bomba
 import com.estonianport.unique.model.Calefaccion
 import com.estonianport.unique.model.Filtro
@@ -99,14 +98,17 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
         return piscinaRepository.save(piscina)
     }
 
-    fun deleteProgramacion(piscinaId: Long, programacionId: Long) {
+    fun deleteProgramacion(piscinaId: Long, programacionId: Long, esFiltrado: Boolean) {
         val piscina = findById(piscinaId)
-        piscina.programacionIluminacion.removeIf { it.id == programacionId }
-        piscina.programacionFiltrado.removeIf { it.id == programacionId }
+        if (esFiltrado) {
+            piscina.eliminarProgramacionFiltrado(programacionId)
+        } else {
+            piscina.eliminarProgramacionLuces(programacionId)
+        }
         piscinaRepository.save(piscina)
     }
 
-    fun agregarProgramacionLuces(piscinaId: Long, programacion: ProgramacionIluminacion) {
+    fun agregarProgramacionIluminacion(piscinaId: Long, programacion: ProgramacionIluminacion) {
         val piscina = findById(piscinaId)
         piscina.agregarProgramacionIluminacion(programacion)
         piscinaRepository.save(piscina)
@@ -118,12 +120,14 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
         piscinaRepository.save(piscina)
     }
 
-    fun updateProgramacionLuces(
+    fun updateProgramacionIluminacion(
         piscinaId: Long,
         programacion: ProgramacionIluminacion,
     ) {
         val piscina = findById(piscinaId)
-        piscina.programacionIluminacion.find { it.id == programacion.id }?.apply {
+        val programacionAEditar = piscina.programacionIluminacion.find { it.id == programacion.id }
+            ?: throw NotFoundException("La programación de iluminación con ID: ${programacion.id} no pertenece a la piscina con ID: $piscinaId")
+        programacionAEditar.apply {
             horaInicio = programacion.horaInicio
             horaFin = programacion.horaFin
             dias = programacion.dias
@@ -137,7 +141,9 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
         programacion: ProgramacionFiltrado,
     ) {
         val piscina = findById(piscinaId)
-        piscina.programacionFiltrado.find { it.id == programacion.id }?.apply {
+        val programacionAEditar = piscina.programacionFiltrado.find { it.id == programacion.id }
+            ?: throw NotFoundException("La programación de filtrado con ID: ${programacion.id} no pertenece a la piscina con ID: $piscinaId")
+        programacionAEditar.apply {
             horaInicio = programacion.horaInicio
             horaFin = programacion.horaFin
             dias = programacion.dias
@@ -276,7 +282,7 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
         }
     }
 
-    fun updateCompuestos (piscinaId: Long, orp: Boolean, controlPh: Boolean, cloroSalino: Boolean) {
+    fun updateCompuestos(piscinaId: Long, orp: Boolean, controlPh: Boolean, cloroSalino: Boolean) {
         val piscina = findById(piscinaId)
         piscina.orp = orp
         piscina.controlAutomaticoPH = controlPh
@@ -284,7 +290,7 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
         piscinaRepository.save(piscina)
     }
 
-    fun addRegistro (piscinaId: Long, registro: Registro) {
+    fun addRegistro(piscinaId: Long, registro: Registro) {
         val piscina = findById(piscinaId)
         piscina.agregarRegistro(registro)
         piscinaRepository.save(piscina)

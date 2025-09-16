@@ -5,8 +5,7 @@ import com.estonianport.unique.dto.request.CalefaccionRequestDto
 import com.estonianport.unique.dto.request.FiltroRequestDto
 import com.estonianport.unique.dto.request.PiscinaCompuestosRequestDto
 import com.estonianport.unique.dto.request.PiscinaRequestDto
-import com.estonianport.unique.dto.request.ProgramacionFiltradoRequestDto
-import com.estonianport.unique.dto.request.ProgramacionLucesRequestDto
+import com.estonianport.unique.dto.request.ProgramacionRequestDto
 import com.estonianport.unique.dto.request.SistemaGermicidaRequestDto
 import com.estonianport.unique.mapper.PiscinaMapper
 import com.estonianport.unique.dto.response.CustomResponse
@@ -140,7 +139,7 @@ class PiscinaController {
                 this.piscinaAsignada()
             }
         }
-        
+
         piscinaService.create(newPiscina)
         return ResponseEntity.status(201).body(
             CustomResponse(
@@ -150,67 +149,11 @@ class PiscinaController {
         )
     }
 
-    @DeleteMapping("programacion/{piscinaId}/{programacionId}")
-    fun getProgramacionPiscina(@PathVariable piscinaId: Long, @PathVariable programacionId: Long): ResponseEntity<CustomResponse> {
-        piscinaService.deleteProgramacion(piscinaId, programacionId)
-        return ResponseEntity.status(200).body(
-            CustomResponse(
-                message = "Programación de la piscina eliminada correctamente",
-                data = null
-            )
-        )
-    }
-
-    @PostMapping("/programacion-luces/{piscinaId}")
-    fun createProgramacionPiscina(@PathVariable piscinaId: Long, @RequestBody programacionDTO : ProgramacionLucesRequestDto): ResponseEntity<CustomResponse> {
-        val nuevaProgramacion = ProgramacionMapper.buildProgramacionIluminacion(programacionDTO)
-        piscinaService.agregarProgramacionLuces(piscinaId, nuevaProgramacion)
-        return ResponseEntity.status(200).body(
-            CustomResponse(
-                message = "Programación luces de la piscina creada correctamente",
-                data = ProgramacionMapper.buildProgramacionIluminacionResponseDto(nuevaProgramacion)
-            )
-        )
-    }
-
-    @PostMapping("/programacion-filtrado/{piscinaId}")
-    fun createProgramacionPiscina(@PathVariable piscinaId: Long, @RequestBody programacionDTO : ProgramacionFiltradoRequestDto): ResponseEntity<CustomResponse> {
-        val nuevaProgramacion = ProgramacionMapper.buildProgramacionFiltrado(programacionDTO)
-        piscinaService.agregarProgramacionFiltrado(piscinaId, nuevaProgramacion)
-        return ResponseEntity.status(200).body(
-            CustomResponse(
-                message = "Programación filtrado de la piscina creada correctamente",
-                data = ProgramacionMapper.buildProgramacionFiltradoResponseDto(nuevaProgramacion)
-            )
-        )
-    }
-
-    @PutMapping("/programacion-luces-update/{piscinaId}")
-    fun updateProgramacionLucesPiscina(@PathVariable piscinaId: Long, @RequestBody programacionDTO: ProgramacionLucesRequestDto): ResponseEntity<CustomResponse> {
-        val programacionActualizada = ProgramacionMapper.buildProgramacionIluminacion(programacionDTO)
-        piscinaService.updateProgramacionLuces(piscinaId, programacionActualizada)
-        return ResponseEntity.status(200).body(
-            CustomResponse(
-                message = "Programación luces de la piscina actualizada correctamente",
-                data = ProgramacionMapper.buildProgramacionIluminacionResponseDto(programacionActualizada)
-            )
-        )
-    }
-
-    @PutMapping("/programacion-filtrado-update/{piscinaId}")
-    fun updateProgramacionLucesPiscina(@PathVariable piscinaId: Long, @RequestBody programacionDTO: ProgramacionFiltradoRequestDto): ResponseEntity<CustomResponse> {
-        val programacionActualizada = ProgramacionMapper.buildProgramacionFiltrado(programacionDTO)
-        piscinaService.updateProgramacionFiltrado(piscinaId, programacionActualizada)
-        return ResponseEntity.status(200).body(
-            CustomResponse(
-                message = "Programación filtrado de la piscina actualizada correctamente",
-                data = ProgramacionMapper.buildProgramacionFiltradoResponseDto(programacionActualizada)
-            )
-        )
-    }
-
     @PutMapping("/update-bomba/{piscinaId}")
-    fun updateBombaPiscina(@PathVariable piscinaId: Long, @RequestBody bombaRequestDto: BombaRequestDto): ResponseEntity<CustomResponse> {
+    fun updateBombaPiscina(
+        @PathVariable piscinaId: Long,
+        @RequestBody bombaRequestDto: BombaRequestDto
+    ): ResponseEntity<CustomResponse> {
         val bombaActualizada = BombaMapper.buildBomba(bombaRequestDto)
         piscinaService.updateBomba(piscinaId, bombaActualizada)
         return ResponseEntity.status(200).body(
@@ -222,7 +165,10 @@ class PiscinaController {
     }
 
     @PutMapping("/update-filtro/{piscinaId}")
-    fun updateFiltroPiscina(@PathVariable piscinaId: Long, @RequestBody filtroDto : FiltroRequestDto): ResponseEntity<CustomResponse> {
+    fun updateFiltroPiscina(
+        @PathVariable piscinaId: Long,
+        @RequestBody filtroDto: FiltroRequestDto
+    ): ResponseEntity<CustomResponse> {
         val filtroActualizado = FiltroMapper.buildFiltro(filtroDto)
         piscinaService.updateFiltro(piscinaId, filtroActualizado)
         return ResponseEntity.status(200).body(
@@ -234,7 +180,10 @@ class PiscinaController {
     }
 
     @PutMapping("/update-germicida/{piscinaId}")
-    fun updateGermicidaPiscina(@PathVariable piscinaId: Long, @RequestBody germicidaDto: SistemaGermicidaRequestDto) : ResponseEntity<CustomResponse> {
+    fun updateGermicidaPiscina(
+        @PathVariable piscinaId: Long,
+        @RequestBody germicidaDto: SistemaGermicidaRequestDto
+    ): ResponseEntity<CustomResponse> {
         val germicidaActualizado = SistemaGermicidaMapper.buildSistemaGermicida(germicidaDto)
         piscinaService.updateGermicida(piscinaId, germicidaActualizado)
         return ResponseEntity.status(200).body(
@@ -246,7 +195,10 @@ class PiscinaController {
     }
 
     @PutMapping("/update-calefaccion/{piscinaId}")
-    fun updateCalefaccionPiscina(@PathVariable piscinaId: Long, @RequestBody calefaccionDto : CalefaccionRequestDto): ResponseEntity<CustomResponse> {
+    fun updateCalefaccionPiscina(
+        @PathVariable piscinaId: Long,
+        @RequestBody calefaccionDto: CalefaccionRequestDto
+    ): ResponseEntity<CustomResponse> {
         val calefaccionActualizada = CalefaccionMapper.buildCalefaccion(calefaccionDto)
         piscinaService.updateCalefaccion(piscinaId, calefaccionActualizada)
         return ResponseEntity.status(200).body(
@@ -269,7 +221,10 @@ class PiscinaController {
     }
 
     @DeleteMapping("/delete-germicida/{piscinaId}/{germicidaId}")
-    fun deleteGermicida(@PathVariable piscinaId: Long, @PathVariable germicidaId : Long): ResponseEntity<CustomResponse> {
+    fun deleteGermicida(
+        @PathVariable piscinaId: Long,
+        @PathVariable germicidaId: Long
+    ): ResponseEntity<CustomResponse> {
         piscinaService.deleteGermicida(piscinaId, germicidaId)
         return ResponseEntity.status(200).body(
             CustomResponse(
@@ -280,7 +235,10 @@ class PiscinaController {
     }
 
     @PostMapping("/add-calefaccion/{piscinaId}")
-    fun addCalefaccion(@PathVariable piscinaId: Long, @RequestBody calefaccionDto : CalefaccionRequestDto): ResponseEntity<CustomResponse> {
+    fun addCalefaccion(
+        @PathVariable piscinaId: Long,
+        @RequestBody calefaccionDto: CalefaccionRequestDto
+    ): ResponseEntity<CustomResponse> {
         val nuevaCalefaccion = CalefaccionMapper.buildCalefaccion(calefaccionDto)
         piscinaService.addCalefaccion(piscinaId, nuevaCalefaccion)
         return ResponseEntity.status(200).body(
@@ -292,7 +250,10 @@ class PiscinaController {
     }
 
     @PostMapping("/add-germicida/{piscinaId}")
-    fun addGermicida(@PathVariable piscinaId: Long, @RequestBody germicidaDto: SistemaGermicidaRequestDto): ResponseEntity<CustomResponse> {
+    fun addGermicida(
+        @PathVariable piscinaId: Long,
+        @RequestBody germicidaDto: SistemaGermicidaRequestDto
+    ): ResponseEntity<CustomResponse> {
         val nuevoGermicida = SistemaGermicidaMapper.buildSistemaGermicida(germicidaDto)
         piscinaService.addGermicida(piscinaId, nuevoGermicida)
         return ResponseEntity.status(200).body(
@@ -304,7 +265,10 @@ class PiscinaController {
     }
 
     @PostMapping("/add-bomba/{piscinaId}")
-    fun addBomba(@PathVariable piscinaId: Long, @RequestBody bombaRequestDto: BombaRequestDto): ResponseEntity<CustomResponse> {
+    fun addBomba(
+        @PathVariable piscinaId: Long,
+        @RequestBody bombaRequestDto: BombaRequestDto
+    ): ResponseEntity<CustomResponse> {
         val nuevaBomba = BombaMapper.buildBomba(bombaRequestDto)
         piscinaService.addBomba(piscinaId, nuevaBomba)
         return ResponseEntity.status(200).body(
@@ -316,7 +280,10 @@ class PiscinaController {
     }
 
     @PutMapping("update-compuestos/{piscinaId}")
-    fun updateCompuestosPiscina(@PathVariable piscinaId: Long, @RequestBody compuestos: PiscinaCompuestosRequestDto): ResponseEntity<CustomResponse> {
+    fun updateCompuestosPiscina(
+        @PathVariable piscinaId: Long,
+        @RequestBody compuestos: PiscinaCompuestosRequestDto
+    ): ResponseEntity<CustomResponse> {
         piscinaService.updateCompuestos(piscinaId, compuestos.orp, compuestos.controlPh, compuestos.cloroSalino)
         return ResponseEntity.status(200).body(
             CustomResponse(
@@ -327,7 +294,10 @@ class PiscinaController {
     }
 
     @PostMapping("/add-registro/{piscinaId}")
-    fun addRegistro(@PathVariable piscinaId: Long, @RequestBody registroDto: RegistroResponseDto): ResponseEntity<CustomResponse> {
+    fun addRegistro(
+        @PathVariable piscinaId: Long,
+        @RequestBody registroDto: RegistroResponseDto
+    ): ResponseEntity<CustomResponse> {
         println(registroDto)
         val registro = RegistroMapper.buildRegistro(registroDto)
         piscinaService.addRegistro(piscinaId, registro)
@@ -340,7 +310,10 @@ class PiscinaController {
     }
 
     @PutMapping("/update-registro/{piscinaId}")
-    fun updateRegistro(@PathVariable piscinaId: Long, @RequestBody registroDto: RegistroResponseDto): ResponseEntity<CustomResponse> {
+    fun updateRegistro(
+        @PathVariable piscinaId: Long,
+        @RequestBody registroDto: RegistroResponseDto
+    ): ResponseEntity<CustomResponse> {
         val registroActualizado = RegistroMapper.buildRegistro(registroDto)
         piscinaService.updateRegistro(piscinaId, registroActualizado)
         return ResponseEntity.status(200).body(
@@ -357,6 +330,63 @@ class PiscinaController {
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Registro eliminado correctamente",
+                data = null
+            )
+        )
+    }
+
+    @PostMapping("/add-programacion/{piscinaId}/{esFiltrado}")
+    fun createProgramacionPiscina(
+        @PathVariable piscinaId: Long,
+        @PathVariable esFiltrado: Boolean,
+        @RequestBody programacionDTO: ProgramacionRequestDto
+    ): ResponseEntity<CustomResponse> {
+        if (!esFiltrado) {
+            val nuevaProgramacion = ProgramacionMapper.buildProgramacionIluminacion(programacionDTO)
+            piscinaService.agregarProgramacionIluminacion(piscinaId, nuevaProgramacion)
+        } else {
+            val nuevaProgramacion = ProgramacionMapper.buildProgramacionFiltrado(programacionDTO)
+            piscinaService.agregarProgramacionFiltrado(piscinaId, nuevaProgramacion)
+        }
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Programación filtrado de la piscina creada correctamente",
+                data = null
+            )
+        )
+    }
+
+    @PutMapping("/update-programacion/{piscinaId}/{esFiltrado}")
+    fun updateProgramacion(
+        @PathVariable piscinaId: Long,
+        @PathVariable esFiltrado: Boolean,
+        @RequestBody programacionDTO: ProgramacionRequestDto
+    ): ResponseEntity<CustomResponse> {
+        if (esFiltrado) {
+            val programacionActualizada = ProgramacionMapper.buildProgramacionFiltrado(programacionDTO)
+            piscinaService.updateProgramacionFiltrado(piscinaId, programacionActualizada)
+        } else {
+            val programacionActualizada = ProgramacionMapper.buildProgramacionIluminacion(programacionDTO)
+            piscinaService.updateProgramacionIluminacion(piscinaId, programacionActualizada)
+        }
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Programación de la piscina actualizada correctamente",
+                data = null
+            )
+        )
+    }
+
+    @DeleteMapping("/delete-programacion/{piscinaId}/{programacionId}/{esFiltrado}")
+    fun deleteProgramacionFiltrado(
+        @PathVariable piscinaId: Long,
+        @PathVariable programacionId: Long,
+        @PathVariable esFiltrado: Boolean
+    ): ResponseEntity<CustomResponse> {
+        piscinaService.deleteProgramacion(piscinaId, programacionId,esFiltrado)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Programación eliminada correctamente",
                 data = null
             )
         )
