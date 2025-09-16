@@ -90,6 +90,7 @@ class Piscina(
     val funcionActiva: MutableList<FuncionFiltro> = mutableListOf()
 
     @OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    @OrderBy("id ASC")
     @JoinColumn(name = "piscina_id")
     val programacionFiltrado: MutableSet<ProgramacionFiltrado> = mutableSetOf()
 
@@ -97,6 +98,7 @@ class Piscina(
     val lucesManual: Boolean = false
 
     @OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    @OrderBy("id ASC")
     @JoinColumn(name = "piscina_id")
     val programacionIluminacion: MutableSet<ProgramacionIluminacion> = mutableSetOf()
 
