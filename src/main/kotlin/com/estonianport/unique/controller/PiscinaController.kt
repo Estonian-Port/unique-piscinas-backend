@@ -16,8 +16,11 @@ import com.estonianport.unique.mapper.FiltroMapper
 import com.estonianport.unique.mapper.ProgramacionMapper
 import com.estonianport.unique.mapper.RegistroMapper
 import com.estonianport.unique.mapper.SistemaGermicidaMapper
+import com.estonianport.unique.model.enums.UsuarioType
+import com.estonianport.unique.repository.PlaquetaRepository
 import com.estonianport.unique.service.PiscinaService
 import com.estonianport.unique.service.UsuarioService
+import org.hibernate.usertype.UserType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CrossOrigin
@@ -40,6 +43,9 @@ class PiscinaController {
 
     @Autowired
     lateinit var piscinaService: PiscinaService
+
+    @Autowired
+    lateinit var plaquetaRepository: PlaquetaRepository
 
     @GetMapping("/getAll/{usuarioId}")
     fun getAllPiscinasByUsuarioId(@PathVariable usuarioId: Long): ResponseEntity<CustomResponse> {
@@ -125,7 +131,8 @@ class PiscinaController {
 
     @PostMapping("/alta")
     fun savePiscina(@RequestBody piscinaDto: PiscinaRequestDto): ResponseEntity<CustomResponse> {
-        val newPiscina = PiscinaMapper.buildPiscina(piscinaDto)
+        val plaqueta = plaquetaRepository.findByPatenteAndEstado(piscinaDto.codigoPlaca, UsuarioType.ACTIVO)!!
+        val newPiscina = PiscinaMapper.buildPiscina(piscinaDto, plaqueta)
         if (piscinaDto.administradorId != null) {
             newPiscina.administrador = usuarioService.findById(piscinaDto.administradorId).apply {
                 if (this == null) {

@@ -50,7 +50,7 @@ class AdministracionController {
             CustomResponse(
                 message = "Piscinas registradas obtenidas correctamente",
                 data = piscinaService.getPiscinasRegistradas()
-                    .map { PiscinaMapper.buildPiscinaRegistradaListDto(it, piscinaService.getPh(it.id!!)) }
+                    .map { PiscinaMapper.buildPiscinaRegistradaListDto(it, piscinaService.getPh(it.id)) }
             )
         )
     }

@@ -34,15 +34,15 @@ class Piscina(
     @Column
     val volumenTC: Double?,
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     @JoinColumn(name = "piscina_id")
     val bomba: MutableList<Bomba>,
 
-    @OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY, optional = true)
+    @OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     @PrimaryKeyJoinColumn
     var filtro: Filtro,
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     @JoinColumn(name = "piscina_id")
     val sistemaGermicida: MutableSet<SistemaGermicida>,
 
@@ -59,14 +59,15 @@ class Piscina(
     @Column
     var orp: Boolean,
 
-    @Column(length = 4)
-    val codigoPlaca: String,
+    @OneToOne(fetch = FetchType.LAZY)
+    @PrimaryKeyJoinColumn
+    val plaqueta: Plaqueta,
 
     @Column(length = 5000)
     val notas: String?
 ) {
 
-    // Lo puse aca porque entiendo que se deberia poder crear una pileta sin administrador
+    // Se deberia poder crear una pileta sin administrador
     // y que el admin total en este caso leo, la maneje y luego asigne a un administrador
     @ManyToOne(fetch = FetchType.LAZY)
     var administrador: Usuario? = null
@@ -115,7 +116,7 @@ class Piscina(
     val registros: MutableSet<Registro> = mutableSetOf()
 
     fun climaLocal() {
-        // Implementación de la función clima pegandole a una API externa
+        // Implementación de la función clima usando el sensor de la piscina
     }
 
     fun agregarProgramacionFiltrado(programacion: ProgramacionFiltrado) {

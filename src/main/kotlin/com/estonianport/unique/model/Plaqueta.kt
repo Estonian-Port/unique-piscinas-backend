@@ -11,6 +11,7 @@ import jakarta.persistence.Id
 
 @Entity
 class Plaqueta(
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
@@ -20,5 +21,13 @@ class Plaqueta(
 
     @Column
     @Enumerated(EnumType.STRING)
-    var estado: UsuarioType = UsuarioType.PENDIENTE
+    var estado: UsuarioType = UsuarioType.PENDIENTE,
+
+    @Column
+    var firmware: String,
+
+    @Column
+    var tipo : String
+
+
 )

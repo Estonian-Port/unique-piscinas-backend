@@ -3,9 +3,12 @@ package com.estonianport.unique.mapper
 import com.estonianport.unique.dto.request.PiscinaRequestDto
 import com.estonianport.unique.dto.response.*
 import com.estonianport.unique.model.Piscina
+import com.estonianport.unique.model.Plaqueta
 import com.estonianport.unique.model.enums.toCapitalized
+import com.estonianport.unique.repository.LecturaRepository
+import org.springframework.beans.factory.annotation.Autowired
 
-object PiscinaMapper {
+object PiscinaMapper{
 
     fun buildPiscinaHeaderResponseDto(piscina: Piscina): PiscinaListResponseDto {
         return PiscinaListResponseDto(
@@ -93,7 +96,7 @@ object PiscinaMapper {
             direccion = piscina.direccion,
             ciudad = piscina.ciudad,
             nombreAdministrador = piscina.administrador?.nombre + ' ' + piscina.administrador?.apellido,
-            codigoPlaca = piscina.codigoPlaca,
+            codigoPlaca = piscina.plaqueta.patente,
             esDesbordante = piscina.esDesbordante,
             largo = piscina.largo,
             ancho = piscina.ancho,
@@ -153,7 +156,7 @@ object PiscinaMapper {
         )
     }
 
-    fun buildPiscina(piscinaDTO: PiscinaRequestDto): Piscina {
+    fun buildPiscina(piscinaDTO: PiscinaRequestDto, plaqueta : Plaqueta): Piscina {
         return Piscina(
             id = piscinaDTO.id ?: 0,
             direccion = piscinaDTO.direccion,
@@ -172,7 +175,7 @@ object PiscinaMapper {
             cloroSalino = piscinaDTO.cloroSalino,
             controlAutomaticoPH = piscinaDTO.controlAutomaticoPH,
             orp = piscinaDTO.orp,
-            codigoPlaca = piscinaDTO.codigoPlaca,
+            plaqueta = plaqueta,
             notas = piscinaDTO.notas,
         )
     }

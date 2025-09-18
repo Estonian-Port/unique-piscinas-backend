@@ -2,6 +2,7 @@ package com.estonianport.unique.repository
 
 import com.estonianport.unique.dto.response.LecturaConErrorResponseDto
 import com.estonianport.unique.model.Piscina
+import com.estonianport.unique.model.Plaqueta
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
@@ -88,4 +89,6 @@ interface PiscinaRepository : JpaRepository<Piscina, Int> {
     SELECT CASE WHEN COUNT(p) > 0 THEN TRUE ELSE FALSE END FROM Piscina p WHERE p.administrador IS NOT NULL AND p.administrador.id = :usuarioId
 """)
     fun existsByAdministradorId(usuarioId: Long): Boolean
+
+    fun findByPlaqueta(plaqueta: Plaqueta): Piscina
 }

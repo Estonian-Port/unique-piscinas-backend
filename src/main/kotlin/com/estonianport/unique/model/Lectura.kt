@@ -6,20 +6,23 @@ import java.time.LocalDateTime
 @MappedSuperclass
 abstract class LecturaBase(
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "piscina_id", nullable = false)
+    val piscina: Piscina){
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
+    val id: Long = 0
 
     @Column(nullable = false)
-    val fecha: LocalDateTime
-)
+    val fecha: LocalDateTime = LocalDateTime.now()
+
+}
 
 
 @Entity
 class Lectura(
-
-    id: Long = 0,
-    fecha: LocalDateTime,
+    piscina: Piscina,
 
     @Column(nullable = false)
     val ph: Double,
@@ -33,13 +36,12 @@ class Lectura(
     @Column(nullable = false)
     val presion: Double
 
-) : LecturaBase(id, fecha)
+) : LecturaBase(piscina)
 
 
 @Entity
 class ErrorLectura(
-    id: Long = 0,
-    fecha: LocalDateTime
+    piscina: Piscina
 
-) : LecturaBase(id, fecha)
+) : LecturaBase(piscina)
 
