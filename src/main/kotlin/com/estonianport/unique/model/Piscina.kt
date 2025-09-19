@@ -65,13 +65,31 @@ class Piscina(
     val plaqueta: Plaqueta,
 
     @Column(length = 5000)
-    val notas: String?
+    val notas: String?,
 ) {
 
     // Se deberia poder crear una pileta sin administrador
     // y que el admin total en este caso leo, la maneje y luego asigne a un administrador
     @ManyToOne(fetch = FetchType.LAZY)
     var administrador: Usuario? = null
+
+    @ElementCollection
+    @CollectionTable(
+        name = "pileta_entrada_agua",
+        joinColumns = [JoinColumn(name = "piscina_id")]
+    )
+    @Enumerated(EnumType.STRING)
+    @Column(name = "entrada_agua")
+    var entradaAgua: MutableList<EntradaAgua> = mutableListOf()
+
+    @ElementCollection
+    @CollectionTable(
+        name = "pileta_funcion_activa",
+        joinColumns = [JoinColumn(name = "piscina_id")]
+    )
+    @Enumerated(EnumType.STRING)
+    @Column(name = "funcion_activa")
+    var funcionActiva: MutableList<FuncionFiltro> = mutableListOf()
 
     @OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     @OrderBy("id ASC")
