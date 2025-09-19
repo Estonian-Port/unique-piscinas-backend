@@ -68,28 +68,28 @@ class Piscina(
     val notas: String?,
 ) {
 
-    // Se deberia poder crear una pileta sin administrador
+    // Se deberia poder crear una piscina sin administrador
     // y que el admin total en este caso leo, la maneje y luego asigne a un administrador
     @ManyToOne(fetch = FetchType.LAZY)
     var administrador: Usuario? = null
 
     @ElementCollection
     @CollectionTable(
-        name = "pileta_entrada_agua",
+        name = "piscina_entrada_agua",
         joinColumns = [JoinColumn(name = "piscina_id")]
     )
     @Enumerated(EnumType.STRING)
     @Column(name = "entrada_agua")
-    var entradaAgua: MutableList<EntradaAgua> = mutableListOf()
+    var entradaAgua: MutableList<EntradaAguaType> = mutableListOf()
 
     @ElementCollection
     @CollectionTable(
-        name = "pileta_funcion_activa",
+        name = "piscina_funcion_activa",
         joinColumns = [JoinColumn(name = "piscina_id")]
     )
     @Enumerated(EnumType.STRING)
     @Column(name = "funcion_activa")
-    var funcionActiva: MutableList<FuncionFiltro> = mutableListOf()
+    var funcionActiva: MutableList<FuncionFiltroType> = mutableListOf()
 
     @OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     @OrderBy("id ASC")

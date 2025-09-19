@@ -13,8 +13,8 @@ import com.estonianport.unique.model.Registro
 import com.estonianport.unique.model.SistemaGermicida
 import com.estonianport.unique.model.Trasductor
 import com.estonianport.unique.model.UV
-import com.estonianport.unique.model.enums.EntradaAgua
-import com.estonianport.unique.model.enums.FuncionFiltro
+import com.estonianport.unique.model.enums.EntradaAguaType
+import com.estonianport.unique.model.enums.FuncionFiltroType
 import com.estonianport.unique.repository.PiscinaRepository
 import org.springframework.stereotype.Service
 
@@ -320,7 +320,7 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
         piscinaRepository.save(piscina)
     }
 
-    fun updateEntradaAgua(piscinaId: Long, entradaAgua: MutableList<EntradaAgua>) {
+    fun updateEntradaAgua(piscinaId: Long, entradaAgua: MutableList<EntradaAguaType>) {
         val piscina = findById(piscinaId)
         println("Entrada de agua nueva: $entradaAgua")
         println("Entrada de agua actual: ${piscina.entradaAgua}")
@@ -336,7 +336,7 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
         piscinaRepository.save(piscina)
     }
 
-    fun updateFuncionActiva(piscinaId: Long, funcionActiva: MutableList<FuncionFiltro>) {
+    fun updateFuncionActiva(piscinaId: Long, funcionActiva: MutableList<FuncionFiltroType>) {
         val piscina = findById(piscinaId)
         piscina.funcionActiva = funcionActiva
         piscinaRepository.save(piscina)

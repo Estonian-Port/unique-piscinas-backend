@@ -412,7 +412,7 @@ class PiscinaController {
         @PathVariable piscinaId: Long,
         @RequestBody entradaAgua: List<String>
     ): ResponseEntity<CustomResponse> {
-        val nuevasEntradas = entradaAgua.map { EntradaAgua.valueOf(it.uppercase()) }.toMutableList()
+        val nuevasEntradas = entradaAgua.map { EntradaAguaType.valueOf(it.uppercase()) }.toMutableList()
         println(nuevasEntradas)
         piscinaService.updateEntradaAgua(piscinaId, nuevasEntradas)
         return ResponseEntity.status(200).body(
@@ -438,7 +438,7 @@ class PiscinaController {
             )
         }
         val nuevaFuncionActiva = funcionActiva.map {
-            FuncionFiltro.valueOf(funcionActiva.uppercase())
+            FuncionFiltroType.valueOf(funcionActiva.uppercase())
         }.toMutableList()
         piscinaService.updateFuncionActiva(piscinaId, nuevaFuncionActiva)
         return ResponseEntity.status(200).body(
