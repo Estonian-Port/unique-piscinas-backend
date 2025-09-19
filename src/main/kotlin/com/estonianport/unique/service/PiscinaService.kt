@@ -13,6 +13,8 @@ import com.estonianport.unique.model.Registro
 import com.estonianport.unique.model.SistemaGermicida
 import com.estonianport.unique.model.Trasductor
 import com.estonianport.unique.model.UV
+import com.estonianport.unique.model.enums.EntradaAgua
+import com.estonianport.unique.model.enums.FuncionFiltro
 import com.estonianport.unique.repository.PiscinaRepository
 import org.springframework.stereotype.Service
 
@@ -315,6 +317,28 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
         val registroExistente = piscina.registros.find { it.id == registroId }
             ?: throw NotFoundException("El registro con ID: $registroId no pertenece a la piscina con ID: $piscinaId")
         piscina.eliminarRegistro(registroExistente)
+        piscinaRepository.save(piscina)
+    }
+
+    fun updateEntradaAgua(piscinaId: Long, entradaAgua: MutableList<EntradaAgua>) {
+        val piscina = findById(piscinaId)
+        println("Entrada de agua nueva: $entradaAgua")
+        println("Entrada de agua actual: ${piscina.entradaAgua}")
+        piscina.entradaAgua.clear()
+        piscina.entradaAgua.addAll(entradaAgua)
+        println("Entrada de agua actualizada: ${piscina.entradaAgua}")
+        piscinaRepository.save(piscina)
+    }
+
+    fun desactivarFuncionActiva(piscinaId: Long) {
+        val piscina = findById(piscinaId)
+        piscina.funcionActiva.clear()
+        piscinaRepository.save(piscina)
+    }
+
+    fun updateFuncionActiva(piscinaId: Long, funcionActiva: MutableList<FuncionFiltro>) {
+        val piscina = findById(piscinaId)
+        piscina.funcionActiva = funcionActiva
         piscinaRepository.save(piscina)
     }
 

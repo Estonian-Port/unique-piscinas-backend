@@ -9,4 +9,5 @@ data class PiscinaResumenResponseDto (
     val funcionActiva: List<String>,
     val sistemasGermicidas: List<String>,
     val calefaccion: Boolean,
+    val esDesbordante: Boolean,
 )

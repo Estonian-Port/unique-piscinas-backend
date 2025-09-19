@@ -16,6 +16,8 @@ import com.estonianport.unique.mapper.FiltroMapper
 import com.estonianport.unique.mapper.ProgramacionMapper
 import com.estonianport.unique.mapper.RegistroMapper
 import com.estonianport.unique.mapper.SistemaGermicidaMapper
+import com.estonianport.unique.model.enums.EntradaAgua
+import com.estonianport.unique.model.enums.FuncionFiltro
 import com.estonianport.unique.service.PiscinaService
 import com.estonianport.unique.service.UsuarioService
 import org.springframework.beans.factory.annotation.Autowired
@@ -383,10 +385,52 @@ class PiscinaController {
         @PathVariable programacionId: Long,
         @PathVariable esFiltrado: Boolean
     ): ResponseEntity<CustomResponse> {
-        piscinaService.deleteProgramacion(piscinaId, programacionId,esFiltrado)
+        piscinaService.deleteProgramacion(piscinaId, programacionId, esFiltrado)
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Programación eliminada correctamente",
+                data = null
+            )
+        )
+    }
+
+    @PutMapping("/update-entrada-agua/{piscinaId}")
+    fun updateEntradaAgua(
+        @PathVariable piscinaId: Long,
+        @RequestBody entradaAgua: List<String>
+    ): ResponseEntity<CustomResponse> {
+        val nuevasEntradas = entradaAgua.map { EntradaAgua.valueOf(it.uppercase()) }.toMutableList()
+        println(nuevasEntradas)
+        piscinaService.updateEntradaAgua(piscinaId, nuevasEntradas)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Entrada de agua actualizada correctamente",
+                data = null
+            )
+        )
+    }
+
+    @PutMapping("/update-funcion-activa/{piscinaId}")
+    fun updateFuncionActiva(
+        @PathVariable piscinaId: Long,
+        @RequestBody funcionActiva: String
+    ): ResponseEntity<CustomResponse> {
+        if (funcionActiva.isBlank()) {
+            piscinaService.desactivarFuncionActiva(piscinaId)
+            return ResponseEntity.status(200).body(
+                CustomResponse(
+                    message = "Función activa desactivada correctamente",
+                    data = null
+                )
+            )
+        }
+        val nuevaFuncionActiva = funcionActiva.map {
+            FuncionFiltro.valueOf(funcionActiva.uppercase())
+        }.toMutableList()
+        piscinaService.updateFuncionActiva(piscinaId, nuevaFuncionActiva)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Función activa actualizada correctamente",
                 data = null
             )
         )

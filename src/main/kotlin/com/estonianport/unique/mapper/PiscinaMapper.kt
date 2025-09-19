@@ -25,6 +25,7 @@ object PiscinaMapper {
             funcionActiva = piscina.funcionActiva.map { it.toCapitalized() }.toList(),
             sistemasGermicidas = piscina.sistemaGermicida.map { it.tipo() }.toList(),
             calefaccion = piscina.tieneCalefaccion(),
+            esDesbordante = piscina.esDesbordante,
         )
     }
 

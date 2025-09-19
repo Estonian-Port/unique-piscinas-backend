@@ -63,7 +63,7 @@ class Piscina(
     val codigoPlaca: String,
 
     @Column(length = 5000)
-    val notas: String?
+    val notas: String?,
 ) {
 
     // Lo puse aca porque entiendo que se deberia poder crear una pileta sin administrador
@@ -78,7 +78,7 @@ class Piscina(
     )
     @Enumerated(EnumType.STRING)
     @Column(name = "entrada_agua")
-    val entradaAgua: MutableList<EntradaAgua> = mutableListOf()
+    var entradaAgua: MutableList<EntradaAgua> = mutableListOf()
 
     @ElementCollection
     @CollectionTable(
@@ -87,7 +87,8 @@ class Piscina(
     )
     @Enumerated(EnumType.STRING)
     @Column(name = "funcion_activa")
-    val funcionActiva: MutableList<FuncionFiltro> = mutableListOf()
+    var funcionActiva: MutableList<FuncionFiltro> = mutableListOf()
+
 
     @OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     @OrderBy("id ASC")
