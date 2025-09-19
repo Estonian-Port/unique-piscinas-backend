@@ -58,7 +58,7 @@ class ProgramacionFiltrado(
 
     @Column
     @Enumerated(EnumType.STRING)
-    var funcionFiltro: FuncionFiltro
+    var funcionFiltro: FuncionFiltro = FuncionFiltro.FILTRAR,
 ) : Programacion(
     id = id,
     horaInicio = horaInicio,

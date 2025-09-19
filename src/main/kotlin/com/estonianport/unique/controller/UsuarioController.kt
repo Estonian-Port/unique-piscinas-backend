@@ -1,20 +1,17 @@
 package com.estonianport.unique.controller
 
-import com.estonianport.unique.common.codeGeneratorUtil.CodeGeneratorUtil
 import com.estonianport.unique.common.emailService.EmailService
 import com.estonianport.unique.dto.request.UsuarioAltaRequestDto
+import com.estonianport.unique.dto.request.UsuarioCambioPasswordRequestDto
 import com.estonianport.unique.dto.request.UsuarioRegistroRequestDto
 import com.estonianport.unique.dto.request.UsuarioRequestDto
-import com.estonianport.unique.mapper.PiscinaMapper
 import com.estonianport.unique.dto.response.CustomResponse
 import com.estonianport.unique.mapper.UsuarioMapper
-import com.estonianport.unique.model.Usuario
 import com.estonianport.unique.service.AdministracionService
 import com.estonianport.unique.service.PiscinaService
 import com.estonianport.unique.service.UsuarioService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -26,8 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
 import java.time.LocalDate
-import java.time.LocalDateTime
-import kotlin.text.get
 
 @RestController
 @RequestMapping("/usuario")
@@ -132,17 +127,26 @@ class UsuarioController {
     }
 
     // Busca el usuario por id y encriptar la nueva password
-    @PostMapping("/editPassword")
-    fun editPassword(@RequestBody usuarioDto: UsuarioRequestDto): ResponseEntity<CustomResponse> {
-        val usuario = usuarioService.get(usuarioDto.id)!!
-        usuario.password = usuarioService.encriptarPassword(usuarioDto.password)
-
-        usuarioService.save(usuario)
+    @PostMapping("/update-password")
+    fun editPassword(@RequestBody usuarioDto: UsuarioCambioPasswordRequestDto): ResponseEntity<CustomResponse> {
         return ResponseEntity.status(200).body(
             CustomResponse(
-                message = "Constraseña actualizada correctamente",
-                data = UsuarioMapper.buildUsuarioResponseDto(usuario, mutableListOf<Long>())
+                message = "Password actualizado correctamente",
+                data = UsuarioMapper.buildUsuarioResponseDto(usuarioService.updatePassword(usuarioDto), mutableListOf<Long>())
             )
         )
     }
+
+    @PutMapping("/update-perfil")
+    fun updatePerfil(@RequestBody usuarioDto: UsuarioRequestDto): ResponseEntity<CustomResponse> {
+        val usuario = UsuarioMapper.buildUsuario(usuarioDto)
+        val cantPiscinas = piscinaService.getPiscinasByUsuarioId(usuario.id).map { it.id }
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Perfil actualizado correctamente",
+                data = UsuarioMapper.buildUsuarioResponseDto(usuarioService.updatePerfil(usuario), cantPiscinas)
+            )
+        )
+    }
+
 }

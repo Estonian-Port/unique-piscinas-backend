@@ -10,14 +10,14 @@ data class Bomba(
     val id: Long,
 
     @Column
-    val marca: String,
+    var marca: String,
 
     @Column
-    val modelo: String,
+    var modelo: String,
 
     @Column
-    val potencia: Double,
+    var potencia: Double,
 
     @Column
-    val activa: Boolean = false,
+    var activa: Boolean = false,
 ) {}

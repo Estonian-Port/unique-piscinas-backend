@@ -10,9 +10,9 @@ abstract class SistemaGermicida(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long,
     val activo: Boolean =true,
-    val marca: String,
+    var marca: String,
     @Enumerated(EnumType.STRING)
-    val estado: EstadoType
+    val estado: EstadoType? = null
 ) {
     fun vidaRestante(): Int {
         // Implementación de la lógica para calcular la vida restante del sistema germicida
@@ -55,7 +55,7 @@ class UV(
     activo: Boolean = true,
     marca: String,
     estado: EstadoType,
-    val potencia: Double
+    var potencia: Double
 ) : SistemaGermicida(id, activo, marca, estado)
 
 @DiscriminatorValue("IONIZADOR")
@@ -65,7 +65,7 @@ class Ionizador(
     activo: Boolean = true,
     marca: String,
     estado: EstadoType,
-    val electrodos: Double
+    var electrodos: Double
 ) : SistemaGermicida(id, activo, marca, estado)
 
 @DiscriminatorValue("TRASDUCTOR")
@@ -75,5 +75,5 @@ class Trasductor(
     activo: Boolean = true,
     marca: String,
     estado: EstadoType,
-    val potencia: Double
+    var potencia: Double
 ) : SistemaGermicida(id, activo, marca, estado)

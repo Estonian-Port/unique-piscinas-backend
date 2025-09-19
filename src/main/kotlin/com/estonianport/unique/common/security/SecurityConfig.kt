@@ -29,6 +29,7 @@ class SecurityConfig(
         val jwtAuthenticationFilter = JWTAuthenticationFilter(usuarioService)
         jwtAuthenticationFilter.setAuthenticationManager(authenticationManager)
         jwtAuthenticationFilter.setFilterProcessesUrl("/login")
+        jwtAuthenticationFilter.setAuthenticationFailureHandler(CustomAuthenticationFailureHandler())
 
         return http
                 .cors(Customizer.withDefaults())

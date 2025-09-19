@@ -1,18 +1,12 @@
 package com.estonianport.unique.dto.response
 
-data class ProgramacionIluminacionResponseDto (
-    val id: String,
-    val horaInicio: String,
-    val horaFin: String,
-    val dias: List<String>,
-    val activa: Boolean,
-)
+import com.estonianport.unique.model.enums.ProgramacionType
 
-data class ProgramacionFiltradoResponseDto (
+data class ProgramacionResponseDto (
     val id: String,
     val horaInicio: String,
     val horaFin: String,
     val dias: List<String>,
     val activa: Boolean,
-    val funcionFiltro: String,
+    val tipo: ProgramacionType,
 )

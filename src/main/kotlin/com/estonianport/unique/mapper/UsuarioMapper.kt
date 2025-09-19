@@ -20,6 +20,7 @@ object UsuarioMapper {
             nombre = usuario.nombre,
             apellido = usuario.apellido,
             email = usuario.email,
+            celular = usuario.celular,
             isAdmin = usuario.esAdministrador,
             piscinasId = listaPiscinasId,
             primerLogin = usuario.estado == UsuarioType.PENDIENTE

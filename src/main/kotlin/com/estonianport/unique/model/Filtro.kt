@@ -13,11 +13,11 @@ import jakarta.persistence.InheritanceType
 abstract class Filtro(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long,
-    val marca: String,
-    val modelo: String,
-    val diametro: Double,
-    val activo: Boolean = true
+    var id: Long,
+    var marca: String,
+    var modelo: String,
+    var diametro: Double,
+    var activo: Boolean = true
 )
 
 @DiscriminatorValue("ARENA")
@@ -28,7 +28,7 @@ class FiltroArena(
     modelo: String,
     diametro: Double,
     activo: Boolean = true,
-    val cantidadArena: Int
+    var cantidadArena: Int
 ) : Filtro(id, marca, modelo, diametro, activo)
 
 @DiscriminatorValue("VIDRIO")
@@ -39,7 +39,7 @@ class FiltroVidrio(
     modelo: String,
     diametro: Double,
     activo: Boolean = true,
-    val cantidadVidrio: Int
+    var cantidadVidrio: Int
 ) : Filtro(id, marca, modelo, diametro, activo)
 
 @DiscriminatorValue("CARTUCHO")
@@ -50,7 +50,7 @@ class FiltroCartucho(
     modelo: String,
     diametro: Double,
     activo: Boolean = true,
-    val micrasDelCartucho: Int
+    var micrasDelCartucho: Int
 ) : Filtro(id, marca, modelo, diametro, activo)
 
 

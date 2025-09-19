@@ -40,30 +40,30 @@ class Piscina(
 
     @OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY, optional = true)
     @PrimaryKeyJoinColumn
-    val filtro: Filtro,
+    var filtro: Filtro,
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     @JoinColumn(name = "piscina_id")
     val sistemaGermicida: MutableSet<SistemaGermicida>,
 
-    @OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY, optional = true)
-    @PrimaryKeyJoinColumn
-    val calefaccion: Calefaccion?,
+    @OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY, optional = true, orphanRemoval = true)
+    @JoinColumn(name = "calefaccion_id")
+    var calefaccion: Calefaccion?,
 
     @Column
-    val cloroSalino: Boolean,
+    var cloroSalino: Boolean,
 
     @Column
-    val controlAutomaticoPH: Boolean,
+    var controlAutomaticoPH: Boolean,
 
     @Column
-    val orp: Boolean,
+    var orp: Boolean,
 
     @Column(length = 4)
     val codigoPlaca: String,
 
     @Column(length = 5000)
-    val notas: String?
+    val notas: String?,
 ) {
 
     // Lo puse aca porque entiendo que se deberia poder crear una pileta sin administrador
@@ -78,7 +78,7 @@ class Piscina(
     )
     @Enumerated(EnumType.STRING)
     @Column(name = "entrada_agua")
-    val entradaAgua: MutableList<EntradaAgua> = mutableListOf()
+    var entradaAgua: MutableList<EntradaAgua> = mutableListOf()
 
     @ElementCollection
     @CollectionTable(
@@ -87,16 +87,19 @@ class Piscina(
     )
     @Enumerated(EnumType.STRING)
     @Column(name = "funcion_activa")
-    val funcionActiva: MutableList<FuncionFiltro> = mutableListOf()
+    var funcionActiva: MutableList<FuncionFiltro> = mutableListOf()
 
-    @OneToMany(fetch = FetchType.LAZY)
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    @OrderBy("id ASC")
     @JoinColumn(name = "piscina_id")
     val programacionFiltrado: MutableSet<ProgramacionFiltrado> = mutableSetOf()
 
     @Column
     val lucesManual: Boolean = false
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    @OrderBy("id ASC")
     @JoinColumn(name = "piscina_id")
     val programacionIluminacion: MutableSet<ProgramacionIluminacion> = mutableSetOf()
 
@@ -108,7 +111,7 @@ class Piscina(
     @JoinColumn(name = "piscina_id")
     val erroresLectura: MutableSet<ErrorLectura> = mutableSetOf()
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     @JoinColumn(name = "piscina_id")
     val registros: MutableSet<Registro> = mutableSetOf()
 
@@ -124,12 +127,12 @@ class Piscina(
         programacionIluminacion.add(programacion)
     }
 
-    fun eliminarProgramacionFiltrado(programacion: ProgramacionFiltrado) {
-        programacionFiltrado.remove(programacion)
+    fun eliminarProgramacionFiltrado(programacionId: Long) {
+        programacionFiltrado.remove(programacionFiltrado.find { it.id == programacionId })
     }
 
-    fun eliminarProgramacionLuces(programacion: ProgramacionIluminacion) {
-        programacionIluminacion.remove(programacion)
+    fun eliminarProgramacionLuces(programacionId: Long) {
+        programacionIluminacion.remove(programacionIluminacion.find { it.id == programacionId })
     }
 
     fun agregarRegistro(registro: Registro) {

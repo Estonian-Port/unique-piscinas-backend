@@ -35,21 +35,27 @@ object FiltroMapper {
                 marca = filtroDTO.marca,
                 modelo = filtroDTO.modelo,
                 diametro = filtroDTO.diametro,
+                activo = filtroDTO.activo,
                 cantidadArena = filtroDTO.datoExtra,
+                //tiempoDeVidaUtil = filtroDTO.tiempoDeVidaUtil
             )
             "Vidrio" -> FiltroVidrio(
                 id = filtroDTO.id ?: 0,
                 marca = filtroDTO.marca,
                 modelo = filtroDTO.modelo,
                 diametro = filtroDTO.diametro,
+                activo = filtroDTO.activo,
                 cantidadVidrio = filtroDTO.datoExtra,
+                //tiempoDeVidaUtil = filtroDTO.tiempoDeVidaUtil
             )
             "Cartucho" -> FiltroCartucho(
                 id = filtroDTO.id ?: 0,
                 marca = filtroDTO.marca,
                 modelo = filtroDTO.modelo,
                 diametro = filtroDTO.diametro,
+                activo = filtroDTO.activo,
                 micrasDelCartucho = filtroDTO.datoExtra
+                //tiempoDeVidaUtil = filtroDTO.tiempoDeVidaUtil
             )
             else -> throw IllegalArgumentException("Tipo de filtro no reconocido")
         }
