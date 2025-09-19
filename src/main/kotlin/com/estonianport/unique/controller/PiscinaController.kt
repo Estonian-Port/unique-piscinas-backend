@@ -16,11 +16,12 @@ import com.estonianport.unique.mapper.FiltroMapper
 import com.estonianport.unique.mapper.ProgramacionMapper
 import com.estonianport.unique.mapper.RegistroMapper
 import com.estonianport.unique.mapper.SistemaGermicidaMapper
-import com.estonianport.unique.model.enums.UsuarioType
+import com.estonianport.unique.model.EstadoPiscina
+import com.estonianport.unique.model.enums.EstadoType
 import com.estonianport.unique.repository.PlaquetaRepository
+import com.estonianport.unique.service.EstadoPiscinaService
 import com.estonianport.unique.service.PiscinaService
 import com.estonianport.unique.service.UsuarioService
-import org.hibernate.usertype.UserType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CrossOrigin
@@ -37,6 +38,9 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/piscina")
 @CrossOrigin("*")
 class PiscinaController {
+
+    @Autowired
+    private lateinit var estadoPiscinaService: EstadoPiscinaService
 
     @Autowired
     private lateinit var usuarioService: UsuarioService
@@ -76,7 +80,8 @@ class PiscinaController {
             CustomResponse(
                 message = "Resumen de la piscina obtenida correctamente",
                 data = PiscinaMapper.buildPiscinaResumenResponseDto(
-                    piscinaService.findById(piscinaId)
+                    piscinaService.findById(piscinaId),
+                    estadoPiscinaService.findEstadoActualByPiscinaId(piscinaId)
                 )
             )
         )
@@ -103,7 +108,8 @@ class PiscinaController {
                 message = "Equipamiento de la piscina obtenida correctamente",
                 data = PiscinaMapper.buildPiscinaEquipamientoResponseDto(
                     piscinaService.findById(piscinaId),
-                    piscinaService.getPresion(piscinaId)
+                    piscinaService.getPresion(piscinaId),
+                    estadoPiscinaService.findEstadoActualByPiscinaId(piscinaId)
                 )
             )
         )
@@ -131,7 +137,7 @@ class PiscinaController {
 
     @PostMapping("/alta")
     fun savePiscina(@RequestBody piscinaDto: PiscinaRequestDto): ResponseEntity<CustomResponse> {
-        val plaqueta = plaquetaRepository.findByPatenteAndEstado(piscinaDto.codigoPlaca, UsuarioType.ACTIVO)!!
+        val plaqueta = plaquetaRepository.findByPatenteAndEstado(piscinaDto.codigoPlaca, EstadoType.ACTIVO)!!
         val newPiscina = PiscinaMapper.buildPiscina(piscinaDto, plaqueta)
         if (piscinaDto.administradorId != null) {
             newPiscina.administrador = usuarioService.findById(piscinaDto.administradorId).apply {

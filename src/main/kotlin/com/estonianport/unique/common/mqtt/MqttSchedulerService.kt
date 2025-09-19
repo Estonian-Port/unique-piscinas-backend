@@ -1,6 +1,7 @@
 package com.estonianport.unique.common.mqtt
 
 import com.estonianport.unique.model.ErrorLectura
+import com.estonianport.unique.model.enums.EstadoType
 import com.estonianport.unique.repository.ErrorLecturaRepository
 import com.estonianport.unique.repository.LecturaRepository
 import com.estonianport.unique.repository.PiscinaRepository
@@ -22,8 +23,8 @@ class MqttSchedulerService(
         val ahora = LocalDateTime.now()
         val limite = ahora.minusMinutes(35)
 
-        val plaquetas = plaquetaRepository.findAll()
-        plaquetas.forEach { plaqueta ->
+        val plaquetas = plaquetaRepository.findByEstado(EstadoType.ACTIVO)
+        plaquetas?.forEach { plaqueta ->
             val ultima = lecturaRepository.findUltimaByPlaqueta(plaqueta.patente)
 
             if (ultima == null || ultima.fecha.isBefore(limite)) {

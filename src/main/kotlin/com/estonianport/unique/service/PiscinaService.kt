@@ -148,7 +148,7 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
             horaFin = programacion.horaFin
             dias = programacion.dias
             activa = programacion.activa
-            funcionFiltro = programacion.funcionFiltro
+            funcionFiltroType = programacion.funcionFiltroType
         }
         piscinaRepository.save(piscina)
     }

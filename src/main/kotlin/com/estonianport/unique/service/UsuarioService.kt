@@ -7,13 +7,11 @@ import com.estonianport.unique.dto.request.UsuarioRegistroRequestDto
 import com.estonianport.unique.repository.UsuarioRepository
 import com.estonianport.unique.model.Usuario
 import com.estonianport.unique.model.enums.EstadoType
-import com.estonianport.unique.model.enums.UsuarioType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.CrudRepository
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 @Service
 class UsuarioService : GenericServiceImpl<Usuario, Long>() {
@@ -121,14 +119,14 @@ class UsuarioService : GenericServiceImpl<Usuario, Long>() {
     fun desvincularPiscina(usuarioId: Long, tienePiscinaAsignada: Boolean) {
         val usuario = findById(usuarioId) ?: throw NoSuchElementException("No se encontró un usuario con el ID proporcionado")
         if (!tienePiscinaAsignada) {
-            usuario.estado = UsuarioType.INACTIVO
+            usuario.estado = EstadoType.INACTIVO
             save(usuario)
         }
     }
 
     fun darDeBaja(usuarioId: Long) {
         val usuario = findById(usuarioId) ?: throw NoSuchElementException("No se encontró un usuario con el ID proporcionado")
-        usuario.estado = UsuarioType.BAJA
+        usuario.estado = EstadoType.BAJA
         usuario.fechaBaja = LocalDate.now()
         save(usuario)
     }

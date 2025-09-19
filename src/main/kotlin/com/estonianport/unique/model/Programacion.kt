@@ -1,6 +1,6 @@
 package com.estonianport.unique.model
 
-import com.estonianport.unique.model.enums.FuncionFiltro
+import com.estonianport.unique.model.enums.FuncionFiltroType
 import jakarta.persistence.*
 import java.time.DayOfWeek
 import java.time.LocalTime
@@ -56,9 +56,9 @@ class ProgramacionFiltrado(
     dias: MutableList<DayOfWeek> = mutableListOf(),
     activa: Boolean,
 
-    @Column
+    @Column(name="funcion_filtro")
     @Enumerated(EnumType.STRING)
-    var funcionFiltro: FuncionFiltro = FuncionFiltro.FILTRAR,
+    var funcionFiltroType: FuncionFiltroType = FuncionFiltroType.FILTRAR,
 ) : Programacion(
     id = id,
     horaInicio = horaInicio,

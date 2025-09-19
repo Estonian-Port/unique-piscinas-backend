@@ -5,14 +5,11 @@ import com.estonianport.unique.model.enums.FuncionFiltroType
 import com.estonianport.unique.model.enums.SistemaGermicidaType
 import com.fasterxml.jackson.annotation.JsonProperty
 
-data class LecturaResponseDto(
+data class PiscinaEstadoDto(
     @JsonProperty("id_solicitud")
     val idSolicitud: String,
-    val redox: Float,
-    val ph: Float,
-    val cloro: Float,
-    val presion: Float,
-    val temperatura: Float,
-    val humedad: Float,
-    val temperaturaAgua: Float,
+    val entradaAguaActiva: List<EntradaAguaType>,
+    val sistemaGermicidaActivo: List<SistemaGermicidaType>,
+    val funcionFiltroActivo: FuncionFiltroType,
+    val calefaccionActiva: Boolean
 )

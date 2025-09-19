@@ -2,11 +2,10 @@ package com.estonianport.unique.mapper
 
 import com.estonianport.unique.dto.request.PiscinaRequestDto
 import com.estonianport.unique.dto.response.*
+import com.estonianport.unique.model.EstadoPiscina
 import com.estonianport.unique.model.Piscina
 import com.estonianport.unique.model.Plaqueta
 import com.estonianport.unique.model.enums.toCapitalized
-import com.estonianport.unique.repository.LecturaRepository
-import org.springframework.beans.factory.annotation.Autowired
 
 object PiscinaMapper{
 
@@ -18,16 +17,16 @@ object PiscinaMapper{
         )
     }
 
-    fun buildPiscinaResumenResponseDto(piscina: Piscina): PiscinaResumenResponseDto {
+    fun buildPiscinaResumenResponseDto(piscina: Piscina, estadoPiscina: EstadoPiscina): PiscinaResumenResponseDto {
         return PiscinaResumenResponseDto(
             id = piscina.id.toString(),
             direccion = piscina.direccion,
             volumen = piscina.volumen.toString(),
             clima = piscina.climaLocal().toString(),
-            entradaAgua = piscina.entradaAgua.map { it.toCapitalized() }.toList(),
-            funcionActiva = piscina.funcionActiva.map { it.toCapitalized() }.toList(),
-            sistemasGermicidas = piscina.sistemaGermicida.map { it.tipo() }.toList(),
-            calefaccion = piscina.tieneCalefaccion(),
+            entradaAgua = estadoPiscina.entradaAguaActiva.map { it.toCapitalized() }.toList(),
+            funcionActiva = estadoPiscina.funcionFiltroActivo,
+            sistemasGermicidas = estadoPiscina.sistemaGermicidaActivo?.map { it.toCapitalized() }?.toList(),
+            calefaccion = estadoPiscina.calefaccionActiva,
         )
     }
 
@@ -38,14 +37,14 @@ object PiscinaMapper{
         )
     }
 
-    fun buildPiscinaEquipamientoResponseDto(piscina: Piscina, presionPiscina: Double): PiscinaEquipamientoResponseDto {
+    fun buildPiscinaEquipamientoResponseDto(piscina: Piscina, presionPiscina: Double, estadoPiscina: EstadoPiscina): PiscinaEquipamientoResponseDto {
         return PiscinaEquipamientoResponseDto(
             id = piscina.id.toString(),
             direccion = piscina.direccion,
             volumen = piscina.volumen.toString(),
-            estadoFiltro = piscina.filtroActivo(),
-            entradaAgua = piscina.entradaAgua.map { it.toCapitalized() }.toList(),
-            funcionActiva = piscina.funcionActiva.map { it.toCapitalized() }.toList(),
+            estadoFiltro = piscina.filtro.activo,
+            entradaAgua = estadoPiscina.entradaAguaActiva.map { it.toCapitalized() }.toList(),
+            funcionActiva = estadoPiscina.funcionFiltroActivo,
             presion = presionPiscina,
             bombas = piscina.bomba.map { BombaMapper.buildBombaResponseDto(it) }.toList(),
             filtro = FiltroMapper.buildFiltroResponseDto(piscina.filtro),

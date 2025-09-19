@@ -6,7 +6,7 @@ import com.estonianport.unique.model.Ionizador
 import com.estonianport.unique.model.SistemaGermicida
 import com.estonianport.unique.model.Trasductor
 import com.estonianport.unique.model.UV
-import com.estonianport.unique.model.enums.EstadoType
+import com.estonianport.unique.model.enums.CondicionType
 
 object SistemaGermicidaMapper {
 
@@ -33,7 +33,7 @@ object SistemaGermicidaMapper {
                 return UV(
                     id = germicida.id ?: 0,
                     marca = germicida.marca,
-                    estado = EstadoType.OPERATIVO,
+                    estado = CondicionType.OPERATIVO,
                     potencia = germicida.datoExtra,
                 )
             }
@@ -41,7 +41,7 @@ object SistemaGermicidaMapper {
                 return Ionizador(
                     id = germicida.id ?: 0,
                     marca = germicida.marca,
-                    estado = EstadoType.OPERATIVO,
+                    estado = CondicionType.OPERATIVO,
                     electrodos = germicida.datoExtra,
                 )
             }
@@ -49,7 +49,7 @@ object SistemaGermicidaMapper {
                 return Trasductor(
                     id = germicida.id ?: 0,
                     marca = germicida.marca,
-                    estado = EstadoType.OPERATIVO,
+                    estado = CondicionType.OPERATIVO,
                     potencia = germicida.datoExtra,
                 )
             }

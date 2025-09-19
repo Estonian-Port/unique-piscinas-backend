@@ -1,5 +1,5 @@
 package com.estonianport.unique.model.enums
 
-enum class EntradaAgua {
+enum class EntradaAguaType {
     FONDO, BARREFONDO, SKIMMER
 }

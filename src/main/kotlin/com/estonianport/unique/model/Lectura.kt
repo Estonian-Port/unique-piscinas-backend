@@ -25,16 +25,26 @@ class Lectura(
     piscina: Piscina,
 
     @Column(nullable = false)
-    val ph: Double,
+    val redox: Float,
 
     @Column(nullable = false)
-    val cloro: Double,
+    val ph: Float,
 
     @Column(nullable = false)
-    val temperatura: Double,
+    val cloro: Float,
 
     @Column(nullable = false)
-    val presion: Double
+    val presion: Float,
+
+    @Column(nullable = false)
+    val temperatura: Float,
+
+    @Column(nullable = false)
+    val humedad: Float,
+
+    @Column(nullable = false)
+    val temperaturaAgua: Float,
+
 
 ) : LecturaBase(piscina)
 

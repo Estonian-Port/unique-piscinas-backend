@@ -1,5 +1,5 @@
 package com.estonianport.unique.model.enums
 
-enum class FuncionFiltro {
+enum class FuncionFiltroType {
     FILTRAR, RETROLAVAR, ENJUAGAR, DESAGOTAR, RECIRCULAR
 }

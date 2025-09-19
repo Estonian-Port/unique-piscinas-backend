@@ -1,7 +1,8 @@
 package com.estonianport.unique.model
 
-import com.estonianport.unique.model.enums.EntradaAgua
-import com.estonianport.unique.model.enums.FuncionFiltro
+import com.estonianport.unique.model.enums.EntradaAguaType
+import com.estonianport.unique.model.enums.FuncionFiltroType
+import com.estonianport.unique.model.enums.SistemaGermicidaType
 import jakarta.persistence.*
 
 @Entity
@@ -72,24 +73,6 @@ class Piscina(
     @ManyToOne(fetch = FetchType.LAZY)
     var administrador: Usuario? = null
 
-    @ElementCollection
-    @CollectionTable(
-        name = "pileta_entrada_agua",
-        joinColumns = [JoinColumn(name = "piscina_id")]
-    )
-    @Enumerated(EnumType.STRING)
-    @Column(name = "entrada_agua")
-    val entradaAgua: MutableList<EntradaAgua> = mutableListOf()
-
-    @ElementCollection
-    @CollectionTable(
-        name = "pileta_funcion_activa",
-        joinColumns = [JoinColumn(name = "piscina_id")]
-    )
-    @Enumerated(EnumType.STRING)
-    @Column(name = "funcion_activa")
-    val funcionActiva: MutableList<FuncionFiltro> = mutableListOf()
-
     @OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     @OrderBy("id ASC")
     @JoinColumn(name = "piscina_id")
@@ -103,9 +86,11 @@ class Piscina(
     @JoinColumn(name = "piscina_id")
     val programacionIluminacion: MutableSet<ProgramacionIluminacion> = mutableSetOf()
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "piscina_id")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "piscina", cascade = [CascadeType.ALL], orphanRemoval = true)
     val lecturas: MutableSet<Lectura> = mutableSetOf()
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "piscina", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val estados: MutableList<EstadoPiscina> = mutableListOf()
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "piscina_id")
@@ -153,7 +138,4 @@ class Piscina(
         return (lecturas + erroresLectura).sortedBy { it.fecha }
     }
 
-    fun tieneCalefaccion() = calefaccion != null
-
-    fun filtroActivo(): Boolean = (entradaAgua.isNotEmpty() and funcionActiva.isNotEmpty())
 }

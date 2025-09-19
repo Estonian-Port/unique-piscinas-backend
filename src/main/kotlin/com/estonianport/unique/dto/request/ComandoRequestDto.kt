@@ -1,5 +1,5 @@
 package com.estonianport.unique.dto.request
 
-data class ActivacionRequestDto(
+data class ComandoRequestDto(
     val accion : String,
     val idSolicitud : Long)

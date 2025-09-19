@@ -1,7 +1,7 @@
 package com.estonianport.unique.model
 
 import com.estonianport.unique.dto.UsuarioAbmDTO
-import com.estonianport.unique.model.enums.UsuarioType
+import com.estonianport.unique.model.enums.EstadoType
 import jakarta.persistence.*
 import java.time.LocalDate
 
@@ -28,7 +28,7 @@ class Usuario(
     val esAdministrador: Boolean = false,
 
     @Enumerated(EnumType.STRING)
-    var estado: UsuarioType = UsuarioType.PENDIENTE,
+    var estado: EstadoType = EstadoType.PENDIENTE,
 ) {
 
     @Column
@@ -49,13 +49,13 @@ class Usuario(
 
     fun confirmarPrimerLogin() {
         if (ultimoIngreso != null) {
-            estado = UsuarioType.INACTIVO
+            estado = EstadoType.INACTIVO
         }
     }
 
     fun piscinaAsignada() {
         if (ultimoIngreso != null) {
-            estado = UsuarioType.ACTIVO // Pasa a ACTIVO cuando se le asigna una piscina y ya ingresó al sistema
+            estado = EstadoType.ACTIVO // Pasa a ACTIVO cuando se le asigna una piscina y ya ingresó al sistema
         }
     }
 }

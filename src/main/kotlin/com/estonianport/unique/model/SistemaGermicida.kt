@@ -1,6 +1,6 @@
 package com.estonianport.unique.model
 
-import com.estonianport.unique.model.enums.EstadoType
+import com.estonianport.unique.model.enums.CondicionType
 import jakarta.persistence.*
 
 @Entity
@@ -12,7 +12,7 @@ abstract class SistemaGermicida(
     val activo: Boolean =true,
     var marca: String,
     @Enumerated(EnumType.STRING)
-    val estado: EstadoType? = null
+    val condicion: CondicionType? = null
 ) {
     fun vidaRestante(): Int {
         // Implementación de la lógica para calcular la vida restante del sistema germicida
@@ -54,7 +54,7 @@ class UV(
     id: Long,
     activo: Boolean = true,
     marca: String,
-    estado: EstadoType,
+    estado: CondicionType,
     var potencia: Double
 ) : SistemaGermicida(id, activo, marca, estado)
 
@@ -64,7 +64,7 @@ class Ionizador(
     id: Long,
     activo: Boolean = true,
     marca: String,
-    estado: EstadoType,
+    estado: CondicionType,
     var electrodos: Double
 ) : SistemaGermicida(id, activo, marca, estado)
 
@@ -74,6 +74,6 @@ class Trasductor(
     id: Long,
     activo: Boolean = true,
     marca: String,
-    estado: EstadoType,
+    estado: CondicionType,
     var potencia: Double
 ) : SistemaGermicida(id, activo, marca, estado)

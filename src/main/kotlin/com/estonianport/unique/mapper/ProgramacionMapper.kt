@@ -4,7 +4,7 @@ import com.estonianport.unique.dto.request.ProgramacionRequestDto
 import com.estonianport.unique.dto.response.ProgramacionResponseDto
 import com.estonianport.unique.model.ProgramacionFiltrado
 import com.estonianport.unique.model.ProgramacionIluminacion
-import com.estonianport.unique.model.enums.FuncionFiltro
+import com.estonianport.unique.model.enums.FuncionFiltroType
 import com.estonianport.unique.model.enums.ProgramacionType
 import java.time.DayOfWeek
 import java.time.LocalTime
@@ -54,7 +54,7 @@ object ProgramacionMapper {
             horaFin = LocalTime.parse(programacionRequestDto.horaFin),
             dias = programacionRequestDto.dias.map { DayOfWeek.valueOf(it.uppercase()) }.toMutableList(),
             activa = programacionRequestDto.activa,
-            funcionFiltro = FuncionFiltro.FILTRAR
+            funcionFiltroType = FuncionFiltroType.FILTRAR
         )
     }
 

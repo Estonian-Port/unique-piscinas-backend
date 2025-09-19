@@ -1,6 +1,6 @@
 package com.estonianport.unique.model
 
-import com.estonianport.unique.model.enums.UsuarioType
+import com.estonianport.unique.model.enums.EstadoType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -21,7 +21,7 @@ class Plaqueta(
 
     @Column
     @Enumerated(EnumType.STRING)
-    var estado: UsuarioType = UsuarioType.PENDIENTE,
+    var estado: EstadoType = EstadoType.PENDIENTE,
 
     @Column
     var firmware: String,

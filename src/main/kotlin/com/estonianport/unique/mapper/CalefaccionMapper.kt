@@ -16,7 +16,6 @@ object CalefaccionMapper {
             marca = calefaccion.marca,
             modelo = calefaccion.modelo,
             potencia = calefaccion.potencia,
-            activa = calefaccion.activa
         )
     }
 
@@ -27,7 +26,6 @@ object CalefaccionMapper {
             potencia = calefaccionDTO.potencia,
             modelo = calefaccionDTO.modelo,
             marca = calefaccionDTO.marca,
-            activa = calefaccionDTO.activa
         )
     }
 }

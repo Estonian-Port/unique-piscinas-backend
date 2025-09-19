@@ -1,6 +1,5 @@
 package com.estonianport.unique.model
 
-import com.estonianport.unique.model.enums.EstadoType
 import jakarta.persistence.*
 
 @Entity

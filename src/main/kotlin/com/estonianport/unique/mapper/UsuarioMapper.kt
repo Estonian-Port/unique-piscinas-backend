@@ -8,8 +8,7 @@ import com.estonianport.unique.dto.response.UsuarioRegistradoResponseDto
 import com.estonianport.unique.dto.response.UsuarioResponseDto
 import com.estonianport.unique.model.Piscina
 import com.estonianport.unique.model.Usuario
-import com.estonianport.unique.model.enums.UsuarioType
-import java.time.LocalDateTime
+import com.estonianport.unique.model.enums.EstadoType
 import java.time.format.DateTimeFormatter
 
 object UsuarioMapper {
@@ -23,7 +22,7 @@ object UsuarioMapper {
             celular = usuario.celular,
             isAdmin = usuario.esAdministrador,
             piscinasId = listaPiscinasId,
-            primerLogin = usuario.estado == UsuarioType.PENDIENTE
+            primerLogin = usuario.estado == EstadoType.PENDIENTE
         )
     }
 
