@@ -3,7 +3,6 @@ package com.estonianport.unique.common.mqtt
 import com.estonianport.unique.dto.response.LecturaResponseDto
 import com.estonianport.unique.dto.response.PiscinaEstadoDto
 import com.estonianport.unique.model.*
-import com.estonianport.unique.model.enums.EntradaAguaType
 import com.estonianport.unique.model.enums.EstadoType
 import com.estonianport.unique.repository.*
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
