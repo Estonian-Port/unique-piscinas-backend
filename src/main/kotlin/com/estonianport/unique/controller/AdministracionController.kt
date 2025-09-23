@@ -1,10 +1,12 @@
 package com.estonianport.unique.controller
 
+import com.estonianport.unique.common.mqtt.MqttSubscriberService
 import com.estonianport.unique.mapper.PiscinaMapper
 import com.estonianport.unique.dto.response.CustomResponse
 import com.estonianport.unique.mapper.UsuarioMapper
 import com.estonianport.unique.service.AdministracionService
 import com.estonianport.unique.service.PiscinaService
+import com.estonianport.unique.service.PlaquetaService
 import com.estonianport.unique.service.UsuarioService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -28,6 +30,11 @@ class AdministracionController {
 
     @Autowired
     lateinit var usuarioService: UsuarioService
+
+    @Autowired
+    lateinit var plaquetaService: PlaquetaService
+
+
 
     // Tengo la duda si todos los endpoints de administracion deberian chequear si el usuario es administrador.
     // Por el momento lo hago para todos.
@@ -92,6 +99,16 @@ class AdministracionController {
                 data = usuarioService.getUsuariosRegistrados().map {
                     UsuarioMapper.buildUsuarioNuevaPiscinaResponseDto(it)
                 }
+            )
+        )
+    }
+
+    @GetMapping("/patentes-nueva-piscina")
+    fun getPatentesNuevaPiscina(): ResponseEntity<CustomResponse> {
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Patentes para nueva piscina obtenidos correctamente",
+                data = plaquetaService.getPatentesDisponibles()
             )
         )
     }

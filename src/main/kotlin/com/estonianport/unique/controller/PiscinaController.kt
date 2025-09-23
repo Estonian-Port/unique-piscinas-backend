@@ -24,6 +24,7 @@ import com.estonianport.unique.service.EstadoPiscinaService
 import com.estonianport.unique.model.enums.EntradaAguaType
 import com.estonianport.unique.model.enums.FuncionFiltroType
 import com.estonianport.unique.service.PiscinaService
+import com.estonianport.unique.service.PlaquetaService
 import com.estonianport.unique.service.UsuarioService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -41,6 +42,9 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/piscina")
 @CrossOrigin("*")
 class PiscinaController {
+
+    @Autowired
+    private lateinit var plaquetaService: PlaquetaService
 
     @Autowired
     private lateinit var estadoPiscinaService: EstadoPiscinaService
@@ -140,7 +144,7 @@ class PiscinaController {
 
     @PostMapping("/alta")
     fun savePiscina(@RequestBody piscinaDto: PiscinaRequestDto): ResponseEntity<CustomResponse> {
-        val plaqueta = plaquetaRepository.findByPatenteAndEstado(piscinaDto.codigoPlaca, EstadoType.ACTIVO)!!
+        val plaqueta = plaquetaRepository.findByPatenteAndEstado(piscinaDto.codigoPlaca, EstadoType.INACTIVO)!!
         val newPiscina = PiscinaMapper.buildPiscina(piscinaDto, plaqueta)
         if (piscinaDto.administradorId != null) {
             newPiscina.administrador = usuarioService.findById(piscinaDto.administradorId).apply {
@@ -155,7 +159,7 @@ class PiscinaController {
                 this.piscinaAsignada()
             }
         }
-
+        plaquetaService.activarPlaqueta(piscinaDto.codigoPlaca)
         piscinaService.create(newPiscina)
         return ResponseEntity.status(201).body(
             CustomResponse(
