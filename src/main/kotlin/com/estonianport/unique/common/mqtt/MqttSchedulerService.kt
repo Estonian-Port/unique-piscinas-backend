@@ -18,7 +18,7 @@ class MqttSchedulerService(
     private val piscinaRepository: PiscinaRepository
 ) {
 
-    @Scheduled(fixedRate = 60 * 1000) // cada 30 minutos
+    @Scheduled(fixedRate = 30 * 60 * 1000)
     fun verificarLecturas() {
         val ahora = LocalDateTime.now()
         val limite = ahora.minusMinutes(35)

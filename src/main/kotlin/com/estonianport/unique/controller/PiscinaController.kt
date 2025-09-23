@@ -3,6 +3,7 @@ package com.estonianport.unique.controller
 import com.estonianport.unique.dto.request.BombaRequestDto
 import com.estonianport.unique.dto.request.CalefaccionRequestDto
 import com.estonianport.unique.dto.request.FiltroRequestDto
+import com.estonianport.unique.dto.request.FuncionFiltroRequestDto
 import com.estonianport.unique.dto.request.PiscinaCompuestosRequestDto
 import com.estonianport.unique.dto.request.PiscinaRequestDto
 import com.estonianport.unique.dto.request.ProgramacionRequestDto
@@ -413,23 +414,30 @@ class PiscinaController {
         @RequestBody entradaAgua: List<String>
     ): ResponseEntity<CustomResponse> {
         val nuevasEntradas = entradaAgua.map { EntradaAguaType.valueOf(it.uppercase()) }.toMutableList()
-        println(nuevasEntradas)
-        piscinaService.updateEntradaAgua(piscinaId, nuevasEntradas)
+        estadoPiscinaService.updateEntradaAgua(piscinaId, nuevasEntradas)
+        val piscinaprueba = PiscinaMapper.buildPiscinaResumenResponseDto(
+            piscinaService.findById(piscinaId),
+            estadoPiscinaService.findEstadoActualByPiscinaId(piscinaId)
+        )
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Entrada de agua actualizada correctamente",
-                data = null
+                data = PiscinaMapper.buildPiscinaResumenResponseDto(
+                    piscinaService.findById(piscinaId),
+                    estadoPiscinaService.findEstadoActualByPiscinaId(piscinaId)
+                )
             )
         )
     }
 
-    @PutMapping("/update-funcion-activa/{piscinaId}")
+    @PutMapping("/update-funcion-filtro/{piscinaId}")
     fun updateFuncionActiva(
         @PathVariable piscinaId: Long,
-        @RequestBody funcionActiva: String
+        @RequestBody funcionActiva: FuncionFiltroRequestDto
     ): ResponseEntity<CustomResponse> {
-        if (funcionActiva.isBlank()) {
-            piscinaService.desactivarFuncionActiva(piscinaId)
+        val nuevaFuncionActiva = FuncionFiltroType.valueOf(funcionActiva.funcion.uppercase())
+        if (nuevaFuncionActiva == FuncionFiltroType.REPOSO) {
+            estadoPiscinaService.desactivarFuncionActiva(piscinaId)
             return ResponseEntity.status(200).body(
                 CustomResponse(
                     message = "Función activa desactivada correctamente",
@@ -437,10 +445,8 @@ class PiscinaController {
                 )
             )
         }
-        val nuevaFuncionActiva = funcionActiva.map {
-            FuncionFiltroType.valueOf(funcionActiva.uppercase())
-        }.toMutableList()
-        piscinaService.updateFuncionActiva(piscinaId, nuevaFuncionActiva)
+
+        estadoPiscinaService.updateFuncionActiva(piscinaId, nuevaFuncionActiva)
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Función activa actualizada correctamente",

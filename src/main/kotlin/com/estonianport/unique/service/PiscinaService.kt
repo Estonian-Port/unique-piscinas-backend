@@ -320,26 +320,6 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
         piscinaRepository.save(piscina)
     }
 
-    fun updateEntradaAgua(piscinaId: Long, entradaAgua: MutableList<EntradaAguaType>) {
-        val piscina = findById(piscinaId)
-        println("Entrada de agua nueva: $entradaAgua")
-        println("Entrada de agua actual: ${piscina.entradaAgua}")
-        piscina.entradaAgua.clear()
-        piscina.entradaAgua.addAll(entradaAgua)
-        println("Entrada de agua actualizada: ${piscina.entradaAgua}")
-        piscinaRepository.save(piscina)
-    }
 
-    fun desactivarFuncionActiva(piscinaId: Long) {
-        val piscina = findById(piscinaId)
-        piscina.funcionActiva.clear()
-        piscinaRepository.save(piscina)
-    }
-
-    fun updateFuncionActiva(piscinaId: Long, funcionActiva: MutableList<FuncionFiltroType>) {
-        val piscina = findById(piscinaId)
-        piscina.funcionActiva = funcionActiva
-        piscinaRepository.save(piscina)
-    }
 
 }
