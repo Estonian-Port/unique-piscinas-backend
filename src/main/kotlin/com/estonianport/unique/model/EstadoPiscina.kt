@@ -18,11 +18,11 @@ class EstadoPiscina(
     )
     @Enumerated(EnumType.STRING)
     @Column(name = "entrada_agua_activa")
-    val entradaAguaActiva: List<EntradaAguaType>,
+    val entradaAguaActiva: MutableList<EntradaAguaType>,
 
     @Column
     @Enumerated(EnumType.STRING)
-    val funcionFiltroActivo: FuncionFiltroType?,
+    var funcionFiltroActivo: FuncionFiltroType,
 
     @ElementCollection
     @CollectionTable(
@@ -48,9 +48,9 @@ class EstadoPiscina(
         fun estadoInicial(piscina: Piscina): EstadoPiscina {
             return EstadoPiscina(
                 piscina = piscina,
-                entradaAguaActiva = emptyList(),
+                entradaAguaActiva = mutableListOf(),
                 sistemaGermicidaActivo = emptyList(),
-                funcionFiltroActivo = null,
+                funcionFiltroActivo = FuncionFiltroType.REPOSO,
                 calefaccionActiva = false,
                 fecha = LocalDateTime.now()
             )

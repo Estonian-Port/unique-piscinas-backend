@@ -10,3 +10,5 @@ data class FiltroRequestDto(
     val datoExtra: Int,
     val tiempoDeVidaUtil: Int
 )
+
+data class FuncionFiltroRequestDto(val funcion: String)
