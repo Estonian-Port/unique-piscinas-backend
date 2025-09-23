@@ -60,8 +60,8 @@ class Piscina(
     @Column
     var orp: Boolean,
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @PrimaryKeyJoinColumn
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "plaqueta_id", nullable = false, unique = true)
     val plaqueta: Plaqueta,
 
     @Column(length = 5000)
