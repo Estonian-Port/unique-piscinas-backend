@@ -49,7 +49,7 @@ interface PiscinaRepository : JpaRepository<Piscina, Int> {
 
 
     @Query(
-        """SELECT id, fecha, ph, cloro, temperatura, presion, false AS esError
+        """SELECT id, fecha, ph, cloro, redox, presion, false AS esError
             FROM lectura
             WHERE piscina_id = :piscinaId
 
@@ -62,7 +62,7 @@ interface PiscinaRepository : JpaRepository<Piscina, Int> {
             ORDER BY fecha""",
         nativeQuery = true
     )
-    fun findTodasLecturasConError(piscinaId: Long): List<LecturaConErrorResponseDto>
+    fun findTodasLecturasConError(piscinaId: Long): List<Array<Any>>
 
 
     @Query("""

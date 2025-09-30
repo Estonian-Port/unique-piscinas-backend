@@ -1,5 +1,6 @@
 package com.estonianport.unique.controller
 
+import com.estonianport.unique.common.mqtt.MqttPublisherService
 import com.estonianport.unique.dto.request.BombaRequestDto
 import com.estonianport.unique.dto.request.CalefaccionRequestDto
 import com.estonianport.unique.dto.request.FiltroRequestDto
@@ -42,6 +43,9 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/piscina")
 @CrossOrigin("*")
 class PiscinaController {
+
+    @Autowired
+    private lateinit var mqttPublisherService: MqttPublisherService
 
     @Autowired
     private lateinit var plaquetaService: PlaquetaService
@@ -122,12 +126,31 @@ class PiscinaController {
         )
     }
 
-    @GetMapping("lectura/{piscinaId}")
+    @GetMapping("lecturas/{piscinaId}")
     fun getLecturasPiscina(@PathVariable piscinaId: Long): ResponseEntity<CustomResponse> {
+        val lecturas = piscinaService.getLecturasPiscina(piscinaId)
+        println(lecturas)
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Lecturas de la piscina obtenida correctamente",
                 data = piscinaService.getLecturasPiscina(piscinaId)
+            )
+        )
+    }
+
+    @PostMapping("/lectura-manual/{piscinaId}")
+    fun tomarLecturaManual(@PathVariable piscinaId: Long): ResponseEntity<CustomResponse> {
+        val piscina = piscinaService.findById(piscinaId)
+        val patentePlaqueta = piscina.plaqueta.patente
+        // Recibimos un ok cuando la muestra fue realizada con exito?
+        mqttPublisherService.sendCommand(patentePlaqueta, "tomar_muestra")
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Lectura tomada correctamente",
+                data = PiscinaMapper.buildPiscinaResumenResponseDto(
+                    piscinaService.findById(piscinaId),
+                    estadoPiscinaService.findEstadoActualByPiscinaId(piscinaId)
+                )
             )
         )
     }
@@ -455,6 +478,31 @@ class PiscinaController {
             CustomResponse(
                 message = "Función activa actualizada correctamente",
                 data = null
+            )
+        )
+    }
+
+    @PutMapping("/update-estado-filtro/{piscinaId}")
+    fun updateEstadoFiltro(
+        @PathVariable piscinaId: Long,
+        @RequestBody funcionActiva: FuncionFiltroRequestDto,
+        @RequestBody entradaAgua: List<String>
+    ): ResponseEntity<CustomResponse> {
+        val patentePlaqueta = piscinaService.getPatentePlaqueta(piscinaId)
+        val nuevaFuncionActiva = FuncionFiltroType.valueOf(funcionActiva.funcion.uppercase())
+        val nuevasEntradas = entradaAgua.map { EntradaAguaType.valueOf(it.uppercase()) }.toMutableList()
+        mqttPublisherService.sendCommandList(patentePlaqueta, nuevasEntradas, nuevaFuncionActiva)
+        val ultimoEstado = mqttPublisherService.sendCommand(patentePlaqueta, "tomar_muestra")
+        // SI VAMOS A GUARDAR TODOS LOS ESTADOS SIMPLEMENTE SE HACE UN SAVE, SI ES UN SOLO ESTADO QUE SE ACTUALIZA
+        // HAY QUE HACER UPDATE DE TODOS LOS DATOS
+        val estadoPiscina = estadoPiscinaService.findEstadoActualByPiscinaId(piscinaId)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Comando enviado correctamente",
+                data = PiscinaMapper.buildPiscinaResumenResponseDto(
+                    piscinaService.findById(piscinaId),
+                    estadoPiscina
+                )
             )
         )
     }
