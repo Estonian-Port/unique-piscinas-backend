@@ -13,10 +13,9 @@ import com.estonianport.unique.model.Registro
 import com.estonianport.unique.model.SistemaGermicida
 import com.estonianport.unique.model.Trasductor
 import com.estonianport.unique.model.UV
-import com.estonianport.unique.model.enums.EntradaAguaType
-import com.estonianport.unique.model.enums.FuncionFiltroType
 import com.estonianport.unique.repository.PiscinaRepository
 import org.springframework.stereotype.Service
+import java.sql.Timestamp
 
 @Service
 class PiscinaService(private val piscinaRepository: PiscinaRepository, private val usuarioService: UsuarioService) {
@@ -33,7 +32,19 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
     }
 
     fun getLecturasPiscina(piscinaId: Long): List<LecturaConErrorResponseDto> {
-        return piscinaRepository.findTodasLecturasConError(piscinaId)
+        val resultados = piscinaRepository.findTodasLecturasConError(piscinaId)
+        return resultados.map {
+            LecturaConErrorResponseDto(
+                id = (it[0] as Number).toLong(),
+                fecha = (it[1] as Timestamp).toLocalDateTime().toString(),
+                ph = (it[2] as? Number)?.toDouble(),
+                cloro = (it[3] as? Number)?.toDouble(),
+                redox = (it[4] as? Number)?.toDouble(),
+                presion = (it[5] as? Number)?.toDouble(),
+                esError = it[6] as Boolean
+            )
+
+        }
     }
 
     fun getPresion(piscinaId: Long): Double {
@@ -320,6 +331,9 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
         piscinaRepository.save(piscina)
     }
 
-
+    fun getPatentePlaqueta(piscinaId: Long): String {
+        val piscina = findById(piscinaId)
+        return piscina.plaqueta.patente
+    }
 
 }
