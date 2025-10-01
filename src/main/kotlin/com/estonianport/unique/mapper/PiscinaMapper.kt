@@ -5,6 +5,7 @@ import com.estonianport.unique.dto.response.*
 import com.estonianport.unique.model.EstadoPiscina
 import com.estonianport.unique.model.Piscina
 import com.estonianport.unique.model.Plaqueta
+import com.estonianport.unique.model.enums.ProgramacionType
 import com.estonianport.unique.model.enums.toCapitalized
 
 object PiscinaMapper{
@@ -62,13 +63,13 @@ object PiscinaMapper{
             id = piscina.id.toString(),
             direccion = piscina.direccion,
             volumen = piscina.volumen.toString(),
-            programacionIluminacion = piscina.programacionIluminacion.map {
-                ProgramacionMapper.buildProgramacionIluminacionResponseDto(
+            programacionIluminacion = piscina.programaciones.filter{ it.tipo == ProgramacionType.FILTRADO }.map {
+                ProgramacionMapper.buildProgramacionResponseDto(
                     it
                 )
             }.toList(),
-            programacionFiltrado = piscina.programacionFiltrado.map {
-                ProgramacionMapper.buildProgramacionFiltradoResponseDto(
+            programacionFiltrado = piscina.programaciones.filter{ it.tipo == ProgramacionType.ILUMINACION }.map {
+                ProgramacionMapper.buildProgramacionResponseDto(
                     it
                 )
             }.toList()

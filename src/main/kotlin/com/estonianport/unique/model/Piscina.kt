@@ -94,15 +94,7 @@ class Piscina(
     @OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     @OrderBy("id ASC")
     @JoinColumn(name = "piscina_id")
-    val programacionFiltrado: MutableSet<ProgramacionFiltrado> = mutableSetOf()
-
-    @Column
-    val lucesManual: Boolean = false
-
-    @OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
-    @OrderBy("id ASC")
-    @JoinColumn(name = "piscina_id")
-    val programacionIluminacion: MutableSet<ProgramacionIluminacion> = mutableSetOf()
+    val programaciones: MutableSet<Programacion> = mutableSetOf()
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "piscina", cascade = [CascadeType.ALL], orphanRemoval = true)
     val lecturas: MutableSet<Lectura> = mutableSetOf()
@@ -122,20 +114,12 @@ class Piscina(
         // Implementación de la función clima usando el sensor de la piscina
     }
 
-    fun agregarProgramacionFiltrado(programacion: ProgramacionFiltrado) {
-        programacionFiltrado.add(programacion)
+    fun agregarProgramacion(programacion: Programacion) {
+        programaciones.add(programacion)
     }
 
-    fun agregarProgramacionIluminacion(programacion: ProgramacionIluminacion) {
-        programacionIluminacion.add(programacion)
-    }
-
-    fun eliminarProgramacionFiltrado(programacionId: Long) {
-        programacionFiltrado.remove(programacionFiltrado.find { it.id == programacionId })
-    }
-
-    fun eliminarProgramacionLuces(programacionId: Long) {
-        programacionIluminacion.remove(programacionIluminacion.find { it.id == programacionId })
+    fun eliminarProgramacion(programacion: Programacion) {
+        programaciones.remove(programacion)
     }
 
     fun agregarRegistro(registro: Registro) {

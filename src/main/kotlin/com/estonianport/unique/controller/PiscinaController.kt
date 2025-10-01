@@ -378,63 +378,6 @@ class PiscinaController {
         )
     }
 
-    @PostMapping("/add-programacion/{piscinaId}/{esFiltrado}")
-    fun createProgramacionPiscina(
-        @PathVariable piscinaId: Long,
-        @PathVariable esFiltrado: Boolean,
-        @RequestBody programacionDTO: ProgramacionRequestDto
-    ): ResponseEntity<CustomResponse> {
-        if (!esFiltrado) {
-            val nuevaProgramacion = ProgramacionMapper.buildProgramacionIluminacion(programacionDTO)
-            piscinaService.agregarProgramacionIluminacion(piscinaId, nuevaProgramacion)
-        } else {
-            val nuevaProgramacion = ProgramacionMapper.buildProgramacionFiltrado(programacionDTO)
-            piscinaService.agregarProgramacionFiltrado(piscinaId, nuevaProgramacion)
-        }
-        return ResponseEntity.status(200).body(
-            CustomResponse(
-                message = "Programación filtrado de la piscina creada correctamente",
-                data = null
-            )
-        )
-    }
-
-    @PutMapping("/update-programacion/{piscinaId}/{esFiltrado}")
-    fun updateProgramacion(
-        @PathVariable piscinaId: Long,
-        @PathVariable esFiltrado: Boolean,
-        @RequestBody programacionDTO: ProgramacionRequestDto
-    ): ResponseEntity<CustomResponse> {
-        if (esFiltrado) {
-            val programacionActualizada = ProgramacionMapper.buildProgramacionFiltrado(programacionDTO)
-            piscinaService.updateProgramacionFiltrado(piscinaId, programacionActualizada)
-        } else {
-            val programacionActualizada = ProgramacionMapper.buildProgramacionIluminacion(programacionDTO)
-            piscinaService.updateProgramacionIluminacion(piscinaId, programacionActualizada)
-        }
-        return ResponseEntity.status(200).body(
-            CustomResponse(
-                message = "Programación de la piscina actualizada correctamente",
-                data = null
-            )
-        )
-    }
-
-    @DeleteMapping("/delete-programacion/{piscinaId}/{programacionId}/{esFiltrado}")
-    fun deleteProgramacionFiltrado(
-        @PathVariable piscinaId: Long,
-        @PathVariable programacionId: Long,
-        @PathVariable esFiltrado: Boolean
-    ): ResponseEntity<CustomResponse> {
-        piscinaService.deleteProgramacion(piscinaId, programacionId, esFiltrado)
-        return ResponseEntity.status(200).body(
-            CustomResponse(
-                message = "Programación eliminada correctamente",
-                data = null
-            )
-        )
-    }
-
     @PutMapping("/update-entrada-agua/{piscinaId}")
     fun updateEntradaAgua(
         @PathVariable piscinaId: Long,
