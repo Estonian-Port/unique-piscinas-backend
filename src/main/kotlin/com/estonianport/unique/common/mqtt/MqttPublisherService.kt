@@ -11,16 +11,17 @@ import org.springframework.stereotype.Service
 class MqttPublisherService(private val mqttClient: MqttClient) {
 
     fun sendCommand(patente: String, accion: String) {
-        val topic = "plaquetas/$patente/comando"
-        val idSolicitud = System.currentTimeMillis().toInt()
+        val topic = "plaquetas/comando"
+        val idSolicitud = System.currentTimeMillis()
         val payload =
             """{
-                "accion": "$accion",
-                "id_solicitud": $idSolicitud
+                "patente": "$patente",
+                "id_solicitud": $idSolicitud,
+                "accion": "$accion"
             }"""
         val message = MqttMessage(payload.toByteArray()).apply { qos = 1 }
         mqttClient.publish(topic, message)
-        println("Publicado comando $accion en $topic")
+        println("Publicado comando $accion para plaqueta $patente en $topic")
     }
 
     fun sendCommandList(
@@ -29,17 +30,20 @@ class MqttPublisherService(private val mqttClient: MqttClient) {
         funcionFiltro: FuncionFiltroType? = null,
         sistemasGermicida: List<SistemaGermicidaType> = emptyList()
     ) {
-        val topic = "plaquetas/$patente/comandos"
+        val topic = "plaquetas/control"
+        val idSolicitud = System.currentTimeMillis()
 
         val payloadMap = mutableMapOf(
-            "entrada_agua" to (entradasAgua),
+            "patente" to patente,
+            "id_solicitud" to idSolicitud,
+            "entrada_agua" to entradasAgua,
             "funcion_filtro" to (funcionFiltro ?: ""),
-            "sistema_germicida" to (sistemasGermicida)
+            "sistema_germicida" to sistemasGermicida
         )
 
         val payloadJson = com.fasterxml.jackson.module.kotlin.jacksonObjectMapper().writeValueAsString(payloadMap)
         val message = MqttMessage(payloadJson.toByteArray()).apply { qos = 1 }
         mqttClient.publish(topic, message)
-        println("Publicado comando lista en $topic: $payloadJson")
+        println("Publicado comando lista para plaqueta $patente en $topic: $payloadJson")
     }
 }

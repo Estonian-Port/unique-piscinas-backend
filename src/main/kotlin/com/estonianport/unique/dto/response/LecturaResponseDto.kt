@@ -1,31 +1,27 @@
 package com.estonianport.unique.dto.response
 
 import com.fasterxml.jackson.annotation.JsonProperty
+
 data class LecturaResponseDto(
+
     @JsonProperty("id_solicitud")
     val idSolicitud: String? = null,
-    @JsonProperty("Patente")
+
+    @JsonProperty("patente")
     val patente: String,
-    @JsonProperty("Redos")
+
+    @JsonProperty("redox")
     val redox: Float,
-    @JsonProperty("Ph")
+
+    @JsonProperty("ph")
     val ph: Float,
-    @JsonProperty("Cloro")
+
+    @JsonProperty("cloro")
     val cloro: Float,
-    @JsonProperty("PresTrF")
+
+    @JsonProperty("presion")
     val presion: Float,
-    @JsonProperty("Temp")
-    val temperatura: Float,
-    @JsonProperty("Humedad")
-    val humedad: Float,
-    @JsonProperty("TempAgua")
-    val temperaturaAgua: Float,
-    @JsonProperty("EAA")
-    val eaa: Int,
-    @JsonProperty("SistGerm")
-    val sistGerm: Int,
-    @JsonProperty("FFA")
-    val ffa: Int,
-    @JsonProperty("CaAc")
-    val caAc: Boolean
+
+    @JsonProperty("temperatura_agua")
+    val temperaturaAgua: Float
 )

@@ -37,12 +37,6 @@ class Lectura(
     val presion: Float,
 
     @Column(nullable = false)
-    val temperatura: Float,
-
-    @Column(nullable = false)
-    val humedad: Float,
-
-    @Column(nullable = false)
     val temperaturaAgua: Float,
 
 
