@@ -96,9 +96,6 @@ class Piscina(
     @JoinColumn(name = "piscina_id")
     val programacionFiltrado: MutableSet<Programacion> = mutableSetOf()
 
-    @Column
-    val lucesManual: Boolean = false
-
     @OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     @OrderBy("id ASC")
     @JoinColumn(name = "piscina_id")
