@@ -3,6 +3,7 @@ package com.estonianport.unique.repository
 import com.estonianport.unique.dto.response.LecturaConErrorResponseDto
 import com.estonianport.unique.model.Piscina
 import com.estonianport.unique.model.Plaqueta
+import com.estonianport.unique.model.Programacion
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
@@ -65,30 +66,53 @@ interface PiscinaRepository : JpaRepository<Piscina, Int> {
     fun findTodasLecturasConError(piscinaId: Long): List<Array<Any>>
 
 
-    @Query("""
+    @Query(
+        """
         SELECT COUNT(p) FROM Piscina p WHERE p.esDesbordante IS TRUE
-    """)
+    """
+    )
     fun countDesbordante(): Int
 
-    @Query("""
+    @Query(
+        """
         SELECT COUNT(p) FROM Piscina p WHERE p.esDesbordante IS FALSE
-    """)
+    """
+    )
     fun countSkimmer(): Int
 
-    @Query("""
+    @Query(
+        """
         SELECT SUM(p.volumen) FROM Piscina p
-    """)
+    """
+    )
     fun getTotalVolumen(): Double
 
-    @Query("""
+    @Query(
+        """
        SELECT ROUND(AVG(p.volumen), 2) FROM Piscina p
-    """)
+    """
+    )
     fun getPromedioVolumen(): Double
 
-    @Query("""
+    @Query(
+        """
     SELECT CASE WHEN COUNT(p) > 0 THEN TRUE ELSE FALSE END FROM Piscina p WHERE p.administrador IS NOT NULL AND p.administrador.id = :usuarioId
-""")
+    """
+    )
     fun existsByAdministradorId(usuarioId: Long): Boolean
 
     fun findByPlaqueta(plaqueta: Plaqueta): Piscina
+
+    @Query(
+        """
+    SELECT pf.*
+    FROM programacion_filtrado pf
+    WHERE pf.piscina_id = :piscinaId
+      AND (pf.dia > EXTRACT(DOW FROM CURRENT_DATE)
+           OR (pf.dia = EXTRACT(DOW FROM CURRENT_DATE) AND pf.hora > CURRENT_TIME))
+    ORDER BY pf.dia, pf.hora
+    LIMIT 1
+    """, nativeQuery = true
+    )
+    fun getProximaProgramacionFiltrado(piscinaId: Long): Programacion?
 }

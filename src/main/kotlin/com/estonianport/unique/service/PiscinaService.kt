@@ -73,6 +73,37 @@ class PiscinaService(
         return ultimasDosPh[0] - ultimasDosPh[1]
     }
 
+    fun getProximoCicloFiltrado(piscinaId:Long) : String? {
+        val proximaProgramacion = piscinaRepository.getProximaProgramacionFiltrado(piscinaId) ?: return null
+        return calcularTiempoRestante(proximaProgramacion)
+    }
+
+    fun calcularTiempoRestante(programacion : Programacion) : String? {
+        val ahora = LocalDateTime.now()
+        val proximaEjecucion = programacion.proximaEjecucion ?: return null
+
+        if (proximaEjecucion.isBefore(ahora)) {
+            return null
+        }
+
+        val duracion = java.time.Duration.between(ahora, proximaEjecucion)
+
+        val dias = duracion.toDays()
+        val horas = duracion.toHours() % 24
+        val minutos = duracion.toMinutes() % 60
+
+        val partes = mutableListOf<String>()
+        if (dias > 0) partes.add("$dias ${if (dias.toInt() == 1) "día" else "días"}")
+        if (horas > 0) partes.add("$horas ${if (horas.toInt() == 1) "hora" else "horas"}")
+        if (minutos > 0) partes.add("$minutos ${if (minutos.toInt() == 1) "minuto" else "minutos"}")
+
+        return if (partes.isEmpty()) {
+            "Menos de un minuto"
+        } else {
+            partes.joinToString(", ")
+        }
+    }
+
     fun totalPiscinas(): Int {
         return piscinaRepository.count().toInt()
     }

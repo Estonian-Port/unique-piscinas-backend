@@ -121,7 +121,8 @@ class PiscinaController {
                 data = PiscinaMapper.buildPiscinaEquipamientoResponseDto(
                     piscinaService.findById(piscinaId),
                     piscinaService.getPresion(piscinaId),
-                    estadoPiscinaService.findEstadoActualByPiscinaId(piscinaId)
+                    estadoPiscinaService.findEstadoActualByPiscinaId(piscinaId),
+                    piscinaService.getProximoCicloFiltrado(piscinaId)
                 )
             )
         )

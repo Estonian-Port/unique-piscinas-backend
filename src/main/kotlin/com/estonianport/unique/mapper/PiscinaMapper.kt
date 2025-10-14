@@ -38,7 +38,7 @@ object PiscinaMapper{
         )
     }
 
-    fun buildPiscinaEquipamientoResponseDto(piscina: Piscina, presionPiscina: Double, estadoPiscina: EstadoPiscina): PiscinaEquipamientoResponseDto {
+    fun buildPiscinaEquipamientoResponseDto(piscina: Piscina, presionPiscina: Double, estadoPiscina: EstadoPiscina, proximoCicloFiltrado: String?): PiscinaEquipamientoResponseDto {
         return PiscinaEquipamientoResponseDto(
             id = piscina.id.toString(),
             direccion = piscina.direccion,
@@ -47,6 +47,8 @@ object PiscinaMapper{
             entradaAgua = estadoPiscina.entradaAguaActiva.map { it.toCapitalized() }.toList(),
             funcionActiva = estadoPiscina.funcionFiltroActivo,
             presion = presionPiscina,
+            ultimaActividad = estadoPiscina.ultimaActividad?.toString(),
+            proximoCiclo = proximoCicloFiltrado,
             bombas = piscina.bomba.map { BombaMapper.buildBombaResponseDto(it) }.toList(),
             filtro = FiltroMapper.buildFiltroResponseDto(piscina.filtro),
             sistemasGermicidas = piscina.sistemaGermicida.map {
