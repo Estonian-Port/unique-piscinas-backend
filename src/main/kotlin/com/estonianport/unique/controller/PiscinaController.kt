@@ -122,7 +122,7 @@ class PiscinaController {
                     piscinaService.findById(piscinaId),
                     piscinaService.getPresion(piscinaId),
                     estadoPiscinaService.findEstadoActualByPiscinaId(piscinaId),
-                    piscinaService.getProximoCicloFiltrado(piscinaId)
+                    piscinaService.calcularTiempoRestante(piscinaId)
                 )
             )
         )

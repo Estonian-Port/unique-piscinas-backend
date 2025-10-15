@@ -1,12 +1,13 @@
 package com.estonianport.unique.repository
 
-import com.estonianport.unique.dto.response.LecturaConErrorResponseDto
 import com.estonianport.unique.model.Piscina
 import com.estonianport.unique.model.Plaqueta
 import com.estonianport.unique.model.Programacion
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
+import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
+import java.time.LocalDateTime
 
 @Repository
 interface PiscinaRepository : JpaRepository<Piscina, Int> {
@@ -103,16 +104,18 @@ interface PiscinaRepository : JpaRepository<Piscina, Int> {
 
     fun findByPlaqueta(plaqueta: Plaqueta): Piscina
 
-    @Query(
-        """
-    SELECT pf.*
-    FROM programacion_filtrado pf
-    WHERE pf.piscina_id = :piscinaId
-      AND (pf.dia > EXTRACT(DOW FROM CURRENT_DATE)
-           OR (pf.dia = EXTRACT(DOW FROM CURRENT_DATE) AND pf.hora > CURRENT_TIME))
-    ORDER BY pf.dia, pf.hora
-    LIMIT 1
-    """, nativeQuery = true
-    )
-    fun getProximaProgramacionFiltrado(piscinaId: Long): Programacion?
+    @Query("""
+    SELECT
+        pd.dia AS dia,
+        p.hora_inicio AS horaInicio,
+        p.hora_fin AS horaFin
+    FROM programaciones p
+    JOIN programacion_dia pd ON p.id = pd.programacion_id
+    WHERE
+        p.piscina_id = :piscinaId
+        AND p.tipo = 'FILTRADO'
+        AND p.activa = true
+""", nativeQuery = true)
+    fun findProgramacionesFiltradoActivas(@Param("piscinaId") piscinaId: Long): List<Array<Any>>
+
 }

@@ -3,7 +3,6 @@ package com.estonianport.unique.model
 import com.estonianport.unique.model.enums.ProgramacionType
 import jakarta.persistence.*
 import java.time.DayOfWeek
-import java.time.LocalDateTime
 import java.time.LocalTime
 
 @Entity
@@ -34,7 +33,4 @@ class Programacion(
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     var tipo: ProgramacionType,
-
-    @Column(name = "proxima_ejecucion")
-    var proximaEjecucion: LocalDateTime? = null,
 )
