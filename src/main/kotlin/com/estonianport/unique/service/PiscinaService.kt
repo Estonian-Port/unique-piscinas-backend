@@ -2,23 +2,34 @@ package com.estonianport.unique.service
 
 import com.estonianport.unique.dto.response.LecturaConErrorResponseDto
 import com.estonianport.unique.common.errors.NotFoundException
+import com.estonianport.unique.common.quartz.QuartzSchedulerService
 import com.estonianport.unique.model.Bomba
 import com.estonianport.unique.model.Calefaccion
 import com.estonianport.unique.model.Filtro
 import com.estonianport.unique.model.Ionizador
 import com.estonianport.unique.model.Piscina
-import com.estonianport.unique.model.ProgramacionFiltrado
-import com.estonianport.unique.model.ProgramacionIluminacion
+import com.estonianport.unique.model.Programacion
 import com.estonianport.unique.model.Registro
 import com.estonianport.unique.model.SistemaGermicida
 import com.estonianport.unique.model.Trasductor
 import com.estonianport.unique.model.UV
+import com.estonianport.unique.model.enums.ProgramacionType
 import com.estonianport.unique.repository.PiscinaRepository
 import org.springframework.stereotype.Service
 import java.sql.Timestamp
+import java.time.DayOfWeek
+import java.time.Duration
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.temporal.TemporalAdjusters
+import kotlin.math.ceil
 
 @Service
-class PiscinaService(private val piscinaRepository: PiscinaRepository, private val usuarioService: UsuarioService) {
+class PiscinaService(
+    private val piscinaRepository: PiscinaRepository,
+    private val usuarioService: UsuarioService,
+    private val quartzSchedulerService: QuartzSchedulerService
+) {
 
     fun getPiscinasByUsuarioId(usuarioId: Long): List<Piscina> {
         usuarioService.findById(usuarioId)
@@ -67,6 +78,45 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
         return ultimasDosPh[0] - ultimasDosPh[1]
     }
 
+    fun getProximaProgramacionFiltrado(piscinaId: Long): LocalDateTime? {
+        val results = piscinaRepository.findProgramacionesFiltradoActivas(piscinaId)
+        if (results.isEmpty()) return null
+        val ahora = LocalDateTime.now()
+        var proxima: LocalDateTime? = null
+        for (row in results) {
+            val dia = DayOfWeek.valueOf(row[0].toString())
+            val hora =
+                LocalTime.parse(row[1].toString()) // Calcular el próximo día correspondiente
+            var candidato = ahora.with(TemporalAdjusters.nextOrSame(dia)).with(hora)
+            if (candidato.isBefore(ahora)) {
+                candidato = candidato.plusWeeks(1)
+            }
+            if (proxima == null || candidato.isBefore(proxima)) {
+                proxima = candidato
+            }
+        }
+        return proxima
+    }
+
+    fun calcularTiempoRestante(piscinaId: Long): String {
+        val proximaEjecucion = getProximaProgramacionFiltrado(piscinaId) ?: return "No hay programaciones activas"
+        val ahora = LocalDateTime.now()
+        if (proximaEjecucion.isBefore(ahora)) {
+            return "El ciclo ya comenzó"
+        }
+        val duracion = Duration.between(ahora, proximaEjecucion)
+        val dias = duracion.toDays()
+        val horas = duracion.toHours() % 24
+        val minutos = ceil(duracion.seconds / 60.0).toLong() % 60
+        return when {
+            dias > 0 -> "${dias}d ${horas}h ${minutos}m"
+            horas > 0 -> "${horas}h ${minutos}m"
+            minutos > 0 -> "${minutos}m"
+            else -> "Menos de un minuto"
+        }
+    }
+
+
     fun totalPiscinas(): Int {
         return piscinaRepository.count().toInt()
     }
@@ -111,64 +161,122 @@ class PiscinaService(private val piscinaRepository: PiscinaRepository, private v
         return piscinaRepository.save(piscina)
     }
 
-    fun deleteProgramacion(piscinaId: Long, programacionId: Long, esFiltrado: Boolean) {
+    fun deleteProgramacion(piscinaId: Long, programacionId: Long) {
         val piscina = findById(piscinaId)
-        if (esFiltrado) {
-            piscina.eliminarProgramacionFiltrado(programacionId)
+        val programacion = piscina.programacionFiltrado.find { it.id == programacionId }
+            ?: piscina.programacionIluminacion.find { it.id == programacionId }
+            ?: throw NotFoundException("Programación no encontrada")
+
+        programacion.dias.forEach { dia ->
+            quartzSchedulerService.eliminarJob("inicio_${programacionId}_${dia.name}")
+            quartzSchedulerService.eliminarJob("fin_${programacionId}_${dia.name}")
+        }
+
+        piscina.eliminarProgramacionFiltrado(programacionId)
+        piscina.eliminarProgramacionFiltrado(programacionId)
+        piscinaRepository.save(piscina)
+    }
+
+
+    fun agregarProgramacion(piscinaId: Long, nuevaProgramacion: Programacion) {
+        val piscina = findById(piscinaId)
+        val patente = piscina.plaqueta.patente
+
+        if (nuevaProgramacion.tipo == ProgramacionType.FILTRADO) {
+            piscina.agregarProgramacionFiltrado(nuevaProgramacion)
         } else {
-            piscina.eliminarProgramacionLuces(programacionId)
+            piscina.agregarProgramacionIluminacion(nuevaProgramacion)
         }
-        piscinaRepository.save(piscina)
+
+        val guardada = piscinaRepository.save(piscina)
+        val programacionId = guardada.id
+
+        // Crear jobs Quartz por cada día configurado
+        nuevaProgramacion.dias.forEach { dia ->
+            quartzSchedulerService.programarJob(
+                piscinaId,
+                patente,
+                if (nuevaProgramacion.tipo == ProgramacionType.FILTRADO) "FILTRAR" else "ENCENDER_LUCES",
+                dia,
+                nuevaProgramacion.horaInicio,
+                "inicio_${programacionId}_${dia.name}"
+            )
+            quartzSchedulerService.programarJob(
+                piscinaId,
+                patente,
+                if (nuevaProgramacion.tipo == ProgramacionType.FILTRADO) "REPOSO" else "APAGAR_LUCES",
+                dia,
+                nuevaProgramacion.horaFin,
+                "fin_${programacionId}_${dia.name}"
+            )
+        }
     }
 
-    fun agregarProgramacionIluminacion(piscinaId: Long, programacion: ProgramacionIluminacion) {
-        val piscina = findById(piscinaId)
-        piscina.agregarProgramacionIluminacion(programacion)
-        piscinaRepository.save(piscina)
-    }
 
-    fun agregarProgramacionFiltrado(piscinaId: Long, programacion: ProgramacionFiltrado) {
+    fun updateProgramacion(piscinaId: Long, programacion: Programacion) {
         val piscina = findById(piscinaId)
-        piscina.agregarProgramacionFiltrado(programacion)
-        piscinaRepository.save(piscina)
-    }
+        val patente = piscina.plaqueta.patente
 
-    fun updateProgramacionIluminacion(
-        piscinaId: Long,
-        programacion: ProgramacionIluminacion,
-    ) {
-        val piscina = findById(piscinaId)
-        val programacionAEditar = piscina.programacionIluminacion.find { it.id == programacion.id }
-            ?: throw NotFoundException("La programación de iluminación con ID: ${programacion.id} no pertenece a la piscina con ID: $piscinaId")
-        programacionAEditar.apply {
+        val programacionExistente = (
+                piscina.programacionFiltrado.find { it.id == programacion.id }
+                    ?: piscina.programacionIluminacion.find { it.id == programacion.id }
+                )
+            ?: throw NotFoundException("La programación con ID: ${programacion.id} no pertenece a la piscina con ID: $piscinaId")
+
+        // 🔹 1. Eliminar jobs anteriores
+        programacionExistente.dias.forEach { dia ->
+            quartzSchedulerService.eliminarJob("inicio_${programacion.id}_${dia.name}")
+            quartzSchedulerService.eliminarJob("fin_${programacion.id}_${dia.name}")
+        }
+
+        // 🔹 2. Actualizar campos
+        programacionExistente.apply {
             horaInicio = programacion.horaInicio
             horaFin = programacion.horaFin
             dias = programacion.dias
             activa = programacion.activa
         }
+
+        // 🔹 3. Si está activa, crear nuevos jobs
+        if (programacion.activa) {
+            programacion.dias.forEach { dia ->
+                quartzSchedulerService.programarJob(
+                    piscinaId,
+                    patente,
+                    if (programacion.tipo == ProgramacionType.FILTRADO) "FILTRAR" else "ENCENDER_LUCES",
+                    dia,
+                    programacion.horaInicio,
+                    "inicio_${programacion.id}_${dia.name}"
+                )
+
+                quartzSchedulerService.programarJob(
+                    piscinaId,
+                    patente,
+                    if (programacion.tipo == ProgramacionType.FILTRADO) "REPOSO" else "APAGAR_LUCES",
+                    dia,
+                    programacion.horaFin,
+                    "fin_${programacion.id}_${dia.name}"
+                )
+            }
+
+            // 🔹 4. Calcular próxima ejecución visible para el front
+//            programacionExistente.proximaEjecucion = programacion.dias.minOfOrNull {
+//                quartzSchedulerService.calcularProximaEjecucion(it, programacion.horaInicio)
+//            }
+        }
+//        else {
+//            // Si la desactivás, limpiamos el campo proxima_ejecucion
+//            programacionExistente.proximaEjecucion = null
+//        }
+
         piscinaRepository.save(piscina)
     }
 
-    fun updateProgramacionFiltrado(
-        piscinaId: Long,
-        programacion: ProgramacionFiltrado,
-    ) {
-        val piscina = findById(piscinaId)
-        val programacionAEditar = piscina.programacionFiltrado.find { it.id == programacion.id }
-            ?: throw NotFoundException("La programación de filtrado con ID: ${programacion.id} no pertenece a la piscina con ID: $piscinaId")
-        programacionAEditar.apply {
-            horaInicio = programacion.horaInicio
-            horaFin = programacion.horaFin
-            dias = programacion.dias
-            activa = programacion.activa
-            funcionFiltroType = programacion.funcionFiltroType
-        }
-        piscinaRepository.save(piscina)
-    }
 
     fun asignarAdministrador(usuarioId: Long, piscinaId: Long) {
         val usuario =
-            usuarioService.findById(usuarioId) ?: throw NotFoundException("Usuario no encontrado con ID: $usuarioId")
+            usuarioService.findById(usuarioId)
+                ?: throw NotFoundException("Usuario no encontrado con ID: $usuarioId")
         val piscina = findById(piscinaId)
         piscina.administrador = usuario
         usuarioService.piscinaAsignada(usuario)

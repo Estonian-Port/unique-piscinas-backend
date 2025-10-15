@@ -10,6 +10,8 @@ data class PiscinaEquipamientoResponseDto(
     val entradaAgua: List<String>,
     val funcionActiva: FuncionFiltroType?,
     val presion: Double,
+    val ultimaActividad: String? = null,
+    val proximoCiclo: String? = null,
     val bombas: List<BombaResponseDto>,
     val filtro: FiltroResponseDto,
     val sistemasGermicidas: List<SistemaGermicidaResponseDto>,

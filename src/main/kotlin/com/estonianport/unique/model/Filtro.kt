@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Inheritance
 import jakarta.persistence.InheritanceType
+import java.time.Duration
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -17,8 +18,14 @@ abstract class Filtro(
     var marca: String,
     var modelo: String,
     var diametro: Double,
-    var activo: Boolean = true
-)
+    var activo: Boolean = true,
+    var tiempoDeVidaUtil: Duration = Duration.ZERO,
+    var vidaRestante: Duration = tiempoDeVidaUtil,
+) {
+    fun filtroUsado (tiempoUsado : Duration) {
+        vidaRestante -= tiempoUsado
+    }
+}
 
 @DiscriminatorValue("ARENA")
 @Entity
@@ -28,8 +35,10 @@ class FiltroArena(
     modelo: String,
     diametro: Double,
     activo: Boolean = true,
+    tiempoDeVidaUtil: Duration,
+    vidaRestante: Duration,
     var cantidadArena: Int
-) : Filtro(id, marca, modelo, diametro, activo)
+) : Filtro(id, marca, modelo, diametro, activo, tiempoDeVidaUtil, vidaRestante)
 
 @DiscriminatorValue("VIDRIO")
 @Entity
@@ -39,8 +48,10 @@ class FiltroVidrio(
     modelo: String,
     diametro: Double,
     activo: Boolean = true,
+    tiempoDeVidaUtil: Duration,
+    vidaRestante: Duration,
     var cantidadVidrio: Int
-) : Filtro(id, marca, modelo, diametro, activo)
+) : Filtro(id, marca, modelo, diametro, activo, tiempoDeVidaUtil, vidaRestante)
 
 @DiscriminatorValue("CARTUCHO")
 @Entity
@@ -50,8 +61,10 @@ class FiltroCartucho(
     modelo: String,
     diametro: Double,
     activo: Boolean = true,
+    tiempoDeVidaUtil: Duration,
+    vidaRestante: Duration,
     var micrasDelCartucho: Int
-) : Filtro(id, marca, modelo, diametro, activo)
+) : Filtro(id, marca, modelo, diametro, activo, tiempoDeVidaUtil, vidaRestante)
 
 
 

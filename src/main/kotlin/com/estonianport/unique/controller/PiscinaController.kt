@@ -24,6 +24,7 @@ import com.estonianport.unique.repository.PlaquetaRepository
 import com.estonianport.unique.service.EstadoPiscinaService
 import com.estonianport.unique.model.enums.EntradaAguaType
 import com.estonianport.unique.model.enums.FuncionFiltroType
+import com.estonianport.unique.model.enums.ProgramacionType
 import com.estonianport.unique.service.PiscinaService
 import com.estonianport.unique.service.PlaquetaService
 import com.estonianport.unique.service.UsuarioService
@@ -120,7 +121,8 @@ class PiscinaController {
                 data = PiscinaMapper.buildPiscinaEquipamientoResponseDto(
                     piscinaService.findById(piscinaId),
                     piscinaService.getPresion(piscinaId),
-                    estadoPiscinaService.findEstadoActualByPiscinaId(piscinaId)
+                    estadoPiscinaService.findEstadoActualByPiscinaId(piscinaId),
+                    piscinaService.calcularTiempoRestante(piscinaId)
                 )
             )
         )
@@ -378,19 +380,13 @@ class PiscinaController {
         )
     }
 
-    @PostMapping("/add-programacion/{piscinaId}/{esFiltrado}")
+    @PostMapping("/add-programacion/{piscinaId}")
     fun createProgramacionPiscina(
         @PathVariable piscinaId: Long,
-        @PathVariable esFiltrado: Boolean,
         @RequestBody programacionDTO: ProgramacionRequestDto
     ): ResponseEntity<CustomResponse> {
-        if (!esFiltrado) {
-            val nuevaProgramacion = ProgramacionMapper.buildProgramacionIluminacion(programacionDTO)
-            piscinaService.agregarProgramacionIluminacion(piscinaId, nuevaProgramacion)
-        } else {
-            val nuevaProgramacion = ProgramacionMapper.buildProgramacionFiltrado(programacionDTO)
-            piscinaService.agregarProgramacionFiltrado(piscinaId, nuevaProgramacion)
-        }
+        val nuevaProgramacion = ProgramacionMapper.buildProgramacion(programacionDTO)
+        piscinaService.agregarProgramacion(piscinaId, nuevaProgramacion)
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Programación filtrado de la piscina creada correctamente",
@@ -399,19 +395,13 @@ class PiscinaController {
         )
     }
 
-    @PutMapping("/update-programacion/{piscinaId}/{esFiltrado}")
+    @PutMapping("/update-programacion/{piscinaId}")
     fun updateProgramacion(
         @PathVariable piscinaId: Long,
-        @PathVariable esFiltrado: Boolean,
         @RequestBody programacionDTO: ProgramacionRequestDto
     ): ResponseEntity<CustomResponse> {
-        if (esFiltrado) {
-            val programacionActualizada = ProgramacionMapper.buildProgramacionFiltrado(programacionDTO)
-            piscinaService.updateProgramacionFiltrado(piscinaId, programacionActualizada)
-        } else {
-            val programacionActualizada = ProgramacionMapper.buildProgramacionIluminacion(programacionDTO)
-            piscinaService.updateProgramacionIluminacion(piscinaId, programacionActualizada)
-        }
+        val programacionActualizada = ProgramacionMapper.buildProgramacion(programacionDTO)
+        piscinaService.updateProgramacion(piscinaId, programacionActualizada)
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Programación de la piscina actualizada correctamente",
@@ -420,13 +410,12 @@ class PiscinaController {
         )
     }
 
-    @DeleteMapping("/delete-programacion/{piscinaId}/{programacionId}/{esFiltrado}")
+    @DeleteMapping("/delete-programacion/{piscinaId}/{programacionId}")
     fun deleteProgramacionFiltrado(
         @PathVariable piscinaId: Long,
         @PathVariable programacionId: Long,
-        @PathVariable esFiltrado: Boolean
     ): ResponseEntity<CustomResponse> {
-        piscinaService.deleteProgramacion(piscinaId, programacionId, esFiltrado)
+        piscinaService.deleteProgramacion(piscinaId, programacionId)
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Programación eliminada correctamente",

@@ -3,6 +3,7 @@ package com.estonianport.unique.mapper
 import com.estonianport.unique.dto.request.FiltroRequestDto
 import com.estonianport.unique.dto.response.FiltroResponseDto
 import com.estonianport.unique.model.*
+import java.time.Duration
 
 object FiltroMapper {
 
@@ -37,7 +38,8 @@ object FiltroMapper {
                 diametro = filtroDTO.diametro,
                 activo = filtroDTO.activo,
                 cantidadArena = filtroDTO.datoExtra,
-                //tiempoDeVidaUtil = filtroDTO.tiempoDeVidaUtil
+                tiempoDeVidaUtil = Duration.ofHours(filtroDTO.tiempoDeVidaUtil.toLong()),
+                vidaRestante = Duration.ofHours(filtroDTO.tiempoDeVidaUtil.toLong())
             )
             "Vidrio" -> FiltroVidrio(
                 id = filtroDTO.id ?: 0,
@@ -46,7 +48,8 @@ object FiltroMapper {
                 diametro = filtroDTO.diametro,
                 activo = filtroDTO.activo,
                 cantidadVidrio = filtroDTO.datoExtra,
-                //tiempoDeVidaUtil = filtroDTO.tiempoDeVidaUtil
+                tiempoDeVidaUtil = Duration.ofHours(filtroDTO.tiempoDeVidaUtil.toLong()),
+                vidaRestante = Duration.ofHours(filtroDTO.tiempoDeVidaUtil.toLong())
             )
             "Cartucho" -> FiltroCartucho(
                 id = filtroDTO.id ?: 0,
@@ -54,8 +57,9 @@ object FiltroMapper {
                 modelo = filtroDTO.modelo,
                 diametro = filtroDTO.diametro,
                 activo = filtroDTO.activo,
-                micrasDelCartucho = filtroDTO.datoExtra
-                //tiempoDeVidaUtil = filtroDTO.tiempoDeVidaUtil
+                micrasDelCartucho = filtroDTO.datoExtra,
+                tiempoDeVidaUtil = Duration.ofHours(filtroDTO.tiempoDeVidaUtil.toLong()),
+                vidaRestante = Duration.ofHours(filtroDTO.tiempoDeVidaUtil.toLong())
             )
             else -> throw IllegalArgumentException("Tipo de filtro no reconocido")
         }

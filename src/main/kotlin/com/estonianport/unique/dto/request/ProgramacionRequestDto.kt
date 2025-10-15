@@ -8,4 +8,5 @@ data class ProgramacionRequestDto (
     val dias: List<String>,
     val activa: Boolean,
     val tipo: String,
+    val idPiscina: Long,
 )
