@@ -459,10 +459,6 @@ class PiscinaController {
     ): ResponseEntity<CustomResponse> {
         val nuevasEntradas = entradaAgua.map { EntradaAguaType.valueOf(it.uppercase()) }.toMutableList()
         estadoPiscinaService.updateEntradaAgua(piscinaId, nuevasEntradas)
-        val piscinaprueba = PiscinaMapper.buildPiscinaResumenResponseDto(
-            piscinaService.findById(piscinaId),
-            estadoPiscinaService.findEstadoActualByPiscinaId(piscinaId)
-        )
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Entrada de agua actualizada correctamente",
@@ -480,8 +476,9 @@ class PiscinaController {
         @RequestBody funcionActiva: FuncionFiltroRequestDto
     ): ResponseEntity<CustomResponse> {
         val nuevaFuncionActiva = FuncionFiltroType.valueOf(funcionActiva.funcion.uppercase())
+        val patentePlaqueta = piscinaService.getPatentePlaqueta(piscinaId)
         if (nuevaFuncionActiva == FuncionFiltroType.REPOSO) {
-            estadoPiscinaService.desactivarFuncionActiva(piscinaId)
+            estadoPiscinaService.desactivarFuncionActiva(piscinaId, patentePlaqueta)
             return ResponseEntity.status(200).body(
                 CustomResponse(
                     message = "Función activa desactivada correctamente",
@@ -490,7 +487,7 @@ class PiscinaController {
             )
         }
 
-        estadoPiscinaService.updateFuncionActiva(piscinaId, nuevaFuncionActiva)
+        estadoPiscinaService.updateFuncionActiva(piscinaId, nuevaFuncionActiva, patentePlaqueta)
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Función activa actualizada correctamente",
@@ -520,6 +517,28 @@ class PiscinaController {
                     piscinaService.findById(piscinaId),
                     estadoPiscina
                 )
+            )
+        )
+    }
+
+    @PostMapping("/encender-luces-manuales/{piscinaId}")
+    fun encenderLucesManuales(@PathVariable piscinaId: Long): ResponseEntity<CustomResponse> {
+        estadoPiscinaService.encenderLuces(piscinaId)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Luces encendidas manualmente",
+                data = null
+            )
+        )
+    }
+
+    @PostMapping("/apagar-luces-manuales/{piscinaId}")
+    fun apagarLucesManuales(@PathVariable piscinaId: Long): ResponseEntity<CustomResponse> {
+        estadoPiscinaService.apagarLuces(piscinaId)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Luces apagadas manualmente",
+                data = null
             )
         )
     }

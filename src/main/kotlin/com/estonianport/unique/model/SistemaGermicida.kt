@@ -9,7 +9,7 @@ abstract class SistemaGermicida(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long,
-    val activo: Boolean =true,
+    var activo: Boolean =true,
     var marca: String,
     var vidaUtil: Int,
     @Enumerated(EnumType.STRING)
@@ -18,9 +18,10 @@ abstract class SistemaGermicida(
     var vidaRestante: Int = vidaUtil * 60 // Vida util en minutos
 
     fun descontarVida(tiempoUso : Int) { // tiempoUso en minutos
-        vidaRestante -= tiempoUso.toInt()
+        vidaRestante -= tiempoUso
         if (vidaRestante < 0) vidaRestante = 0
         verificarEstado()
+        activo = false
     }
 
     fun resetearVida() {
