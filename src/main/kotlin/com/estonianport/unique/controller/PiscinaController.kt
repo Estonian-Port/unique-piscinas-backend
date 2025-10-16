@@ -224,6 +224,20 @@ class PiscinaController {
         )
     }
 
+    @PostMapping("/reset-contador-filtro/{piscinaId}/{filtroId}")
+    fun resetContadorFiltro(
+        @PathVariable piscinaId: Long,
+        @PathVariable filtroId: Long,
+    ): ResponseEntity<CustomResponse> {
+        piscinaService.resetearContadorFiltro(piscinaId, filtroId)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Contador del Filtro actualizado correctamente",
+                data = null
+            )
+        )
+    }
+
     @PutMapping("/update-germicida/{piscinaId}")
     fun updateGermicidaPiscina(
         @PathVariable piscinaId: Long,
@@ -234,6 +248,20 @@ class PiscinaController {
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Sistema germicida actualizado correctamente",
+                data = null
+            )
+        )
+    }
+
+    @PostMapping("/reset-contador-germicida/{piscinaId}/{germicidaId}")
+    fun resetContadorGermicida(
+        @PathVariable piscinaId: Long,
+        @PathVariable germicidaId: Long,
+    ): ResponseEntity<CustomResponse> {
+        piscinaService.resetearContadorGermicida(piscinaId, germicidaId)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Contador del Germicida actualizado correctamente",
                 data = null
             )
         )

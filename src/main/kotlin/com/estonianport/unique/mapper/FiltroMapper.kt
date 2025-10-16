@@ -25,7 +25,8 @@ object FiltroMapper {
                 is FiltroVidrio -> filtro.cantidadVidrio.toDouble()
                 is FiltroCartucho -> filtro.micrasDelCartucho.toDouble()
                 else -> 0.0
-            }
+            },
+            vidaRestante = filtro.vidaRestante()
         )
     }
 
@@ -38,8 +39,7 @@ object FiltroMapper {
                 diametro = filtroDTO.diametro,
                 activo = filtroDTO.activo,
                 cantidadArena = filtroDTO.datoExtra,
-                tiempoDeVidaUtil = Duration.ofHours(filtroDTO.tiempoDeVidaUtil.toLong()),
-                vidaRestante = Duration.ofHours(filtroDTO.tiempoDeVidaUtil.toLong())
+                tiempoDeVidaUtil = filtroDTO.tiempoDeVidaUtil
             )
             "Vidrio" -> FiltroVidrio(
                 id = filtroDTO.id ?: 0,
@@ -48,8 +48,7 @@ object FiltroMapper {
                 diametro = filtroDTO.diametro,
                 activo = filtroDTO.activo,
                 cantidadVidrio = filtroDTO.datoExtra,
-                tiempoDeVidaUtil = Duration.ofHours(filtroDTO.tiempoDeVidaUtil.toLong()),
-                vidaRestante = Duration.ofHours(filtroDTO.tiempoDeVidaUtil.toLong())
+                tiempoDeVidaUtil = filtroDTO.tiempoDeVidaUtil
             )
             "Cartucho" -> FiltroCartucho(
                 id = filtroDTO.id ?: 0,
@@ -58,8 +57,7 @@ object FiltroMapper {
                 diametro = filtroDTO.diametro,
                 activo = filtroDTO.activo,
                 micrasDelCartucho = filtroDTO.datoExtra,
-                tiempoDeVidaUtil = Duration.ofHours(filtroDTO.tiempoDeVidaUtil.toLong()),
-                vidaRestante = Duration.ofHours(filtroDTO.tiempoDeVidaUtil.toLong())
+                tiempoDeVidaUtil = filtroDTO.tiempoDeVidaUtil
             )
             else -> throw IllegalArgumentException("Tipo de filtro no reconocido")
         }

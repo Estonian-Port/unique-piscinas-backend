@@ -7,5 +7,6 @@ data class FiltroResponseDto (
     val modelo: String,
     val diametro: Double,
     val activo: Boolean,
-    val datoExtra: Double
+    val datoExtra: Double,
+    val vidaRestante: Int?
 )

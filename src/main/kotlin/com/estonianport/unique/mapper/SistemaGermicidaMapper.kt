@@ -15,9 +15,9 @@ object SistemaGermicidaMapper {
             id = germicida.id.toString(),
             tipo = germicida.tipo(),
             marca = germicida.marca,
-            vidaRestante = germicida.vidaRestante().toString(),
+            vidaRestante = (germicida.vidaRestante / 60).toString(),
             activo = germicida.activo,
-            estado = germicida.estado(),
+            estado = condicionToString(germicida.condicion!!),
             datoExtra = when (germicida) {
                 is UV -> germicida.potencia
                 is Ionizador -> germicida.electrodos
@@ -27,6 +27,16 @@ object SistemaGermicidaMapper {
         )
     }
 
+    private fun condicionToString(condicion: CondicionType): String {
+        return when (condicion) {
+            CondicionType.OPERATIVO -> "Operativo"
+            CondicionType.REQUIERE_REVISION -> "Requiere revisión"
+            CondicionType.REEMPLAZO_URGENTE -> "Reemplazo urgente"
+            CondicionType.MANTENIMIENTO -> "Mantenimiento"
+        }
+    }
+
+
     fun buildSistemaGermicida (germicida: SistemaGermicidaRequestDto) : SistemaGermicida {
         when (germicida.tipo) {
             "UV" -> {
@@ -35,6 +45,7 @@ object SistemaGermicidaMapper {
                     marca = germicida.marca,
                     estado = CondicionType.OPERATIVO,
                     potencia = germicida.datoExtra,
+                    vidaUtil = germicida.vidaUtil
                 )
             }
             "IONIZADOR" -> {
@@ -43,6 +54,7 @@ object SistemaGermicidaMapper {
                     marca = germicida.marca,
                     estado = CondicionType.OPERATIVO,
                     electrodos = germicida.datoExtra,
+                    vidaUtil = germicida.vidaUtil
                 )
             }
             "TRASDUCTOR" -> {
@@ -51,6 +63,7 @@ object SistemaGermicidaMapper {
                     marca = germicida.marca,
                     estado = CondicionType.OPERATIVO,
                     potencia = germicida.datoExtra,
+                    vidaUtil = germicida.vidaUtil
                 )
             }
             else -> throw IllegalArgumentException("Tipo de sistema germicida no soportado: ${germicida.tipo}")
