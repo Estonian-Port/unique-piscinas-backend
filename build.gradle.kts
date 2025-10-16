@@ -26,7 +26,6 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-mail")
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-starter-web")
-	implementation("com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("com.github.librepdf:openpdf:1.3.30")
@@ -36,7 +35,8 @@ dependencies {
 	implementation("commons-validator:commons-validator:1.7")
     implementation("io.prometheus:prometheus-metrics-core:1.0.0")
 	implementation("org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5")
-	developmentOnly("org.springframework.boot:spring-boot-devtools")
+    implementation("org.springframework.boot:spring-boot-starter-quartz") //QUARTZ
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly("org.postgresql:postgresql")
 	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
 	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")

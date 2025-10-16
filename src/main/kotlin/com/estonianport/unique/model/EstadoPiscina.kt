@@ -44,6 +44,9 @@ class EstadoPiscina(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0
 
+    @Column
+    val ultimaActividad: LocalDateTime? = null
+
     companion object {
         fun estadoInicial(piscina: Piscina): EstadoPiscina {
             return EstadoPiscina(

@@ -1,24 +1,24 @@
 package com.estonianport.unique.model
 
-import com.estonianport.unique.model.enums.FuncionFiltroType
+import com.estonianport.unique.model.enums.ProgramacionType
 import jakarta.persistence.*
 import java.time.DayOfWeek
 import java.time.LocalTime
 
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-abstract class Programacion(
+@Table(name = "programaciones")
+class Programacion(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
+    var id: Long? = null,
 
-    @Column
+    @Column(name = "hora_inicio", nullable = false)
     var horaInicio: LocalTime,
 
-    @Column
+    @Column(name = "hora_fin", nullable = false)
     var horaFin: LocalTime,
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
         name = "programacion_dia",
         joinColumns = [JoinColumn(name = "programacion_id")]
@@ -27,42 +27,10 @@ abstract class Programacion(
     @Column(name = "dia")
     var dias: MutableList<DayOfWeek> = mutableListOf(),
 
-    @Column
-    var activa: Boolean,
-)
+    @Column(nullable = false)
+    var activa: Boolean = true,
 
-@DiscriminatorValue("ILUMINACION")
-@Entity
-class ProgramacionIluminacion(
-    id: Long?,
-    horaInicio: LocalTime,
-    horaFin: LocalTime,
-    dias: MutableList<DayOfWeek> = mutableListOf(),
-    activa: Boolean,
-) : Programacion(
-    id = id,
-    horaInicio = horaInicio,
-    horaFin = horaFin,
-    dias = dias,
-    activa = activa,
-)
-
-@DiscriminatorValue("FILTRADO")
-@Entity
-class ProgramacionFiltrado(
-    id: Long?,
-    horaInicio: LocalTime,
-    horaFin: LocalTime,
-    dias: MutableList<DayOfWeek> = mutableListOf(),
-    activa: Boolean,
-
-    @Column(name="funcion_filtro")
     @Enumerated(EnumType.STRING)
-    var funcionFiltroType: FuncionFiltroType = FuncionFiltroType.FILTRAR,
-) : Programacion(
-    id = id,
-    horaInicio = horaInicio,
-    horaFin = horaFin,
-    dias = dias,
-    activa = activa,
+    @Column(nullable = false)
+    var tipo: ProgramacionType,
 )
