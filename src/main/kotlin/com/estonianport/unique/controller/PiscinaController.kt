@@ -128,7 +128,7 @@ class PiscinaController {
         )
     }
 
-    @GetMapping("lecturas/{piscinaId}")
+    @GetMapping("/lecturas/{piscinaId}")
     fun getLecturasPiscina(@PathVariable piscinaId: Long): ResponseEntity<CustomResponse> {
         val lecturas = piscinaService.getLecturasPiscina(piscinaId)
         println(lecturas)
@@ -157,7 +157,7 @@ class PiscinaController {
         )
     }
 
-    @GetMapping("programacion/{piscinaId}")
+    @GetMapping("/programacion/{piscinaId}")
     fun getProgramacionPiscina(@PathVariable piscinaId: Long): ResponseEntity<CustomResponse> {
         return ResponseEntity.status(200).body(
             CustomResponse(
@@ -324,7 +324,7 @@ class PiscinaController {
         )
     }
 
-    @PutMapping("update-compuestos/{piscinaId}")
+    @PutMapping("/update-compuestos/{piscinaId}")
     fun updateCompuestosPiscina(
         @PathVariable piscinaId: Long,
         @RequestBody compuestos: PiscinaCompuestosRequestDto

@@ -1,6 +1,5 @@
 package com.estonianport.unique.common.quartz
 
-import EnviarComandoPiscinaJob
 import org.quartz.*
 import org.springframework.stereotype.Service
 import java.time.DayOfWeek

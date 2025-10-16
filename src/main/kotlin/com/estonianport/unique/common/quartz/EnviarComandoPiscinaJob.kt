@@ -1,3 +1,5 @@
+package com.estonianport.unique.common.quartz
+
 import com.estonianport.unique.common.mqtt.MqttPublisherService
 import org.quartz.Job
 import org.quartz.JobExecutionContext
