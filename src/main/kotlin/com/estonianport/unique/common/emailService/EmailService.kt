@@ -4,6 +4,7 @@ import com.estonianport.unique.common.errors.BusinessException
 import com.estonianport.unique.dto.request.UsuarioRequestDto
 import com.estonianport.unique.model.Usuario
 import jakarta.mail.MessagingException
+import jakarta.mail.internet.InternetAddress
 import jakarta.mail.internet.MimeMessage
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.mail.javamail.JavaMailSender
@@ -36,6 +37,7 @@ class EmailService {
             helper.setTo(email)
             helper.setText(textMessage, true)
             helper.setSubject(subject)
+            helper.setFrom(InternetAddress("estonianport@gmail.com", "Estonian Port"))
             sender.send(message)
         } catch (e: MessagingException) {
             throw BusinessException("No se pudo enviar el mail")
