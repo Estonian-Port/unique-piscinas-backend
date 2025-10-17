@@ -143,6 +143,10 @@ class Piscina(
         registros.remove(registro)
     }
 
+    fun agregarNuevoEstadoPiscina(estadoPiscina: EstadoPiscina) {
+        estados.add(estadoPiscina)
+    }
+
     fun realizarLectura(lectura: Lectura) {
         // Implementación de la función para realizar una lectura de la piscina mediante la placa de control.
         lecturas.add(lectura)
