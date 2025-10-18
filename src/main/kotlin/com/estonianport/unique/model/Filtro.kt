@@ -7,7 +7,8 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Inheritance
 import jakarta.persistence.InheritanceType
-import java.time.Duration
+import java.time.LocalDate
+import java.time.Period
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -19,11 +20,15 @@ abstract class Filtro(
     var modelo: String,
     var diametro: Double,
     var activo: Boolean = true,
-    var tiempoDeVidaUtil: Duration = Duration.ZERO,
-    var vidaRestante: Duration = tiempoDeVidaUtil,
+    var tiempoDeVidaUtil: Int,
+    var fechaAlta: LocalDate = LocalDate.now(),
 ) {
-    fun filtroUsado (tiempoUsado : Duration) {
-        vidaRestante -= tiempoUsado
+    fun vidaRestante(): Int? {
+        val fechaVencimiento = fechaAlta.plusYears(tiempoDeVidaUtil.toLong())
+        val ahora = LocalDate.now()
+        if (ahora.isAfter(fechaVencimiento)) return 0 // ya venció
+        val mesesRestantes = Period.between(ahora, fechaVencimiento).toTotalMonths()
+        return if (mesesRestantes <= 3) mesesRestantes.toInt() else null
     }
 }
 
@@ -35,10 +40,10 @@ class FiltroArena(
     modelo: String,
     diametro: Double,
     activo: Boolean = true,
-    tiempoDeVidaUtil: Duration,
-    vidaRestante: Duration,
+    tiempoDeVidaUtil: Int,
+    fechaAlta: LocalDate = LocalDate.now(),
     var cantidadArena: Int
-) : Filtro(id, marca, modelo, diametro, activo, tiempoDeVidaUtil, vidaRestante)
+) : Filtro(id, marca, modelo, diametro, activo, tiempoDeVidaUtil, fechaAlta)
 
 @DiscriminatorValue("VIDRIO")
 @Entity
@@ -48,10 +53,10 @@ class FiltroVidrio(
     modelo: String,
     diametro: Double,
     activo: Boolean = true,
-    tiempoDeVidaUtil: Duration,
-    vidaRestante: Duration,
+    tiempoDeVidaUtil: Int,
+    fechaAlta: LocalDate = LocalDate.now(),
     var cantidadVidrio: Int
-) : Filtro(id, marca, modelo, diametro, activo, tiempoDeVidaUtil, vidaRestante)
+) : Filtro(id, marca, modelo, diametro, activo, tiempoDeVidaUtil, fechaAlta)
 
 @DiscriminatorValue("CARTUCHO")
 @Entity
@@ -61,10 +66,10 @@ class FiltroCartucho(
     modelo: String,
     diametro: Double,
     activo: Boolean = true,
-    tiempoDeVidaUtil: Duration,
-    vidaRestante: Duration,
+    tiempoDeVidaUtil: Int,
+    fechaAlta: LocalDate = LocalDate.now(),
     var micrasDelCartucho: Int
-) : Filtro(id, marca, modelo, diametro, activo, tiempoDeVidaUtil, vidaRestante)
+) : Filtro(id, marca, modelo, diametro, activo, tiempoDeVidaUtil, fechaAlta)
 
 
 

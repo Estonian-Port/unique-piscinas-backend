@@ -224,6 +224,20 @@ class PiscinaController {
         )
     }
 
+    @PostMapping("/reset-contador-filtro/{piscinaId}/{filtroId}")
+    fun resetContadorFiltro(
+        @PathVariable piscinaId: Long,
+        @PathVariable filtroId: Long,
+    ): ResponseEntity<CustomResponse> {
+        piscinaService.resetearContadorFiltro(piscinaId, filtroId)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Contador del Filtro actualizado correctamente",
+                data = null
+            )
+        )
+    }
+
     @PutMapping("/update-germicida/{piscinaId}")
     fun updateGermicidaPiscina(
         @PathVariable piscinaId: Long,
@@ -234,6 +248,20 @@ class PiscinaController {
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Sistema germicida actualizado correctamente",
+                data = null
+            )
+        )
+    }
+
+    @PostMapping("/reset-contador-germicida/{piscinaId}/{germicidaId}")
+    fun resetContadorGermicida(
+        @PathVariable piscinaId: Long,
+        @PathVariable germicidaId: Long,
+    ): ResponseEntity<CustomResponse> {
+        piscinaService.resetearContadorGermicida(piscinaId, germicidaId)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Contador del Germicida actualizado correctamente",
                 data = null
             )
         )
@@ -423,78 +451,5 @@ class PiscinaController {
             )
         )
     }
-
-    @PutMapping("/update-entrada-agua/{piscinaId}")
-    fun updateEntradaAgua(
-        @PathVariable piscinaId: Long,
-        @RequestBody entradaAgua: List<String>
-    ): ResponseEntity<CustomResponse> {
-        val nuevasEntradas = entradaAgua.map { EntradaAguaType.valueOf(it.uppercase()) }.toMutableList()
-        estadoPiscinaService.updateEntradaAgua(piscinaId, nuevasEntradas)
-        val piscinaprueba = PiscinaMapper.buildPiscinaResumenResponseDto(
-            piscinaService.findById(piscinaId),
-            estadoPiscinaService.findEstadoActualByPiscinaId(piscinaId)
-        )
-        return ResponseEntity.status(200).body(
-            CustomResponse(
-                message = "Entrada de agua actualizada correctamente",
-                data = PiscinaMapper.buildPiscinaResumenResponseDto(
-                    piscinaService.findById(piscinaId),
-                    estadoPiscinaService.findEstadoActualByPiscinaId(piscinaId)
-                )
-            )
-        )
-    }
-
-    @PutMapping("/update-funcion-filtro/{piscinaId}")
-    fun updateFuncionActiva(
-        @PathVariable piscinaId: Long,
-        @RequestBody funcionActiva: FuncionFiltroRequestDto
-    ): ResponseEntity<CustomResponse> {
-        val nuevaFuncionActiva = FuncionFiltroType.valueOf(funcionActiva.funcion.uppercase())
-        if (nuevaFuncionActiva == FuncionFiltroType.REPOSO) {
-            estadoPiscinaService.desactivarFuncionActiva(piscinaId)
-            return ResponseEntity.status(200).body(
-                CustomResponse(
-                    message = "Función activa desactivada correctamente",
-                    data = null
-                )
-            )
-        }
-
-        estadoPiscinaService.updateFuncionActiva(piscinaId, nuevaFuncionActiva)
-        return ResponseEntity.status(200).body(
-            CustomResponse(
-                message = "Función activa actualizada correctamente",
-                data = null
-            )
-        )
-    }
-
-    @PutMapping("/update-estado-filtro/{piscinaId}")
-    fun updateEstadoFiltro(
-        @PathVariable piscinaId: Long,
-        @RequestBody funcionActiva: FuncionFiltroRequestDto,
-        @RequestBody entradaAgua: List<String>
-    ): ResponseEntity<CustomResponse> {
-        val patentePlaqueta = piscinaService.getPatentePlaqueta(piscinaId)
-        val nuevaFuncionActiva = FuncionFiltroType.valueOf(funcionActiva.funcion.uppercase())
-        val nuevasEntradas = entradaAgua.map { EntradaAguaType.valueOf(it.uppercase()) }.toMutableList()
-        mqttPublisherService.sendCommandList(patentePlaqueta, nuevasEntradas, nuevaFuncionActiva)
-        val ultimoEstado = mqttPublisherService.sendCommand(patentePlaqueta, "tomar_muestra")
-        // SI VAMOS A GUARDAR TODOS LOS ESTADOS SIMPLEMENTE SE HACE UN SAVE, SI ES UN SOLO ESTADO QUE SE ACTUALIZA
-        // HAY QUE HACER UPDATE DE TODOS LOS DATOS
-        val estadoPiscina = estadoPiscinaService.findEstadoActualByPiscinaId(piscinaId)
-        return ResponseEntity.status(200).body(
-            CustomResponse(
-                message = "Comando enviado correctamente",
-                data = PiscinaMapper.buildPiscinaResumenResponseDto(
-                    piscinaService.findById(piscinaId),
-                    estadoPiscina
-                )
-            )
-        )
-    }
-
 
 }

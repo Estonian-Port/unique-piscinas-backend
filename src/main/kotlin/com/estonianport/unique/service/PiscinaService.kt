@@ -6,6 +6,9 @@ import com.estonianport.unique.common.quartz.QuartzSchedulerService
 import com.estonianport.unique.model.Bomba
 import com.estonianport.unique.model.Calefaccion
 import com.estonianport.unique.model.Filtro
+import com.estonianport.unique.model.FiltroArena
+import com.estonianport.unique.model.FiltroCartucho
+import com.estonianport.unique.model.FiltroVidrio
 import com.estonianport.unique.model.Ionizador
 import com.estonianport.unique.model.Piscina
 import com.estonianport.unique.model.Programacion
@@ -19,6 +22,7 @@ import org.springframework.stereotype.Service
 import java.sql.Timestamp
 import java.time.DayOfWeek
 import java.time.Duration
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.temporal.TemporalAdjusters
@@ -258,17 +262,7 @@ class PiscinaService(
                     "fin_${programacion.id}_${dia.name}"
                 )
             }
-
-            // 🔹 4. Calcular próxima ejecución visible para el front
-//            programacionExistente.proximaEjecucion = programacion.dias.minOfOrNull {
-//                quartzSchedulerService.calcularProximaEjecucion(it, programacion.horaInicio)
-//            }
         }
-//        else {
-//            // Si la desactivás, limpiamos el campo proxima_ejecucion
-//            programacionExistente.proximaEjecucion = null
-//        }
-
         piscinaRepository.save(piscina)
     }
 
@@ -307,7 +301,29 @@ class PiscinaService(
         if (piscina.filtro.id != filtroActualizado.id) {
             throw NotFoundException("El filtro con ID: ${filtroActualizado.id} no pertenece a la piscina con ID: $piscinaId")
         }
-        piscina.filtro = filtroActualizado //REVISAR ESTO!
+        piscina.filtro.apply {
+            marca = filtroActualizado.marca
+            modelo = filtroActualizado.modelo
+            diametro = filtroActualizado.diametro
+            if (this is FiltroArena && filtroActualizado is FiltroArena) {
+                this.cantidadArena = filtroActualizado.cantidadArena
+            }
+            if (this is FiltroVidrio && filtroActualizado is FiltroVidrio) {
+                this.cantidadVidrio = filtroActualizado.cantidadVidrio
+            }
+            if (this is FiltroCartucho && filtroActualizado is FiltroCartucho) {
+                this.micrasDelCartucho = filtroActualizado.micrasDelCartucho
+            }
+        }
+        piscinaRepository.save(piscina)
+    }
+
+    fun resetearContadorFiltro(piscinaId: Long, filtroId: Long) {
+        val piscina = findById(piscinaId)
+        if (piscina.filtro.id != filtroId) {
+            throw NotFoundException("El filtro con ID: $filtroId no pertenece a la piscina con ID: $piscinaId")
+        }
+        piscina.filtro.fechaAlta = LocalDate.now()
         piscinaRepository.save(piscina)
     }
 
@@ -327,6 +343,14 @@ class PiscinaService(
         if (germicidaActualizada is Trasductor && germicida is Trasductor) {
             germicida.potencia = germicidaActualizada.potencia
         }
+        piscinaRepository.save(piscina)
+    }
+
+    fun resetearContadorGermicida(piscinaId: Long, germicidaId: Long) {
+        val piscina = findById(piscinaId)
+        val germicida = piscina.sistemaGermicida.find { it.id == germicidaId }
+            ?: throw NotFoundException("El sistema germicida con ID: $germicidaId no pertenece a la piscina con ID: $piscinaId")
+        germicida.resetearVida()
         piscinaRepository.save(piscina)
     }
 
