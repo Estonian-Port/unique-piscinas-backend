@@ -79,7 +79,7 @@ class MqttSubscriberService(
             val estado = EstadoPiscina(
                 piscina = piscina,
                 entradaAguaActiva = dto.entradaAguaActiva.toMutableList(),
-                sistemaGermicidaActivo = dto.sistemaGermicidaActivo,
+                sistemasGermicida = dto.sistemaGermicidaActivo.toMutableSet(),
                 funcionFiltroActivo = dto.funcionFiltroActivo,
                 calefaccionActiva = dto.calefaccionActiva
             )

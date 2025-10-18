@@ -36,7 +36,7 @@ class EstadoPiscina(
     var fecha: LocalDateTime = LocalDateTime.now(),
 
     @Column
-    var lucesManuales: Boolean = false,
+    var luces: Boolean = false,
 
     ) {
     var inicioTrabajoFiltro: LocalDateTime = LocalDateTime.now()
@@ -93,7 +93,7 @@ class EstadoPiscina(
             sistemasGermicida = sistemasGermicida.toMutableSet(),
             calefaccionActiva = calefaccionActiva,
             fecha = LocalDateTime.now(),
-            lucesManuales = lucesManuales
+            luces = luces
         )
     }
 

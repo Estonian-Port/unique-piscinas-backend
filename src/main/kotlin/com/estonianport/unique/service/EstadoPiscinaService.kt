@@ -97,11 +97,11 @@ class EstadoPiscinaService(
         val estadoActualPiscina = estadoPiscinaRepository.findEstadoActualByPiscinaId(piscinaId)
             ?: throw NotFoundException("Estado de piscina no encontrado con ID: $piscinaId")
 
-        if (estadoActualPiscina.lucesManuales) {
+        if (estadoActualPiscina.luces) {
             //mqttPublisherService.sendCommand(patentePlaqueta, "desactivar_luces")
 
             val nuevoEstadoPiscina = estadoActualPiscina.copy().apply {
-                lucesManuales = false
+                luces = false
             }
 
             println("Simulando envío de comando MQTT: desactivar_luces a la plaqueta con patente $patentePlaqueta")
@@ -116,11 +116,11 @@ class EstadoPiscinaService(
         val estadoActualPiscina = estadoPiscinaRepository.findEstadoActualByPiscinaId(piscinaId)
             ?: throw NotFoundException("Estado de piscina no encontrado con ID: $piscinaId")
 
-        if (!estadoActualPiscina.lucesManuales) {
+        if (!estadoActualPiscina.luces) {
             //mqttPublisherService.sendCommand(patentePlaqueta, "activar_luces")
 
             val nuevoEstadoPiscina = estadoActualPiscina.copy().apply {
-                lucesManuales = true
+                luces = true
             }
 
             println("Simulando envío de comando MQTT: activar_luces a la plaqueta con patente $patentePlaqueta")
