@@ -1,5 +1,6 @@
 package com.estonianport.unique.model
 
+import com.estonianport.unique.model.enums.BombaType
 import jakarta.persistence.*
 
 @Entity
@@ -19,4 +20,7 @@ data class Bomba(
 
     @Column
     var activa: Boolean = false,
+
+    @Enumerated(EnumType.STRING)
+    val tipo: BombaType = BombaType.PRINCIPAL,
 ) {}

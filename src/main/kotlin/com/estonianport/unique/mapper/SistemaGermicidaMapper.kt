@@ -45,7 +45,7 @@ object SistemaGermicidaMapper {
                     marca = germicida.marca,
                     estado = CondicionType.OPERATIVO,
                     potencia = germicida.datoExtra,
-                    vidaUtil = germicida.vidaUtil
+                    tiempoVidaUtil = germicida.tiempoVidaUtil
                 )
             }
             "IONIZADOR" -> {
@@ -54,7 +54,7 @@ object SistemaGermicidaMapper {
                     marca = germicida.marca,
                     estado = CondicionType.OPERATIVO,
                     electrodos = germicida.datoExtra,
-                    vidaUtil = germicida.vidaUtil
+                    tiempoVidaUtil = germicida.tiempoVidaUtil
                 )
             }
             "TRASDUCTOR" -> {
@@ -63,7 +63,7 @@ object SistemaGermicidaMapper {
                     marca = germicida.marca,
                     estado = CondicionType.OPERATIVO,
                     potencia = germicida.datoExtra,
-                    vidaUtil = germicida.vidaUtil
+                    tiempoVidaUtil = germicida.tiempoVidaUtil
                 )
             }
             else -> throw IllegalArgumentException("Tipo de sistema germicida no soportado: ${germicida.tipo}")

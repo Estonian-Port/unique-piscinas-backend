@@ -102,7 +102,11 @@ object PiscinaMapper{
             id = piscina.id,
             direccion = piscina.direccion,
             esDesbordante = piscina.esDesbordante,
-            nombreAdministrador = (piscina.administrador?.nombre + ' ' + piscina.administrador?.apellido),
+            if (piscina.administrador != null) {
+                piscina.administrador!!.nombre + ' ' + piscina.administrador!!.apellido
+            } else {
+                "Sin administrador"
+            },
             ph = ph ?: 0.0,
             sistemasGermicidas = piscina.sistemaGermicida.map {
                 SistemaGermicidaMapper.buildSistemaGermicidaResponseDto(

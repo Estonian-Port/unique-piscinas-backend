@@ -6,4 +6,5 @@ data class BombaResponseDto (
     val modelo: String,
     val potencia: String,
     val activa: Boolean,
+    val tipo: String,
 )

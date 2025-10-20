@@ -23,12 +23,22 @@ abstract class Filtro(
     var tiempoDeVidaUtil: Int,
     var fechaAlta: LocalDate = LocalDate.now(),
 ) {
-    fun vidaRestante(): Int? {
+    fun vidaRestante(): String {
         val fechaVencimiento = fechaAlta.plusYears(tiempoDeVidaUtil.toLong())
         val ahora = LocalDate.now()
-        if (ahora.isAfter(fechaVencimiento)) return 0 // ya venció
-        val mesesRestantes = Period.between(ahora, fechaVencimiento).toTotalMonths()
-        return if (mesesRestantes <= 3) mesesRestantes.toInt() else null
+        if (ahora.isAfter(fechaVencimiento)) return "Vencido"
+        val period = Period.between(ahora, fechaVencimiento)
+        val totalMeses = period.years * 12 + period.months
+        if (totalMeses >= 12) {
+            val anios = totalMeses / 12
+            val meses = totalMeses % 12
+            if (meses > 1) return "$anios años $meses meses"
+            return if (meses == 1) "$anios años $meses mes" else "$anios años"
+        }
+        if (totalMeses > 1) return "$totalMeses meses"
+        if (totalMeses == 1) return "$totalMeses mes"
+        val dias = period.days
+        return if (dias > 1) "$dias días" else if (dias == 1) "$dias día" else "Menos de un día"
     }
 }
 

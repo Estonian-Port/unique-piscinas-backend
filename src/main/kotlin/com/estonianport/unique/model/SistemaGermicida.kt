@@ -11,11 +11,11 @@ abstract class SistemaGermicida(
     val id: Long,
     var activo: Boolean =true,
     var marca: String,
-    var vidaUtil: Int,
+    var tiempoVidaUtil: Int,
     @Enumerated(EnumType.STRING)
     var condicion: CondicionType? = null
 ) {
-    var vidaRestante: Int = vidaUtil * 60 // Vida util en minutos
+    var vidaRestante: Int = tiempoVidaUtil * 60 // Vida util en minutos
 
     fun descontarVida(tiempoUso : Int) { // tiempoUso en minutos
         vidaRestante -= tiempoUso
@@ -25,7 +25,7 @@ abstract class SistemaGermicida(
     }
 
     fun resetearVida() {
-        vidaRestante = vidaUtil * 60
+        vidaRestante = tiempoVidaUtil * 60
         verificarEstado()
     }
 
@@ -57,10 +57,10 @@ class UV(
     id: Long,
     activo: Boolean = true,
     marca: String,
-    vidaUtil: Int,
+    tiempoVidaUtil: Int,
     estado: CondicionType,
     var potencia: Double
-) : SistemaGermicida(id, activo, marca, vidaUtil, estado)
+) : SistemaGermicida(id, activo, marca, tiempoVidaUtil, estado)
 
 @DiscriminatorValue("IONIZADOR")
 @Entity
@@ -68,10 +68,10 @@ class Ionizador(
     id: Long,
     activo: Boolean = true,
     marca: String,
-    vidaUtil: Int,
+    tiempoVidaUtil: Int,
     estado: CondicionType,
     var electrodos: Double
-) : SistemaGermicida(id, activo, marca, vidaUtil, estado)
+) : SistemaGermicida(id, activo, marca, tiempoVidaUtil, estado)
 
 @DiscriminatorValue("TRASDUCTOR")
 @Entity
@@ -79,7 +79,7 @@ class Trasductor(
     id: Long,
     activo: Boolean = true,
     marca: String,
-    vidaUtil: Int,
+    tiempoVidaUtil: Int,
     estado: CondicionType,
     var potencia: Double
-) : SistemaGermicida(id, activo, marca, vidaUtil, estado)
+) : SistemaGermicida(id, activo, marca, tiempoVidaUtil, estado)
