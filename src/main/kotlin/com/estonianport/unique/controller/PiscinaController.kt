@@ -357,7 +357,7 @@ class PiscinaController {
         @PathVariable piscinaId: Long,
         @RequestBody compuestos: PiscinaCompuestosRequestDto
     ): ResponseEntity<CustomResponse> {
-        piscinaService.updateCompuestos(piscinaId, compuestos.orp, compuestos.controlPh, compuestos.cloroSalino)
+        piscinaService.updateCompuestos(piscinaId, compuestos.orp, compuestos.controlPH, compuestos.cloroSalino)
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Compuestos de la piscina actualizados correctamente",
