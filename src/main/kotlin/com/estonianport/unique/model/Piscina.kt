@@ -152,6 +152,30 @@ class Piscina(
         lecturas.add(lectura)
     }
 
+    fun desactivarSistemasGermicidas(tiempoUso: Int) {
+        if (sistemaGermicida.isNotEmpty()) {
+            sistemaGermicida.forEach { it.descontarVida(tiempoUso) }
+        }
+    }
+
+    fun activarSistemasGermicidas() {
+        if (sistemaGermicida.isNotEmpty()) {
+            sistemaGermicida.forEach { it.activo = true }
+        }
+    }
+
+    fun verificarEstados() {
+        val estadoActual = estados.maxByOrNull { it.fecha } ?: return
+
+        if (estadoActual.funcionFiltroActivo != FuncionFiltroType.REPOSO) {
+            filtro.activo = true
+            bomba.first().activa = true
+        } else {
+            filtro.activo = false
+            bomba.first().activa = false
+        }
+    }
+
     @Transient
     fun todasLasLecturas(): List<LecturaBase> {
         return (lecturas + erroresLectura).sortedBy { it.fecha }

@@ -39,7 +39,9 @@ class EstadoPiscinaService(
         //si esta en reposo no se envian comandos porque no hay filtro activo y pueden pasar dos cosas
         //1. si pasan los 30 segundos y no se activo el filtro, se limpia la entrada de agua automaticamente
         //2. si se activa una funcion de filtro, ahi se envian los comandos con la nueva entrada de agua desde  updateFuncionActiva()
+        println("Piscina ID: $piscinaId")
         val piscina = piscinaService.findById(piscinaId)
+        println("piscina: $piscina")
         persistirNuevoEstado(piscina, nuevoEstadoPiscina)
     }
 
@@ -66,20 +68,21 @@ class EstadoPiscinaService(
     }
 
     fun enviarComandosFiltroActivado(estadoPiscina: EstadoPiscina, patente: String) {
-        if (estadoPiscina.funcionFiltroActivo == FuncionFiltroType.FILTRAR || estadoPiscina.funcionFiltroActivo == FuncionFiltroType.RECIRCULAR) {
-            mqttPublisherService.sendCommandList(
-                patente,
-                estadoPiscina.entradaAguaActiva,
-                estadoPiscina.funcionFiltroActivo,
-                estadoPiscina.sistemasGermicida.map { SistemaGermicidaType.valueOf(it.tipo()) })
-        } else {
-            mqttPublisherService.sendCommandList(
-                patente,
-                estadoPiscina.entradaAguaActiva,
-                estadoPiscina.funcionFiltroActivo,
-                listOf()
-            )
-        }
+        println("Enviando comandos MQTT para filtro activado a la plaqueta con patente $patente")
+//        if (estadoPiscina.funcionFiltroActivo == FuncionFiltroType.FILTRAR || estadoPiscina.funcionFiltroActivo == FuncionFiltroType.RECIRCULAR) {
+//            mqttPublisherService.sendCommandList(
+//                patente,
+//                estadoPiscina.entradaAguaActiva,
+//                estadoPiscina.funcionFiltroActivo,
+//                estadoPiscina.sistemasGermicida.map { SistemaGermicidaType.valueOf(it.tipo()) })
+//        } else {
+//            mqttPublisherService.sendCommandList(
+//                patente,
+//                estadoPiscina.entradaAguaActiva,
+//                estadoPiscina.funcionFiltroActivo,
+//                listOf()
+//            )
+//        }
     }
 
     fun enviarComandosFiltroDesactivado(estadoPiscina: EstadoPiscina, patente: String) {
@@ -131,6 +134,7 @@ class EstadoPiscinaService(
 
     fun persistirNuevoEstado (piscina: Piscina, nuevoEstado: EstadoPiscina) {
         piscina.agregarNuevoEstadoPiscina(nuevoEstado)
+        piscina.verificarEstados()
         piscinaRepository.save(piscina)
     }
 

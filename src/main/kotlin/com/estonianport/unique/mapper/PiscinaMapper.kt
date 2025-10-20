@@ -6,6 +6,8 @@ import com.estonianport.unique.model.EstadoPiscina
 import com.estonianport.unique.model.Piscina
 import com.estonianport.unique.model.Plaqueta
 import com.estonianport.unique.model.enums.toCapitalized
+import java.time.Duration
+import java.time.LocalDateTime
 
 object PiscinaMapper{
 
@@ -25,7 +27,7 @@ object PiscinaMapper{
             clima = piscina.climaLocal().toString(),
             entradaAgua = estadoPiscina.entradaAguaActiva.map { it.toCapitalized() }.toList(),
             funcionActiva = estadoPiscina.funcionFiltroActivo,
-            sistemasGermicidas = estadoPiscina.sistemasGermicida.map{ it.tipo() }.toList(),
+            sistemasGermicidas = piscina.sistemaGermicida.map{ it.tipo() }.toList(),
             calefaccion = estadoPiscina.calefaccionActiva,
             esDesbordante = piscina.esDesbordante,
         )
@@ -47,7 +49,7 @@ object PiscinaMapper{
             entradaAgua = estadoPiscina.entradaAguaActiva.map { it.toCapitalized() }.toList(),
             funcionActiva = estadoPiscina.funcionFiltroActivo,
             presion = presionPiscina,
-            ultimaActividad = estadoPiscina.ultimaActividad?.toString(),
+            ultimaActividad = calcularUltimaActividad(estadoPiscina.ultimaActividad),
             proximoCiclo = proximoCicloFiltrado,
             bombas = piscina.bomba.map { BombaMapper.buildBombaResponseDto(it) }.toList(),
             filtro = FiltroMapper.buildFiltroResponseDto(piscina.filtro),
@@ -57,6 +59,24 @@ object PiscinaMapper{
                 )
             }.toList(),
         )
+    }
+
+    fun calcularUltimaActividad(ultimaActividad : LocalDateTime?) : String {
+        if (ultimaActividad == null) {
+            return "Sin actividad registrada"
+        }
+        val ahora = LocalDateTime.now()
+        val duracion = Duration.between(ultimaActividad, ahora)
+        val minutos = duracion.toMinutes()
+        val horas = duracion.toHours()
+        val dias = duracion.toDays()
+
+        return when {
+            dias > 0 -> "Hace ${dias}d ${horas}h ${minutos}m"
+            horas > 0 -> "Hace ${horas}h ${minutos}m"
+            minutos > 0 -> "Hace ${minutos}m"
+            else -> "Hace menos de un minuto"
+        }
     }
 
     fun buildPiscinaProgramacionResponseDto(piscina: Piscina): PiscinaProgramacionResponseDto {

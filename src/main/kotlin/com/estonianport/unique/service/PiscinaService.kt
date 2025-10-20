@@ -113,10 +113,10 @@ class PiscinaService(
         val horas = duracion.toHours() % 24
         val minutos = ceil(duracion.seconds / 60.0).toLong() % 60
         return when {
-            dias > 0 -> "${dias}d ${horas}h ${minutos}m"
-            horas > 0 -> "${horas}h ${minutos}m"
-            minutos > 0 -> "${minutos}m"
-            else -> "Menos de un minuto"
+            dias > 0 -> "En ${dias}d ${horas}h ${minutos}m"
+            horas > 0 -> "En ${horas}h ${minutos}m"
+            minutos > 0 -> "En ${minutos}m"
+            else -> "En menos de un minuto"
         }
     }
 

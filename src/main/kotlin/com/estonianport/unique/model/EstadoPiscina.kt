@@ -25,10 +25,6 @@ class EstadoPiscina(
     @Enumerated(EnumType.STRING)
     var funcionFiltroActivo: FuncionFiltroType,
 
-    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
-    @JoinColumn(name = "piscina_id")
-    val sistemasGermicida: MutableSet<SistemaGermicida>,
-
     @Column
     val calefaccionActiva: Boolean,
 
@@ -54,7 +50,7 @@ class EstadoPiscina(
             funcionFiltroActivo = funcion
             if (funcion == FuncionFiltroType.FILTRAR || funcion == FuncionFiltroType.RECIRCULAR) {
                 inicioTrabajoFiltro = LocalDateTime.now()
-                activarSistemasGermicidas()
+                piscina.activarSistemasGermicidas()
             }
         }
     }
@@ -62,16 +58,10 @@ class EstadoPiscina(
     fun desactivarFuncionFiltro() {
         if (funcionFiltroActivo == FuncionFiltroType.FILTRAR || funcionFiltroActivo == FuncionFiltroType.RECIRCULAR) {
             finTrabajoFiltro = LocalDateTime.now()
-            desactivarSistemasGermicidas(calcularTiempoUsoGermicidas())
+            piscina.desactivarSistemasGermicidas(calcularTiempoUsoGermicidas())
         }
         funcionFiltroActivo = FuncionFiltroType.REPOSO
         ultimaActividad = LocalDateTime.now()
-    }
-
-    fun activarSistemasGermicidas() {
-        if (sistemasGermicida.isNotEmpty()) {
-            sistemasGermicida.forEach { it.activo = true }
-        }
     }
 
     fun calcularTiempoUsoGermicidas(): Int {
@@ -79,18 +69,11 @@ class EstadoPiscina(
         return minutosUso
     }
 
-    fun desactivarSistemasGermicidas(tiempoUso: Int) {
-        if (sistemasGermicida.isNotEmpty()) {
-            sistemasGermicida.forEach { it.descontarVida(tiempoUso) }
-        }
-    }
-
     fun copy() : EstadoPiscina {
         return EstadoPiscina(
             piscina = piscina,
             entradaAguaActiva = entradaAguaActiva.toMutableList(),
             funcionFiltroActivo = funcionFiltroActivo,
-            sistemasGermicida = sistemasGermicida.toMutableSet(),
             calefaccionActiva = calefaccionActiva,
             fecha = LocalDateTime.now(),
             luces = luces
@@ -102,7 +85,6 @@ class EstadoPiscina(
             return EstadoPiscina(
                 piscina = piscina,
                 entradaAguaActiva = mutableListOf(),
-                sistemasGermicida = mutableSetOf(),
                 funcionFiltroActivo = FuncionFiltroType.REPOSO,
                 calefaccionActiva = false,
                 fecha = LocalDateTime.now()
