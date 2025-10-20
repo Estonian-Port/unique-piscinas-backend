@@ -327,7 +327,9 @@ class PiscinaController {
         @PathVariable piscinaId: Long,
         @RequestBody germicidaDto: SistemaGermicidaRequestDto
     ): ResponseEntity<CustomResponse> {
+        println(germicidaDto)
         val nuevoGermicida = SistemaGermicidaMapper.buildSistemaGermicida(germicidaDto)
+        println(nuevoGermicida)
         piscinaService.addGermicida(piscinaId, nuevoGermicida)
         return ResponseEntity.status(200).body(
             CustomResponse(

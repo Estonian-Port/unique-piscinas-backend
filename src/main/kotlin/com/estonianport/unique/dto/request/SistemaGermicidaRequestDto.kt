@@ -8,5 +8,5 @@ data class SistemaGermicidaRequestDto (
     val activo: Boolean,
     val estado: String?, // EstadoType
     val datoExtra: Double, // Potencia para UV y US, Electrodos para Ionizador
-    val vidaUtil: Int
+    val tiempoVidaUtil: Int
 )

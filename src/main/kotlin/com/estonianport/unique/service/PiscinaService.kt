@@ -291,7 +291,6 @@ class PiscinaService(
             marca = bombaActualizada.marca
             modelo = bombaActualizada.modelo
             potencia = bombaActualizada.potencia
-            activa = bombaActualizada.activa
         }
         piscinaRepository.save(piscina)
     }
@@ -383,8 +382,11 @@ class PiscinaService(
 
     fun addBomba(piscinaId: Long, bomba: Bomba) {
         val piscina = findById(piscinaId)
-        if (piscina.bomba.size >= 3) {
-            throw IllegalStateException("La piscina con ID: $piscinaId ya tiene el máximo de bombas permitidas (3)")
+        if (piscina.bomba.size >= 4) {
+            throw IllegalStateException("La piscina con ID: $piscinaId ya tiene el máximo de bombas permitidas (4)")
+        }
+        if (piscina.bomba.any { it.tipo == bomba.tipo }) {
+            throw IllegalStateException("La piscina con ID: $piscinaId ya tiene una bomba del tipo ${bomba.tipo} asignada")
         }
         piscina.bomba.add(bomba)
         piscinaRepository.save(piscina)
