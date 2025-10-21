@@ -142,7 +142,7 @@ class PiscinaService(
     }
 
     fun getPiscinasRegistradas(): List<Piscina> {
-        return piscinaRepository.findAll()
+        return piscinaRepository.findAllByOrderByDireccionAsc()
     }
 
     fun getPiscinasSinAdministrador(): List<Piscina> {

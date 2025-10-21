@@ -9,7 +9,7 @@ abstract class SistemaGermicida(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long,
-    var activo: Boolean =true,
+    var activo: Boolean = false,
     var marca: String,
     var tiempoVidaUtil: Int,
     @Enumerated(EnumType.STRING)
@@ -30,11 +30,11 @@ abstract class SistemaGermicida(
     }
 
     fun verificarEstado() {
-        condicion = if (vidaRestante > 50) {
+        condicion = if (vidaRestante > (50 * 60)) {
             CondicionType.OPERATIVO
-        } else if (vidaRestante in 25..50) {
+        } else if (vidaRestante in (25 * 60)..(50 * 60)) {
             CondicionType.REQUIERE_REVISION
-        } else if (vidaRestante in 1..24) {
+        } else if (vidaRestante in (1 * 60)..(24 * 60)) {
             CondicionType.REEMPLAZO_URGENTE
         } else {
             CondicionType.MANTENIMIENTO
@@ -55,7 +55,7 @@ abstract class SistemaGermicida(
 @Entity
 class UV(
     id: Long,
-    activo: Boolean = true,
+    activo: Boolean = false,
     marca: String,
     tiempoVidaUtil: Int,
     estado: CondicionType,
@@ -66,7 +66,7 @@ class UV(
 @Entity
 class Ionizador(
     id: Long,
-    activo: Boolean = true,
+    activo: Boolean = false,
     marca: String,
     tiempoVidaUtil: Int,
     estado: CondicionType,
@@ -77,7 +77,7 @@ class Ionizador(
 @Entity
 class Trasductor(
     id: Long,
-    activo: Boolean = true,
+    activo: Boolean = false,
     marca: String,
     tiempoVidaUtil: Int,
     estado: CondicionType,
