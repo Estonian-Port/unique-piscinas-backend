@@ -102,8 +102,8 @@ class PiscinaService(
         return proxima
     }
 
-    fun calcularTiempoRestante(piscinaId: Long): String {
-        val proximaEjecucion = getProximaProgramacionFiltrado(piscinaId) ?: return "No hay programaciones activas"
+    fun calcularTiempoRestante(piscinaId: Long): String? {
+        val proximaEjecucion = getProximaProgramacionFiltrado(piscinaId) ?: return null
         val ahora = LocalDateTime.now()
         if (proximaEjecucion.isBefore(ahora)) {
             return "El ciclo ya comenzó"
