@@ -410,48 +410,4 @@ class PiscinaController {
         )
     }
 
-    @PostMapping("/add-programacion/{piscinaId}")
-    fun createProgramacionPiscina(
-        @PathVariable piscinaId: Long,
-        @RequestBody programacionDTO: ProgramacionRequestDto
-    ): ResponseEntity<CustomResponse> {
-        val nuevaProgramacion = ProgramacionMapper.buildProgramacion(programacionDTO)
-        piscinaService.agregarProgramacion(piscinaId, nuevaProgramacion)
-        return ResponseEntity.status(200).body(
-            CustomResponse(
-                message = "Programación filtrado de la piscina creada correctamente",
-                data = null
-            )
-        )
-    }
-
-    @PutMapping("/update-programacion/{piscinaId}")
-    fun updateProgramacion(
-        @PathVariable piscinaId: Long,
-        @RequestBody programacionDTO: ProgramacionRequestDto
-    ): ResponseEntity<CustomResponse> {
-        val programacionActualizada = ProgramacionMapper.buildProgramacion(programacionDTO)
-        piscinaService.updateProgramacion(piscinaId, programacionActualizada)
-        return ResponseEntity.status(200).body(
-            CustomResponse(
-                message = "Programación de la piscina actualizada correctamente",
-                data = null
-            )
-        )
-    }
-
-    @DeleteMapping("/delete-programacion/{piscinaId}/{programacionId}")
-    fun deleteProgramacionFiltrado(
-        @PathVariable piscinaId: Long,
-        @PathVariable programacionId: Long,
-    ): ResponseEntity<CustomResponse> {
-        piscinaService.deleteProgramacion(piscinaId, programacionId)
-        return ResponseEntity.status(200).body(
-            CustomResponse(
-                message = "Programación eliminada correctamente",
-                data = null
-            )
-        )
-    }
-
 }

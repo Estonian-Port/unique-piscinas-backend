@@ -5,6 +5,7 @@ import com.estonianport.unique.dto.response.*
 import com.estonianport.unique.model.EstadoPiscina
 import com.estonianport.unique.model.Piscina
 import com.estonianport.unique.model.Plaqueta
+import com.estonianport.unique.model.enums.ProgramacionType
 import com.estonianport.unique.model.enums.toCapitalized
 import java.time.Duration
 import java.time.LocalDateTime
@@ -27,8 +28,8 @@ object PiscinaMapper{
             clima = piscina.climaLocal().toString(),
             entradaAgua = estadoPiscina.entradaAguaActiva.map { it.toCapitalized() }.toList(),
             funcionActiva = estadoPiscina.funcionFiltroActivo,
-            sistemasGermicidas = piscina.sistemaGermicida.map{ it.tipo() }.toList(),
-            calefaccion = estadoPiscina.calefaccionActiva,
+            sistemasGermicidas = piscina.sistemaGermicida.map { SistemaGermicidaMapper.buildSistemaGermicidaResponseDto(it) },
+            calefaccion = piscina.calefaccion?.let { CalefaccionMapper.buildCalefaccionResponseDto(it) },
             esDesbordante = piscina.esDesbordante,
         )
     }
@@ -80,20 +81,19 @@ object PiscinaMapper{
     }
 
     fun buildPiscinaProgramacionResponseDto(piscina: Piscina): PiscinaProgramacionResponseDto {
+        val todas = piscina.programaciones.toList()
+        val iluminacion = todas.filter { it.tipo == ProgramacionType.ILUMINACION }
+            .map { ProgramacionMapper.buildProgramacionResponseDto(it) }
+        val filtrado = todas.filter { it.tipo == ProgramacionType.FILTRADO }
+            .map { ProgramacionMapper.buildProgramacionResponseDto(it) }
+
         return PiscinaProgramacionResponseDto(
             id = piscina.id.toString(),
             direccion = piscina.direccion,
             volumen = piscina.volumen.toString(),
-            programacionIluminacion = piscina.programacionIluminacion.map {
-                ProgramacionMapper.buildProgramacionResponseDto(
-                    it
-                )
-            }.toList(),
-            programacionFiltrado = piscina.programacionFiltrado.map {
-                ProgramacionMapper.buildProgramacionResponseDto(
-                    it
-                )
-            }.toList()
+            programacionIluminacion = iluminacion,
+            programacionFiltrado = filtrado,
+            iluminacionManual = piscina.estadoActual()?.luces ?: false
         )
     }
 

@@ -80,7 +80,6 @@ class MqttSubscriberService(
                 piscina = piscina,
                 entradaAguaActiva = dto.entradaAguaActiva.toMutableList(),
                 funcionFiltroActivo = dto.funcionFiltroActivo,
-                calefaccionActiva = dto.calefaccionActiva
             )
 
             estadoPiscinaRepository.save(estado)

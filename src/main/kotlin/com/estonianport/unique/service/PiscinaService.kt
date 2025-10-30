@@ -11,12 +11,10 @@ import com.estonianport.unique.model.FiltroCartucho
 import com.estonianport.unique.model.FiltroVidrio
 import com.estonianport.unique.model.Ionizador
 import com.estonianport.unique.model.Piscina
-import com.estonianport.unique.model.Programacion
 import com.estonianport.unique.model.Registro
 import com.estonianport.unique.model.SistemaGermicida
 import com.estonianport.unique.model.Trasductor
 import com.estonianport.unique.model.UV
-import com.estonianport.unique.model.enums.ProgramacionType
 import com.estonianport.unique.repository.PiscinaRepository
 import org.springframework.stereotype.Service
 import java.sql.Timestamp
@@ -32,7 +30,6 @@ import kotlin.math.ceil
 class PiscinaService(
     private val piscinaRepository: PiscinaRepository,
     private val usuarioService: UsuarioService,
-    private val quartzSchedulerService: QuartzSchedulerService
 ) {
 
     fun getPiscinasByUsuarioId(usuarioId: Long): List<Piscina> {
@@ -164,108 +161,6 @@ class PiscinaService(
     fun create(piscina: Piscina): Piscina {
         return piscinaRepository.save(piscina)
     }
-
-    fun deleteProgramacion(piscinaId: Long, programacionId: Long) {
-        val piscina = findById(piscinaId)
-        val programacion = piscina.programacionFiltrado.find { it.id == programacionId }
-            ?: piscina.programacionIluminacion.find { it.id == programacionId }
-            ?: throw NotFoundException("Programación no encontrada")
-
-        programacion.dias.forEach { dia ->
-            quartzSchedulerService.eliminarJob("inicio_${programacionId}_${dia.name}")
-            quartzSchedulerService.eliminarJob("fin_${programacionId}_${dia.name}")
-        }
-
-        piscina.eliminarProgramacionFiltrado(programacionId)
-        piscina.eliminarProgramacionFiltrado(programacionId)
-        piscinaRepository.save(piscina)
-    }
-
-
-    fun agregarProgramacion(piscinaId: Long, nuevaProgramacion: Programacion) {
-        val piscina = findById(piscinaId)
-        val patente = piscina.plaqueta.patente
-
-        if (nuevaProgramacion.tipo == ProgramacionType.FILTRADO) {
-            piscina.agregarProgramacionFiltrado(nuevaProgramacion)
-        } else {
-            piscina.agregarProgramacionIluminacion(nuevaProgramacion)
-        }
-
-        val guardada = piscinaRepository.save(piscina)
-        val programacionId = guardada.id
-
-        // Crear jobs Quartz por cada día configurado
-        nuevaProgramacion.dias.forEach { dia ->
-            quartzSchedulerService.programarJob(
-                piscinaId,
-                patente,
-                if (nuevaProgramacion.tipo == ProgramacionType.FILTRADO) "FILTRAR" else "ENCENDER_LUCES",
-                dia,
-                nuevaProgramacion.horaInicio,
-                "inicio_${programacionId}_${dia.name}"
-            )
-            quartzSchedulerService.programarJob(
-                piscinaId,
-                patente,
-                if (nuevaProgramacion.tipo == ProgramacionType.FILTRADO) "REPOSO" else "APAGAR_LUCES",
-                dia,
-                nuevaProgramacion.horaFin,
-                "fin_${programacionId}_${dia.name}"
-            )
-        }
-    }
-
-
-    fun updateProgramacion(piscinaId: Long, programacion: Programacion) {
-        val piscina = findById(piscinaId)
-        val patente = piscina.plaqueta.patente
-
-        val programacionExistente = (
-                piscina.programacionFiltrado.find { it.id == programacion.id }
-                    ?: piscina.programacionIluminacion.find { it.id == programacion.id }
-                )
-            ?: throw NotFoundException("La programación con ID: ${programacion.id} no pertenece a la piscina con ID: $piscinaId")
-
-        // 🔹 1. Eliminar jobs anteriores
-        programacionExistente.dias.forEach { dia ->
-            quartzSchedulerService.eliminarJob("inicio_${programacion.id}_${dia.name}")
-            quartzSchedulerService.eliminarJob("fin_${programacion.id}_${dia.name}")
-        }
-
-        // 🔹 2. Actualizar campos
-        programacionExistente.apply {
-            horaInicio = programacion.horaInicio
-            horaFin = programacion.horaFin
-            dias = programacion.dias
-            activa = programacion.activa
-        }
-
-        // 🔹 3. Si está activa, crear nuevos jobs
-        if (programacion.activa) {
-            programacion.dias.forEach { dia ->
-                quartzSchedulerService.programarJob(
-                    piscinaId,
-                    patente,
-                    if (programacion.tipo == ProgramacionType.FILTRADO) "FILTRAR" else "ENCENDER_LUCES",
-                    dia,
-                    programacion.horaInicio,
-                    "inicio_${programacion.id}_${dia.name}"
-                )
-
-                quartzSchedulerService.programarJob(
-                    piscinaId,
-                    patente,
-                    if (programacion.tipo == ProgramacionType.FILTRADO) "REPOSO" else "APAGAR_LUCES",
-                    dia,
-                    programacion.horaFin,
-                    "fin_${programacion.id}_${dia.name}"
-                )
-            }
-        }
-        piscinaRepository.save(piscina)
-    }
-
 
     fun asignarAdministrador(usuarioId: Long, piscinaId: Long) {
         val usuario =

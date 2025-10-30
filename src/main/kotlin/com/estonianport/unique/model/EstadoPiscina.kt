@@ -25,9 +25,6 @@ class EstadoPiscina(
     @Enumerated(EnumType.STRING)
     var funcionFiltroActivo: FuncionFiltroType,
 
-    @Column
-    val calefaccionActiva: Boolean,
-
     @Column(nullable = false)
     var fecha: LocalDateTime = LocalDateTime.now(),
 
@@ -74,7 +71,6 @@ class EstadoPiscina(
             piscina = piscina,
             entradaAguaActiva = entradaAguaActiva.toMutableList(),
             funcionFiltroActivo = funcionFiltroActivo,
-            calefaccionActiva = calefaccionActiva,
             fecha = LocalDateTime.now(),
             luces = luces
         )
@@ -86,7 +82,6 @@ class EstadoPiscina(
                 piscina = piscina,
                 entradaAguaActiva = mutableListOf(),
                 funcionFiltroActivo = FuncionFiltroType.REPOSO,
-                calefaccionActiva = false,
                 fecha = LocalDateTime.now()
             )
         }

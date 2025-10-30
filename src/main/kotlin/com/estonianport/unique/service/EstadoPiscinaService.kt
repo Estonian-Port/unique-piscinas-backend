@@ -6,27 +6,32 @@ import com.estonianport.unique.model.EstadoPiscina
 import com.estonianport.unique.model.Piscina
 import com.estonianport.unique.model.enums.EntradaAguaType
 import com.estonianport.unique.model.enums.FuncionFiltroType
+import com.estonianport.unique.model.enums.ProgramacionType
 import com.estonianport.unique.model.enums.SistemaGermicidaType
 import com.estonianport.unique.repository.EstadoPiscinaRepository
 import com.estonianport.unique.repository.PiscinaRepository
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class EstadoPiscinaService(
     private val estadoPiscinaRepository: EstadoPiscinaRepository,
     private val piscinaRepository: PiscinaRepository,
-    private val piscinaService: PiscinaService,
     private val mqttPublisherService: MqttPublisherService
 ) {
 
     fun findEstadoActualByPiscinaId(piscinaId: Long): EstadoPiscina {
-        return estadoPiscinaRepository.findEstadoActualByPiscinaId(piscinaId) ?: EstadoPiscina.estadoInicial(
-            piscinaService.findById(piscinaId)
-        )
+        val piscina =
+            piscinaRepository.findById(piscinaId) ?: throw NotFoundException("Piscina no encontrada con ID: $piscinaId")
+
+        return estadoPiscinaRepository.findEstadoActualByPiscinaId(piscinaId)
+            ?: EstadoPiscina.estadoInicial(piscina)
     }
 
     fun updateEntradaAgua(piscinaId: Long, entradaAgua: MutableList<EntradaAguaType>) {
-        val patentePlaqueta = piscinaService.getPatentePlaqueta(piscinaId)
+        val piscina =
+            piscinaRepository.findById(piscinaId) ?: throw NotFoundException("Piscina no encontrada con ID: $piscinaId")
+        val patentePlaqueta = piscina.plaqueta.patente
         val estadoActualPiscina = findEstadoActualByPiscinaId(piscinaId)
         val nuevoEstadoPiscina = estadoActualPiscina.copy().apply {
             entradaAguaActiva.clear()
@@ -38,10 +43,9 @@ class EstadoPiscinaService(
 
         //si esta en reposo no se envian comandos porque no hay filtro activo y pueden pasar dos cosas
         //1. si pasan los 30 segundos y no se activo el filtro, se limpia la entrada de agua automaticamente
-        //2. si se activa una funcion de filtro, ahi se envian los comandos con la nueva entrada de agua desde  updateFuncionActiva()
+        //2. si se activa una funcion de filtro, ahi se envian los comandos con la nueva entrada de agua desde updateFuncionActiva()
         println("Piscina ID: $piscinaId")
-        val piscina = piscinaService.findById(piscinaId)
-        println("piscina: $piscina")
+
         persistirNuevoEstado(piscina, nuevoEstadoPiscina)
     }
 
@@ -52,7 +56,8 @@ class EstadoPiscinaService(
         }
         enviarComandosFiltroDesactivado(nuevoEstadoPiscina, patente)
 
-        val piscina = piscinaService.findById(piscinaId)
+        val piscina =
+            piscinaRepository.findById(piscinaId) ?: throw NotFoundException("Piscina no encontrada con ID: $piscinaId")
         persistirNuevoEstado(piscina, nuevoEstadoPiscina)
     }
 
@@ -63,7 +68,8 @@ class EstadoPiscinaService(
         }
         enviarComandosFiltroActivado(nuevoEstadoPiscina, patente)
 
-        val piscina = piscinaService.findById(piscinaId)
+        val piscina =
+            piscinaRepository.findById(piscinaId) ?: throw NotFoundException("Piscina no encontrada con ID: $piscinaId")
         persistirNuevoEstado(piscina, nuevoEstadoPiscina)
     }
 
@@ -95,46 +101,98 @@ class EstadoPiscinaService(
     }
 
     fun apagarLuces(piscinaId: Long) {
-        val piscina = piscinaService.findById(piscinaId)
-        val patentePlaqueta = piscina.plaqueta.patente
-        val estadoActualPiscina = estadoPiscinaRepository.findEstadoActualByPiscinaId(piscinaId)
-            ?: throw NotFoundException("Estado de piscina no encontrado con ID: $piscinaId")
+        val piscina =
+            piscinaRepository.findById(piscinaId) ?: throw NotFoundException("Piscina no encontrada con ID: $piscinaId")
+        val patente = piscina.plaqueta.patente
 
-        if (estadoActualPiscina.luces) {
-            //mqttPublisherService.sendCommand(patentePlaqueta, "desactivar_luces")
+        // 1. Apagar luces físicamente
+        mqttPublisherService.sendCommand(patente, "desactivar_luces")
 
-            val nuevoEstadoPiscina = estadoActualPiscina.copy().apply {
-                luces = false
+        // 2. Pausar TODAS las programaciones de iluminación que estén ejecutándose
+        piscina.programaciones
+            .filter {
+                it.tipo == ProgramacionType.ILUMINACION &&
+                        it.activa &&
+                        it.esAhora()
             }
+            .forEach { it.pausadaManualmente = true }
 
-            println("Simulando envío de comando MQTT: desactivar_luces a la plaqueta con patente $patentePlaqueta")
-
-            persistirNuevoEstado(piscina, nuevoEstadoPiscina)
+        // 3. Actualizar estado
+        val estadoActual = findEstadoActualByPiscinaId(piscinaId)
+        val nuevoEstado = estadoActual.copy().apply {
+            luces = false
         }
+        persistirNuevoEstado(piscina, nuevoEstado)
     }
 
     fun encenderLuces(piscinaId: Long) {
-        val piscina = piscinaService.findById(piscinaId)
-        val patentePlaqueta = piscina.plaqueta.patente
-        val estadoActualPiscina = estadoPiscinaRepository.findEstadoActualByPiscinaId(piscinaId)
-            ?: throw NotFoundException("Estado de piscina no encontrado con ID: $piscinaId")
+        val piscina =
+            piscinaRepository.findById(piscinaId) ?: throw NotFoundException("Piscina no encontrada con ID: $piscinaId")
+        val patente = piscina.plaqueta.patente
 
-        if (!estadoActualPiscina.luces) {
-            //mqttPublisherService.sendCommand(patentePlaqueta, "activar_luces")
+        // 1. Encender luces físicamente
+        mqttPublisherService.sendCommand(patente, "activar_luces")
 
-            val nuevoEstadoPiscina = estadoActualPiscina.copy().apply {
-                luces = true
-            }
-
-            println("Simulando envío de comando MQTT: activar_luces a la plaqueta con patente $patentePlaqueta")
-
-            persistirNuevoEstado(piscina, nuevoEstadoPiscina)
+        // 2. Actualizar estado
+        val estadoActual = findEstadoActualByPiscinaId(piscinaId)
+        val nuevoEstado = estadoActual.copy().apply {
+            luces = true
         }
+        persistirNuevoEstado(piscina, nuevoEstado)
+
+        piscinaRepository.save(piscina)
     }
 
-    fun persistirNuevoEstado (piscina: Piscina, nuevoEstado: EstadoPiscina) {
+    fun persistirNuevoEstado(piscina: Piscina, nuevoEstado: EstadoPiscina) {
         piscina.agregarNuevoEstadoPiscina(nuevoEstado)
         piscina.verificarEstados()
+        piscinaRepository.save(piscina)
+    }
+
+    @Transactional
+    fun aplicarComando(piscinaId: Long, comando: String, programacionId: Long?) {
+        val piscina =
+            piscinaRepository.findById(piscinaId) ?: throw NotFoundException("Piscina no encontrada con ID: $piscinaId")
+        val programacion = piscina.programaciones.find { it.id == programacionId }
+
+        when (comando.uppercase()) {
+            "ENCENDER_LUCES" -> {
+                val estadoActual = findEstadoActualByPiscinaId(piscinaId)
+
+                // 🔹 Si las luces ya están encendidas, solo marcar que la programación está activa
+                if (!estadoActual.luces) {
+                    encenderLuces(piscinaId)
+                } else {
+                    println("💡 Las luces ya estaban encendidas, programación toma control")
+                }
+
+                // 🔹 Asegurarse de que NO esté pausada (la programación ahora tiene control)
+                programacion?.pausadaManualmente = false
+                if (programacion != null) {
+                    piscinaRepository.save(piscina)
+                }
+            }
+
+            "APAGAR_LUCES" -> {
+                apagarLuces(piscinaId)
+                programacion?.pausadaManualmente = false
+                if (programacion != null) {
+                    piscinaRepository.save(piscina)
+                }
+            }
+
+            "FILTRAR" -> {
+                updateEntradaAgua(piscinaId, mutableListOf(EntradaAguaType.FONDO))
+                updateFuncionActiva(piscinaId, FuncionFiltroType.FILTRAR, piscina.plaqueta.patente)
+                programacion?.pausadaManualmente = false
+            }
+
+            "REPOSO" -> {
+                updateEntradaAgua(piscinaId, mutableListOf())
+                desactivarFuncionActiva(piscinaId, piscina.plaqueta.patente)
+                programacion?.pausadaManualmente = false
+            }
+        }
         piscinaRepository.save(piscina)
     }
 

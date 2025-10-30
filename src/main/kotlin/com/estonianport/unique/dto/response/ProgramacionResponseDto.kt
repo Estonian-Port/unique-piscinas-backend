@@ -9,4 +9,5 @@ data class ProgramacionResponseDto (
     val dias: List<String>,
     val activa: Boolean,
     val tipo: ProgramacionType,
+    val ejecutando: Boolean
 )
