@@ -40,9 +40,8 @@ class ProgramacionService(
         //Guardo la piscina (con flush para obtener el ID de la nueva programación)
         piscinaRepository.saveAndFlush(piscina)
 
-        val programacionGuardada = piscina.programaciones
-            .firstOrNull { it.id != null && it == nuevaProgramacion }
-            ?: throw IllegalStateException("No se pudo obtener la programación guardada")
+        val programacionGuardada = piscinaRepository.getLastProgramacion(piscinaId)
+            ?: throw IllegalStateException("No se pudo obtener la programación recién guardada")
 
         val programacionId = programacionGuardada.id
             ?: throw IllegalStateException("La programación no tiene ID después del flush")

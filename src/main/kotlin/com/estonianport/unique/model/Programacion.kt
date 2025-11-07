@@ -40,7 +40,10 @@ class Programacion(
     var piscina: Piscina? = null,
 
     @Column
-    var pausadaManualmente: Boolean = false
+    var pausadaManualmente: Boolean = false,
+
+    @Column
+    val fechaAlta : LocalDate = LocalDate.now()
 ) {
     // 🔹 Campo transient: no se guarda en BD, se calcula siempre
     @Transient
