@@ -20,6 +20,8 @@ class Calefaccion(
     var modelo: String,
 
     @Column
-    var marca: String
+    var marca: String,
 
+    @Column
+    var activa: Boolean = false
 )

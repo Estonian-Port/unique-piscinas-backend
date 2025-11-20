@@ -35,7 +35,7 @@ dependencies {
 	implementation("commons-validator:commons-validator:1.7")
     implementation("io.prometheus:prometheus-metrics-core:1.0.0")
 	implementation("org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5")
-    implementation("org.springframework.boot:spring-boot-starter-quartz") //QUARTZ
+    implementation("org.springframework.boot:spring-boot-starter-quartz")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly("org.postgresql:postgresql")
 	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")

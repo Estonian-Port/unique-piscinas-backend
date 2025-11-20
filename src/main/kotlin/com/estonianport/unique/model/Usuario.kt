@@ -2,6 +2,7 @@ package com.estonianport.unique.model
 
 import com.estonianport.unique.dto.UsuarioAbmDTO
 import com.estonianport.unique.model.enums.EstadoType
+import com.estonianport.unique.model.enums.RolType
 import jakarta.persistence.*
 import java.time.LocalDate
 
@@ -25,8 +26,10 @@ class Usuario(
     var email: String,
 
     @Column
-    val esAdministrador: Boolean = false,
+    @Enumerated(EnumType.STRING)
+    val rol : RolType = RolType.USER,
 
+    @Column
     @Enumerated(EnumType.STRING)
     var estado: EstadoType = EstadoType.PENDIENTE,
 ) {

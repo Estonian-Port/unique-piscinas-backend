@@ -128,7 +128,7 @@ class PiscinaController {
         )
     }
 
-    @GetMapping("lecturas/{piscinaId}")
+    @GetMapping("/lecturas/{piscinaId}")
     fun getLecturasPiscina(@PathVariable piscinaId: Long): ResponseEntity<CustomResponse> {
         val lecturas = piscinaService.getLecturasPiscina(piscinaId)
         println(lecturas)
@@ -157,7 +157,7 @@ class PiscinaController {
         )
     }
 
-    @GetMapping("programacion/{piscinaId}")
+    @GetMapping("/programacion/{piscinaId}")
     fun getProgramacionPiscina(@PathVariable piscinaId: Long): ResponseEntity<CustomResponse> {
         return ResponseEntity.status(200).body(
             CustomResponse(
@@ -224,6 +224,20 @@ class PiscinaController {
         )
     }
 
+    @PostMapping("/reset-contador-filtro/{piscinaId}/{filtroId}")
+    fun resetContadorFiltro(
+        @PathVariable piscinaId: Long,
+        @PathVariable filtroId: Long,
+    ): ResponseEntity<CustomResponse> {
+        piscinaService.resetearContadorFiltro(piscinaId, filtroId)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Contador del Filtro actualizado correctamente",
+                data = null
+            )
+        )
+    }
+
     @PutMapping("/update-germicida/{piscinaId}")
     fun updateGermicidaPiscina(
         @PathVariable piscinaId: Long,
@@ -234,6 +248,20 @@ class PiscinaController {
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Sistema germicida actualizado correctamente",
+                data = null
+            )
+        )
+    }
+
+    @PostMapping("/reset-contador-germicida/{piscinaId}/{germicidaId}")
+    fun resetContadorGermicida(
+        @PathVariable piscinaId: Long,
+        @PathVariable germicidaId: Long,
+    ): ResponseEntity<CustomResponse> {
+        piscinaService.resetearContadorGermicida(piscinaId, germicidaId)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Contador del Germicida actualizado correctamente",
                 data = null
             )
         )
@@ -299,7 +327,9 @@ class PiscinaController {
         @PathVariable piscinaId: Long,
         @RequestBody germicidaDto: SistemaGermicidaRequestDto
     ): ResponseEntity<CustomResponse> {
+        println(germicidaDto)
         val nuevoGermicida = SistemaGermicidaMapper.buildSistemaGermicida(germicidaDto)
+        println(nuevoGermicida)
         piscinaService.addGermicida(piscinaId, nuevoGermicida)
         return ResponseEntity.status(200).body(
             CustomResponse(
@@ -324,12 +354,12 @@ class PiscinaController {
         )
     }
 
-    @PutMapping("update-compuestos/{piscinaId}")
+    @PutMapping("/update-compuestos/{piscinaId}")
     fun updateCompuestosPiscina(
         @PathVariable piscinaId: Long,
         @RequestBody compuestos: PiscinaCompuestosRequestDto
     ): ResponseEntity<CustomResponse> {
-        piscinaService.updateCompuestos(piscinaId, compuestos.orp, compuestos.controlPh, compuestos.cloroSalino)
+        piscinaService.updateCompuestos(piscinaId, compuestos.orp, compuestos.controlPH, compuestos.cloroSalino)
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Compuestos de la piscina actualizados correctamente",
@@ -379,122 +409,5 @@ class PiscinaController {
             )
         )
     }
-
-    @PostMapping("/add-programacion/{piscinaId}")
-    fun createProgramacionPiscina(
-        @PathVariable piscinaId: Long,
-        @RequestBody programacionDTO: ProgramacionRequestDto
-    ): ResponseEntity<CustomResponse> {
-        val nuevaProgramacion = ProgramacionMapper.buildProgramacion(programacionDTO)
-        piscinaService.agregarProgramacion(piscinaId, nuevaProgramacion)
-        return ResponseEntity.status(200).body(
-            CustomResponse(
-                message = "Programación filtrado de la piscina creada correctamente",
-                data = null
-            )
-        )
-    }
-
-    @PutMapping("/update-programacion/{piscinaId}")
-    fun updateProgramacion(
-        @PathVariable piscinaId: Long,
-        @RequestBody programacionDTO: ProgramacionRequestDto
-    ): ResponseEntity<CustomResponse> {
-        val programacionActualizada = ProgramacionMapper.buildProgramacion(programacionDTO)
-        piscinaService.updateProgramacion(piscinaId, programacionActualizada)
-        return ResponseEntity.status(200).body(
-            CustomResponse(
-                message = "Programación de la piscina actualizada correctamente",
-                data = null
-            )
-        )
-    }
-
-    @DeleteMapping("/delete-programacion/{piscinaId}/{programacionId}")
-    fun deleteProgramacionFiltrado(
-        @PathVariable piscinaId: Long,
-        @PathVariable programacionId: Long,
-    ): ResponseEntity<CustomResponse> {
-        piscinaService.deleteProgramacion(piscinaId, programacionId)
-        return ResponseEntity.status(200).body(
-            CustomResponse(
-                message = "Programación eliminada correctamente",
-                data = null
-            )
-        )
-    }
-
-    @PutMapping("/update-entrada-agua/{piscinaId}")
-    fun updateEntradaAgua(
-        @PathVariable piscinaId: Long,
-        @RequestBody entradaAgua: List<String>
-    ): ResponseEntity<CustomResponse> {
-        val nuevasEntradas = entradaAgua.map { EntradaAguaType.valueOf(it.uppercase()) }.toMutableList()
-        estadoPiscinaService.updateEntradaAgua(piscinaId, nuevasEntradas)
-        val piscinaprueba = PiscinaMapper.buildPiscinaResumenResponseDto(
-            piscinaService.findById(piscinaId),
-            estadoPiscinaService.findEstadoActualByPiscinaId(piscinaId)
-        )
-        return ResponseEntity.status(200).body(
-            CustomResponse(
-                message = "Entrada de agua actualizada correctamente",
-                data = PiscinaMapper.buildPiscinaResumenResponseDto(
-                    piscinaService.findById(piscinaId),
-                    estadoPiscinaService.findEstadoActualByPiscinaId(piscinaId)
-                )
-            )
-        )
-    }
-
-    @PutMapping("/update-funcion-filtro/{piscinaId}")
-    fun updateFuncionActiva(
-        @PathVariable piscinaId: Long,
-        @RequestBody funcionActiva: FuncionFiltroRequestDto
-    ): ResponseEntity<CustomResponse> {
-        val nuevaFuncionActiva = FuncionFiltroType.valueOf(funcionActiva.funcion.uppercase())
-        if (nuevaFuncionActiva == FuncionFiltroType.REPOSO) {
-            estadoPiscinaService.desactivarFuncionActiva(piscinaId)
-            return ResponseEntity.status(200).body(
-                CustomResponse(
-                    message = "Función activa desactivada correctamente",
-                    data = null
-                )
-            )
-        }
-
-        estadoPiscinaService.updateFuncionActiva(piscinaId, nuevaFuncionActiva)
-        return ResponseEntity.status(200).body(
-            CustomResponse(
-                message = "Función activa actualizada correctamente",
-                data = null
-            )
-        )
-    }
-
-    @PutMapping("/update-estado-filtro/{piscinaId}")
-    fun updateEstadoFiltro(
-        @PathVariable piscinaId: Long,
-        @RequestBody funcionActiva: FuncionFiltroRequestDto,
-        @RequestBody entradaAgua: List<String>
-    ): ResponseEntity<CustomResponse> {
-        val patentePlaqueta = piscinaService.getPatentePlaqueta(piscinaId)
-        val nuevaFuncionActiva = FuncionFiltroType.valueOf(funcionActiva.funcion.uppercase())
-        val nuevasEntradas = entradaAgua.map { EntradaAguaType.valueOf(it.uppercase()) }.toMutableList()
-        mqttPublisherService.sendCommandList(patentePlaqueta, nuevasEntradas, nuevaFuncionActiva)
-        val ultimoEstado = mqttPublisherService.sendCommand(patentePlaqueta, "tomar_muestra")
-        // SI VAMOS A GUARDAR TODOS LOS ESTADOS SIMPLEMENTE SE HACE UN SAVE, SI ES UN SOLO ESTADO QUE SE ACTUALIZA
-        // HAY QUE HACER UPDATE DE TODOS LOS DATOS
-        val estadoPiscina = estadoPiscinaService.findEstadoActualByPiscinaId(piscinaId)
-        return ResponseEntity.status(200).body(
-            CustomResponse(
-                message = "Comando enviado correctamente",
-                data = PiscinaMapper.buildPiscinaResumenResponseDto(
-                    piscinaService.findById(piscinaId),
-                    estadoPiscina
-                )
-            )
-        )
-    }
-
 
 }

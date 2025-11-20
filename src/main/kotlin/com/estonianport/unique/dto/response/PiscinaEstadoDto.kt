@@ -1,5 +1,6 @@
 package com.estonianport.unique.dto.response
 
+import com.estonianport.unique.model.SistemaGermicida
 import com.estonianport.unique.model.enums.EntradaAguaType
 import com.estonianport.unique.model.enums.FuncionFiltroType
 import com.estonianport.unique.model.enums.SistemaGermicidaType
@@ -17,7 +18,7 @@ data class PiscinaEstadoDto(
     val entradaAguaActiva: List<EntradaAguaType>,
 
     @JsonProperty("sist_germ")
-    val sistemaGermicidaActivo: List<SistemaGermicidaType>,
+    val sistemaGermicidaActivo: List<SistemaGermicida>,
 
     @JsonProperty("ffa")
     val funcionFiltroActivo: FuncionFiltroType,

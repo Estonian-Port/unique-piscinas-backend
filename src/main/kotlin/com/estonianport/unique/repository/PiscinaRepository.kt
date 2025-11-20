@@ -19,6 +19,8 @@ interface PiscinaRepository : JpaRepository<Piscina, Int> {
 
     fun findByAdministradorIsNull(): List<Piscina>
 
+    fun findAllByOrderByDireccionAsc(): List<Piscina>
+
     @Query(
         """
             SELECT presion
@@ -104,7 +106,8 @@ interface PiscinaRepository : JpaRepository<Piscina, Int> {
 
     fun findByPlaqueta(plaqueta: Plaqueta): Piscina
 
-    @Query("""
+    @Query(
+        """
     SELECT
         pd.dia AS dia,
         p.hora_inicio AS horaInicio,
@@ -115,7 +118,14 @@ interface PiscinaRepository : JpaRepository<Piscina, Int> {
         p.piscina_id = :piscinaId
         AND p.tipo = 'FILTRADO'
         AND p.activa = true
-""", nativeQuery = true)
+""", nativeQuery = true
+    )
     fun findProgramacionesFiltradoActivas(@Param("piscinaId") piscinaId: Long): List<Array<Any>>
+
+    @Query(
+        "SELECT * FROM programaciones WHERE piscina_id = :piscinaId ORDER BY fecha_alta DESC LIMIT 1",
+        nativeQuery = true
+    )
+    fun getLastProgramacion(@Param("piscinaId") piscinaId: Long): Programacion?
 
 }

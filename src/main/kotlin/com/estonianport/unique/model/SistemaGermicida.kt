@@ -9,32 +9,35 @@ abstract class SistemaGermicida(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long,
-    val activo: Boolean =true,
+    var activo: Boolean = false,
     var marca: String,
+    var tiempoVidaUtil: Int,
     @Enumerated(EnumType.STRING)
-    val condicion: CondicionType? = null
+    var condicion: CondicionType? = null
 ) {
-    fun vidaRestante(): Int {
-        // Implementación de la lógica para calcular la vida restante del sistema germicida
-        // Entiendo que la placa controladora es la que dara esta información.
-        return 50
+    var vidaRestante: Int = tiempoVidaUtil * 60 // Vida util en minutos
+
+    fun descontarVida(tiempoUso : Int) { // tiempoUso en minutos
+        vidaRestante -= tiempoUso
+        if (vidaRestante < 0) vidaRestante = 0
+        verificarEstado()
+        activo = false
     }
 
     fun resetearVida() {
-        // Implementación de la lógica para resetear la vida del sistema germicida
-        // Habria que enviar un mensaje a la placa controladora para resetear la vida.
+        vidaRestante = tiempoVidaUtil * 60
+        verificarEstado()
     }
 
-    fun estado(): String {
-        // Implementación de la lógica para obtener el estado del sistema germicida
-        // Hay que definir puntos de corte para definir el estado segun la vida restante.
-        // Dejo planteado una posible implementación con 3 estados: "Optimo", "Atención" y "Reemplazo urgente".
-        return if (vidaRestante() > 50) {
-            "Optimo"
-        } else if (vidaRestante() in 5..50) {
-            "Requiere mantenimiento"
+    fun verificarEstado() {
+        condicion = if (vidaRestante > (50 * 60)) {
+            CondicionType.OPERATIVO
+        } else if (vidaRestante in (25 * 60)..(50 * 60)) {
+            CondicionType.REQUIERE_REVISION
+        } else if (vidaRestante in (1 * 60)..(24 * 60)) {
+            CondicionType.REEMPLAZO_URGENTE
         } else {
-            "Reemplazo urgente"
+            CondicionType.MANTENIMIENTO
         }
     }
 
@@ -52,28 +55,31 @@ abstract class SistemaGermicida(
 @Entity
 class UV(
     id: Long,
-    activo: Boolean = true,
+    activo: Boolean = false,
     marca: String,
+    tiempoVidaUtil: Int,
     estado: CondicionType,
     var potencia: Double
-) : SistemaGermicida(id, activo, marca, estado)
+) : SistemaGermicida(id, activo, marca, tiempoVidaUtil, estado)
 
 @DiscriminatorValue("IONIZADOR")
 @Entity
 class Ionizador(
     id: Long,
-    activo: Boolean = true,
+    activo: Boolean = false,
     marca: String,
+    tiempoVidaUtil: Int,
     estado: CondicionType,
     var electrodos: Double
-) : SistemaGermicida(id, activo, marca, estado)
+) : SistemaGermicida(id, activo, marca, tiempoVidaUtil, estado)
 
 @DiscriminatorValue("TRASDUCTOR")
 @Entity
 class Trasductor(
     id: Long,
-    activo: Boolean = true,
+    activo: Boolean = false,
     marca: String,
+    tiempoVidaUtil: Int,
     estado: CondicionType,
     var potencia: Double
-) : SistemaGermicida(id, activo, marca, estado)
+) : SistemaGermicida(id, activo, marca, tiempoVidaUtil, estado)

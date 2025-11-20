@@ -18,7 +18,8 @@ object ProgramacionMapper {
             horaFin = programacion.horaFin.toString(),
             dias = programacion.dias.map { it.toString() },
             activa = programacion.activa,
-            tipo = ProgramacionType.ILUMINACION
+            tipo = programacion.tipo,
+            ejecutando = programacion.ejecutando
         )
     }
 

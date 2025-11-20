@@ -1,15 +1,12 @@
 package com.estonianport.unique.common.quartz
 
-import EnviarComandoPiscinaJob
 import org.quartz.*
 import org.springframework.stereotype.Service
 import java.time.DayOfWeek
-import java.time.LocalDateTime
 import java.time.LocalTime
-import java.time.temporal.TemporalAdjusters
 
 @Service
-class QuartzSchedulerService(private val scheduler: Scheduler) {
+class QuartzSchedulerService(val scheduler: Scheduler) {
 
     fun programarJob(
         piscinaId: Long,
@@ -17,13 +14,15 @@ class QuartzSchedulerService(private val scheduler: Scheduler) {
         comando: String,
         diaSemana: DayOfWeek,
         hora: LocalTime,
-        jobId: String
+        jobId: String,
+        programacionId: Long
     ) {
         val jobDetail = JobBuilder.newJob(EnviarComandoPiscinaJob::class.java)
             .withIdentity(jobId)
             .usingJobData("piscinaId", piscinaId)
             .usingJobData("patente", patente)
             .usingJobData("comando", comando)
+            .usingJobData("programacionId", programacionId)
             .build()
 
         val quartzDayOfWeek = when (diaSemana) {
@@ -58,15 +57,6 @@ class QuartzSchedulerService(private val scheduler: Scheduler) {
             scheduler.deleteJob(jobKey)
             println("🗑️ Quartz Job eliminado -> $jobId")
         }
-    }
-
-    fun calcularProximaEjecucion(dia: DayOfWeek, hora: LocalTime): LocalDateTime {
-        return LocalDateTime.now()
-            .with(TemporalAdjusters.nextOrSame(dia))
-            .withHour(hora.hour)
-            .withMinute(hora.minute)
-            .withSecond(0)
-            .withNano(0)
     }
 }
 

@@ -1,19 +1,26 @@
-import com.estonianport.unique.common.mqtt.MqttPublisherService
+package com.estonianport.unique.common.quartz
+
 import org.quartz.Job
 import org.quartz.JobExecutionContext
 import org.springframework.stereotype.Component
 
 @Component
 class EnviarComandoPiscinaJob(
-    private val mqttPublisherService: MqttPublisherService
+    private val jobExecutionService: JobExecutionService
 ) : Job {
 
     override fun execute(context: JobExecutionContext) {
         val piscinaId = context.mergedJobDataMap["piscinaId"] as Long
-        val patente = context.mergedJobDataMap["patente"] as String
         val comando = context.mergedJobDataMap["comando"] as String
+        val programacionId = context.mergedJobDataMap["programacionId"] as Long
 
-        println("💧 Ejecutando job Quartz: $comando para piscina $piscinaId")
-        //mqttPublisherService.sendCommand(patente, comando)
+        println("🔔 Job Quartz ejecutándose: $comando para programación $programacionId")
+
+        try {
+            jobExecutionService.ejecutarComandoProgramacion(piscinaId, comando, programacionId)
+        } catch (e: Exception) {
+            println("❌ Error ejecutando job: ${e.message}")
+            e.printStackTrace()
+        }
     }
 }

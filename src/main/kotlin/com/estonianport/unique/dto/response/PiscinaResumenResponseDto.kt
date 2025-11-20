@@ -9,7 +9,7 @@ data class PiscinaResumenResponseDto (
     val clima: String,
     val entradaAgua: List<String>,
     val funcionActiva: FuncionFiltroType?,
-    val sistemasGermicidas: List<String>?,
-    val calefaccion: Boolean,
+    val sistemasGermicidas: List<SistemaGermicidaResponseDto>?,
+    val calefaccion: CalefaccionResponseDto?,
     val esDesbordante: Boolean,
 )

@@ -1,7 +1,7 @@
 package com.estonianport.unique.repository
 
-import com.estonianport.unique.common.emailService.Email
 import com.estonianport.unique.model.Usuario
+import com.estonianport.unique.model.enums.RolType
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
@@ -23,10 +23,10 @@ interface UsuarioRepository : CrudRepository<Usuario, Long> {
         JOIN Piscina p ON p.administrador = u
         WHERE u.ultimoIngreso IS NOT NULL
         AND u.fechaBaja IS NULL
-        AND u.esAdministrador = false
+        AND u.rol = :rolUser
     """
     )
-    fun countUsuariosActivos(): Int
+    fun countUsuariosActivos(rolUser: RolType): Int
 
     @Query(
         """
@@ -34,13 +34,13 @@ interface UsuarioRepository : CrudRepository<Usuario, Long> {
     FROM Usuario u
     WHERE u.ultimoIngreso IS NOT NULL
     AND u.fechaBaja IS NULL
-    AND u.esAdministrador = false
+        AND u.rol = :rolUser
     AND NOT EXISTS (
         SELECT 1 FROM Piscina p WHERE p.administrador = u
     )
 """
     )
-    fun countUsuariosInactivos(): Int
+    fun countUsuariosInactivos(rolUser: RolType): Int
 
     @Query(
         """
@@ -48,19 +48,19 @@ interface UsuarioRepository : CrudRepository<Usuario, Long> {
     FROM Usuario u
     WHERE u.fechaBaja IS NULL
     AND u.ultimoIngreso IS NULL
-    AND u.esAdministrador = false
+        AND u.rol = :rolUser
 """
     )
-    fun countUsuariosPendientes(): Int
+    fun countUsuariosPendientes(rolUser: RolType): Int
 
     @Query(
         """
         SELECT COUNT(u) 
         FROM Usuario u
-        WHERE u.esAdministrador IS FALSE
+        Where u.rol = :rolUser
     """
     )
-    fun totalUsuarios(): Int
+    fun totalUsuarios(rolUser: RolType): Int
 
     // TODO y aca dejo la q devolveria usuarios, seria optimo q si la vas a usar solo para listar en front
     // devuelva usuarioDto

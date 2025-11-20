@@ -1,6 +1,7 @@
 package com.estonianport.unique.controller
 
-import com.estonianport.unique.common.mqtt.MqttSubscriberService
+import com.estonianport.unique.common.codeGeneratorUtil.CodeGeneratorUtil
+import com.estonianport.unique.dto.request.PlaquetaRequestDto
 import com.estonianport.unique.mapper.PiscinaMapper
 import com.estonianport.unique.dto.response.CustomResponse
 import com.estonianport.unique.mapper.UsuarioMapper
@@ -13,7 +14,9 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -41,7 +44,7 @@ class AdministracionController {
 
     @GetMapping("/estadisticas/{usuarioId}")
     fun getEstadisticas(@PathVariable usuarioId: Long): ResponseEntity<CustomResponse> {
-        administracionService.verificarRol(usuarioId)
+        administracionService.verificarRolAdmin(usuarioId)
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Estadísticas obtenidas correctamente",
@@ -52,7 +55,7 @@ class AdministracionController {
 
     @GetMapping("/piscinas-registradas/{usuarioId}")
     fun getPiscinasRegistradas(@PathVariable usuarioId: Long): ResponseEntity<CustomResponse> {
-        administracionService.verificarRol(usuarioId)
+        administracionService.verificarRolAdmin(usuarioId)
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Piscinas registradas obtenidas correctamente",
@@ -67,7 +70,7 @@ class AdministracionController {
         @PathVariable piscinaId: Long,
         @PathVariable usuarioId: Long
     ): ResponseEntity<CustomResponse> {
-        administracionService.verificarRol(usuarioId)
+        administracionService.verificarRolAdmin(usuarioId)
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Ficha técnica de la piscina obtenida correctamente",
@@ -81,7 +84,7 @@ class AdministracionController {
         @PathVariable piscinaId: Long,
         @PathVariable usuarioId: Long
     ): ResponseEntity<CustomResponse> {
-        administracionService.verificarRol(usuarioId)
+        administracionService.verificarRolAdmin(usuarioId)
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Equipos de la piscina obtenida correctamente",
@@ -92,7 +95,7 @@ class AdministracionController {
 
     @GetMapping("/usuarios-nueva-piscina/{usuarioId}")
     fun getUsuarioNuevaPiscina(@PathVariable usuarioId: Long): ResponseEntity<CustomResponse> {
-        administracionService.verificarRol(usuarioId)
+        administracionService.verificarRolAdmin(usuarioId)
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Usuarios para nueva piscina obtenidos correctamente",
@@ -115,7 +118,7 @@ class AdministracionController {
 
     @GetMapping("/usuarios-registrados/{usuarioId}")
     fun getUsuarioRegistrados(@PathVariable usuarioId: Long): ResponseEntity<CustomResponse> {
-        administracionService.verificarRol(usuarioId)
+        administracionService.verificarRolAdmin(usuarioId)
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Usuarios registrados obtenidas correctamente",
@@ -131,7 +134,7 @@ class AdministracionController {
 
     @GetMapping("/usuarios-pendientes/{usuarioId}")
     fun getUsuarioPendientes(@PathVariable usuarioId: Long): ResponseEntity<CustomResponse> {
-        administracionService.verificarRol(usuarioId)
+        administracionService.verificarRolAdmin(usuarioId)
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Usuarios pendientes obtenidas correctamente",
@@ -179,6 +182,18 @@ class AdministracionController {
             CustomResponse(
                 message = "Usuario desvinculado correctamente",
                 data = UsuarioMapper.buildUsuarioRegistradoResponseDto(usuarioService.findById(usuarioId)!!, piscinaService.getPiscinasByUsuarioId(usuarioId))
+            )
+        )
+    }
+
+    @PostMapping("/generar-patente/{usuarioId}")
+fun getGenerarPatente(@PathVariable usuarioId: Long, @RequestBody plaquetaRequestDto : PlaquetaRequestDto
+    ): ResponseEntity<CustomResponse> {
+        administracionService.verificarRolPatGen(usuarioId)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Nueva patente generada correctamente",
+                data = administracionService.generarNuevaPatente(plaquetaRequestDto)
             )
         )
     }

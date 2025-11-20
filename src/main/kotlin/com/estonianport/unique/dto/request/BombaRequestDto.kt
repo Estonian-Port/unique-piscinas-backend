@@ -6,4 +6,5 @@ data class BombaRequestDto (
     val modelo: String,
     val potencia: Double,
     val activa: Boolean,
+    val tipo: String,
 )

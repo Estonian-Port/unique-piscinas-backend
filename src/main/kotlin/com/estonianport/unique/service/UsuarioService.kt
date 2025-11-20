@@ -7,6 +7,7 @@ import com.estonianport.unique.dto.request.UsuarioRegistroRequestDto
 import com.estonianport.unique.repository.UsuarioRepository
 import com.estonianport.unique.model.Usuario
 import com.estonianport.unique.model.enums.EstadoType
+import com.estonianport.unique.model.enums.RolType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.CrudRepository
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
@@ -54,23 +55,23 @@ class UsuarioService : GenericServiceImpl<Usuario, Long>() {
     }
 
     fun totalUsuarios(): Int {
-        return usuarioRepository.totalUsuarios()
+        return usuarioRepository.totalUsuarios(RolType.USER)
     }
 
     fun countUsuariosActivos(): Int {
-        return usuarioRepository.countUsuariosActivos()
+        return usuarioRepository.countUsuariosActivos(RolType.USER)
     }
 
     fun countUsuariosInactivos(): Int {
-        return usuarioRepository.countUsuariosInactivos()
+        return usuarioRepository.countUsuariosInactivos(RolType.USER)
     }
 
     fun countUsuariosPendientes(): Int {
-        return usuarioRepository.countUsuariosPendientes()
+        return usuarioRepository.countUsuariosPendientes(RolType.USER)
     }
 
     fun getUsuariosRegistrados(): List<Usuario> {
-        return getAll()!!.filter { !it.esAdministrador && it.estado.name != "PENDIENTE" && it.estado.name != "BAJA" }
+        return getAll()!!.filter { it.rol != RolType.ADMIN && it.estado.name != "PENDIENTE" && it.estado.name != "BAJA" }
     }
 
     fun getUsuariosPendientes(): List<Usuario> {

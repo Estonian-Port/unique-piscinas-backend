@@ -5,7 +5,10 @@ import com.estonianport.unique.dto.response.*
 import com.estonianport.unique.model.EstadoPiscina
 import com.estonianport.unique.model.Piscina
 import com.estonianport.unique.model.Plaqueta
+import com.estonianport.unique.model.enums.ProgramacionType
 import com.estonianport.unique.model.enums.toCapitalized
+import java.time.Duration
+import java.time.LocalDateTime
 
 object PiscinaMapper{
 
@@ -25,8 +28,8 @@ object PiscinaMapper{
             clima = piscina.climaLocal().toString(),
             entradaAgua = estadoPiscina.entradaAguaActiva.map { it.toCapitalized() }.toList(),
             funcionActiva = estadoPiscina.funcionFiltroActivo,
-            sistemasGermicidas = estadoPiscina.sistemaGermicidaActivo?.map { it.toCapitalized() }?.toList(),
-            calefaccion = estadoPiscina.calefaccionActiva,
+            sistemasGermicidas = piscina.sistemaGermicida.map { SistemaGermicidaMapper.buildSistemaGermicidaResponseDto(it) },
+            calefaccion = piscina.calefaccion?.let { CalefaccionMapper.buildCalefaccionResponseDto(it) },
             esDesbordante = piscina.esDesbordante,
         )
     }
@@ -47,7 +50,7 @@ object PiscinaMapper{
             entradaAgua = estadoPiscina.entradaAguaActiva.map { it.toCapitalized() }.toList(),
             funcionActiva = estadoPiscina.funcionFiltroActivo,
             presion = presionPiscina,
-            ultimaActividad = estadoPiscina.ultimaActividad?.toString(),
+            ultimaActividad = calcularUltimaActividad(estadoPiscina.ultimaActividad),
             proximoCiclo = proximoCicloFiltrado,
             bombas = piscina.bomba.map { BombaMapper.buildBombaResponseDto(it) }.toList(),
             filtro = FiltroMapper.buildFiltroResponseDto(piscina.filtro),
@@ -59,21 +62,38 @@ object PiscinaMapper{
         )
     }
 
+    fun calcularUltimaActividad(ultimaActividad : LocalDateTime?) : String {
+        if (ultimaActividad == null) {
+            return "Sin actividad registrada"
+        }
+        val ahora = LocalDateTime.now()
+        val duracion = Duration.between(ultimaActividad, ahora)
+        val minutos = duracion.toMinutes()
+        val horas = duracion.toHours()
+        val dias = duracion.toDays()
+
+        return when {
+            dias > 0 -> "Hace ${dias}d ${horas}h ${minutos}m"
+            horas > 0 -> "Hace ${horas}h ${minutos}m"
+            minutos > 0 -> "Hace ${minutos}m"
+            else -> "Hace menos de un minuto"
+        }
+    }
+
     fun buildPiscinaProgramacionResponseDto(piscina: Piscina): PiscinaProgramacionResponseDto {
+        val todas = piscina.programaciones.toList()
+        val iluminacion = todas.filter { it.tipo == ProgramacionType.ILUMINACION }
+            .map { ProgramacionMapper.buildProgramacionResponseDto(it) }
+        val filtrado = todas.filter { it.tipo == ProgramacionType.FILTRADO }
+            .map { ProgramacionMapper.buildProgramacionResponseDto(it) }
+
         return PiscinaProgramacionResponseDto(
             id = piscina.id.toString(),
             direccion = piscina.direccion,
             volumen = piscina.volumen.toString(),
-            programacionIluminacion = piscina.programacionIluminacion.map {
-                ProgramacionMapper.buildProgramacionResponseDto(
-                    it
-                )
-            }.toList(),
-            programacionFiltrado = piscina.programacionFiltrado.map {
-                ProgramacionMapper.buildProgramacionResponseDto(
-                    it
-                )
-            }.toList()
+            programacionIluminacion = iluminacion,
+            programacionFiltrado = filtrado,
+            iluminacionManual = piscina.estadoActual()?.luces ?: false
         )
     }
 
@@ -82,7 +102,11 @@ object PiscinaMapper{
             id = piscina.id,
             direccion = piscina.direccion,
             esDesbordante = piscina.esDesbordante,
-            nombreAdministrador = (piscina.administrador?.nombre + ' ' + piscina.administrador?.apellido),
+            if (piscina.administrador != null) {
+                piscina.administrador!!.nombre + ' ' + piscina.administrador!!.apellido
+            } else {
+                "Sin administrador"
+            },
             ph = ph ?: 0.0,
             sistemasGermicidas = piscina.sistemaGermicida.map {
                 SistemaGermicidaMapper.buildSistemaGermicidaResponseDto(

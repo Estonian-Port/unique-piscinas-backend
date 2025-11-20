@@ -1,8 +1,6 @@
 package com.estonianport.unique.model
 
-import com.estonianport.unique.model.enums.EntradaAguaType
 import com.estonianport.unique.model.enums.FuncionFiltroType
-import com.estonianport.unique.model.enums.SistemaGermicidaType
 import jakarta.persistence.*
 
 @Entity
@@ -66,40 +64,16 @@ class Piscina(
 
     @Column(length = 5000)
     val notas: String?,
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "piscina", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OrderBy("id ASC")
+    val programaciones: MutableSet<Programacion> = mutableSetOf(),
 ) {
 
     // Se deberia poder crear una piscina sin administrador
     // y que el admin total en este caso leo, la maneje y luego asigne a un administrador
     @ManyToOne(fetch = FetchType.LAZY)
     var administrador: Usuario? = null
-
-    @ElementCollection
-    @CollectionTable(
-        name = "piscina_entrada_agua",
-        joinColumns = [JoinColumn(name = "piscina_id")]
-    )
-    @Enumerated(EnumType.STRING)
-    @Column(name = "entrada_agua")
-    var entradaAgua: MutableList<EntradaAguaType> = mutableListOf()
-
-    @ElementCollection
-    @CollectionTable(
-        name = "piscina_funcion_activa",
-        joinColumns = [JoinColumn(name = "piscina_id")]
-    )
-    @Enumerated(EnumType.STRING)
-    @Column(name = "funcion_activa")
-    var funcionActiva: MutableList<FuncionFiltroType> = mutableListOf()
-
-    @OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
-    @OrderBy("id ASC")
-    @JoinColumn(name = "piscina_id")
-    val programacionFiltrado: MutableSet<Programacion> = mutableSetOf()
-
-    @OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
-    @OrderBy("id ASC")
-    @JoinColumn(name = "piscina_id")
-    val programacionIluminacion: MutableSet<Programacion> = mutableSetOf()
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "piscina", cascade = [CascadeType.ALL], orphanRemoval = true)
     val lecturas: MutableSet<Lectura> = mutableSetOf()
@@ -120,19 +94,21 @@ class Piscina(
     }
 
     fun agregarProgramacionFiltrado(programacion: Programacion) {
-        programacionFiltrado.add(programacion)
+        programacion.piscina = this
+        programaciones.add(programacion)
     }
 
     fun agregarProgramacionIluminacion(programacion: Programacion) {
-        programacionIluminacion.add(programacion)
+        programacion.piscina = this
+        programaciones.add(programacion)
     }
 
     fun eliminarProgramacionFiltrado(programacionId: Long) {
-        programacionFiltrado.remove(programacionFiltrado.find { it.id == programacionId })
+        programaciones.removeIf { it.id == programacionId }
     }
 
-    fun eliminarProgramacionLuces(programacionId: Long) {
-        programacionIluminacion.remove(programacionIluminacion.find { it.id == programacionId })
+    fun eliminarProgramacionIluminacion(programacionId: Long) {
+        programaciones.removeIf { it.id == programacionId }
     }
 
     fun agregarRegistro(registro: Registro) {
@@ -143,9 +119,41 @@ class Piscina(
         registros.remove(registro)
     }
 
+    fun agregarNuevoEstadoPiscina(estadoPiscina: EstadoPiscina) {
+        estados.add(estadoPiscina)
+    }
+
     fun realizarLectura(lectura: Lectura) {
         // Implementación de la función para realizar una lectura de la piscina mediante la placa de control.
         lecturas.add(lectura)
+    }
+
+    fun desactivarSistemasGermicidas(tiempoUso: Int) {
+        if (sistemaGermicida.isNotEmpty()) {
+            sistemaGermicida.forEach { it.descontarVida(tiempoUso) }
+        }
+    }
+
+    fun activarSistemasGermicidas() {
+        if (sistemaGermicida.isNotEmpty()) {
+            sistemaGermicida.forEach { it.activo = true }
+        }
+    }
+
+    fun verificarEstados() {
+        val estadoActual = estados.maxByOrNull { it.fecha } ?: return
+
+        if (estadoActual.funcionFiltroActivo != FuncionFiltroType.REPOSO) {
+            filtro.activo = true
+            bomba.first().activa = true
+        } else {
+            filtro.activo = false
+            bomba.first().activa = false
+        }
+    }
+
+    fun estadoActual(): EstadoPiscina? {
+        return estados.maxByOrNull { it.fecha }
     }
 
     @Transient

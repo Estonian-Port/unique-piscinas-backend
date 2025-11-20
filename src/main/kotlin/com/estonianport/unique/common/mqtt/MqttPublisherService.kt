@@ -20,7 +20,7 @@ class MqttPublisherService(private val mqttClient: MqttClient) {
                 "accion": "$accion"
             }"""
         val message = MqttMessage(payload.toByteArray()).apply { qos = 1 }
-        mqttClient.publish(topic, message)
+        //mqttClient.publish(topic, message)
         println("Publicado comando $accion para plaqueta $patente en $topic")
     }
 
@@ -43,7 +43,7 @@ class MqttPublisherService(private val mqttClient: MqttClient) {
 
         val payloadJson = com.fasterxml.jackson.module.kotlin.jacksonObjectMapper().writeValueAsString(payloadMap)
         val message = MqttMessage(payloadJson.toByteArray()).apply { qos = 1 }
-        mqttClient.publish(topic, message)
+        //mqttClient.publish(topic, message)
         println("Publicado comando lista para plaqueta $patente en $topic: $payloadJson")
     }
 }
