@@ -2,6 +2,7 @@ package com.estonianport.unique.controller
 
 import com.estonianport.unique.common.codeGeneratorUtil.CodeGeneratorUtil
 import com.estonianport.unique.dto.request.PlaquetaRequestDto
+import com.estonianport.unique.dto.request.UsuarioAltaRequestDto
 import com.estonianport.unique.mapper.PiscinaMapper
 import com.estonianport.unique.dto.response.CustomResponse
 import com.estonianport.unique.mapper.UsuarioMapper
@@ -12,6 +13,7 @@ import com.estonianport.unique.service.UsuarioService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CrossOrigin
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.time.LocalDate
 
 @RestController
 @RequestMapping("/administracion")
@@ -36,11 +39,6 @@ class AdministracionController {
 
     @Autowired
     lateinit var plaquetaService: PlaquetaService
-
-
-
-    // Tengo la duda si todos los endpoints de administracion deberian chequear si el usuario es administrador.
-    // Por el momento lo hago para todos.
 
     @GetMapping("/estadisticas/{usuarioId}")
     fun getEstadisticas(@PathVariable usuarioId: Long): ResponseEntity<CustomResponse> {
@@ -194,6 +192,17 @@ fun getGenerarPatente(@PathVariable usuarioId: Long, @RequestBody plaquetaReques
             CustomResponse(
                 message = "Nueva patente generada correctamente",
                 data = administracionService.generarNuevaPatente(plaquetaRequestDto)
+            )
+        )
+    }
+
+    @DeleteMapping("/eliminar-invitacion")
+    fun eliminarInvitacion(@RequestBody usuarioDto: UsuarioAltaRequestDto): ResponseEntity<CustomResponse> {
+        usuarioService.eliminarInvitacionPorEmail(usuarioDto.email)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Invitación eliminada correctamente",
+                data = null
             )
         )
     }

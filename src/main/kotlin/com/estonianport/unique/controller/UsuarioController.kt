@@ -93,6 +93,27 @@ class UsuarioController {
         )
     }
 
+    @PostMapping("/reenviar-invitacion")
+    fun reenviarInvitacion(@RequestBody usuarioDto: UsuarioAltaRequestDto): ResponseEntity<CustomResponse> {
+        val usuario = usuarioService.getUsuarioByEmail(usuarioDto.email)
+        val password = usuarioService.generarPassword()
+        usuario.password = usuarioService.encriptarPassword(password)
+        usuarioService.save(usuario)
+
+        try {
+            emailService.enviarEmailAltaUsuario(usuario, "Bienvenido a UNIQUE", password);
+        } catch (_: Exception) {
+            // TODO enviar notificacion de fallo al enviar el mail
+        }
+
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Usuario creado correctamente",
+                data = UsuarioMapper.buildUsuarioResponseDto(usuario, mutableListOf<Long>())
+            )
+        )
+    }
+
     @PutMapping("/registro")
     fun registro(@RequestBody usuarioDto: UsuarioRegistroRequestDto): ResponseEntity<CustomResponse> {
         usuarioService.primerLogin(usuarioDto)
@@ -132,7 +153,10 @@ class UsuarioController {
         return ResponseEntity.status(200).body(
             CustomResponse(
                 message = "Password actualizado correctamente",
-                data = UsuarioMapper.buildUsuarioResponseDto(usuarioService.updatePassword(usuarioDto), mutableListOf<Long>())
+                data = UsuarioMapper.buildUsuarioResponseDto(
+                    usuarioService.updatePassword(usuarioDto),
+                    mutableListOf<Long>()
+                )
             )
         )
     }
