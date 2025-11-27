@@ -28,6 +28,7 @@ object PiscinaMapper{
             clima = piscina.climaLocal().toString(),
             entradaAgua = estadoPiscina.entradaAguaActiva.map { it.toCapitalized() }.toList(),
             funcionActiva = estadoPiscina.funcionFiltroActivo,
+            bombas = piscina.bomba.map { BombaMapper.buildBombaResponseDto(it) },
             sistemasGermicidas = piscina.sistemaGermicida.map { SistemaGermicidaMapper.buildSistemaGermicidaResponseDto(it) },
             calefaccion = piscina.calefaccion?.let { CalefaccionMapper.buildCalefaccionResponseDto(it) },
             esDesbordante = piscina.esDesbordante,
