@@ -1,5 +1,6 @@
 package com.estonianport.unique.model
 
+import com.estonianport.unique.model.enums.BombaType
 import com.estonianport.unique.model.enums.FuncionFiltroType
 import jakarta.persistence.*
 
@@ -140,20 +141,25 @@ class Piscina(
         }
     }
 
-    fun verificarEstados() {
+    fun verificarEstados(piscina: Piscina) {
         val estadoActual = estados.maxByOrNull { it.fecha } ?: return
 
         if (estadoActual.funcionFiltroActivo != FuncionFiltroType.REPOSO) {
             filtro.activo = true
-            bomba.first().activa = true
+            piscina.actualizarEstadoBombaPrincipal(true)
         } else {
             filtro.activo = false
-            bomba.first().activa = false
+            piscina.actualizarEstadoBombaPrincipal(false)
         }
     }
 
     fun estadoActual(): EstadoPiscina? {
         return estados.maxByOrNull { it.fecha }
+    }
+
+    fun actualizarEstadoBombaPrincipal(activa: Boolean) {
+        val bombaPrincipal = bomba.find { it.tipo == BombaType.PRINCIPAL }
+        bombaPrincipal?.activa = activa
     }
 
     @Transient

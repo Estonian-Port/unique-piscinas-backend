@@ -146,7 +146,7 @@ class EstadoPiscinaService(
 
     fun persistirNuevoEstado(piscina: Piscina, nuevoEstado: EstadoPiscina) {
         piscina.agregarNuevoEstadoPiscina(nuevoEstado)
-        piscina.verificarEstados()
+        piscina.verificarEstados(piscina)
         piscinaRepository.save(piscina)
     }
 

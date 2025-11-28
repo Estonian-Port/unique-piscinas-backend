@@ -48,6 +48,8 @@ class EstadoPiscina(
             if (funcion == FuncionFiltroType.FILTRAR || funcion == FuncionFiltroType.RECIRCULAR) {
                 inicioTrabajoFiltro = LocalDateTime.now()
                 piscina.activarSistemasGermicidas()
+            } else {
+                piscina.desactivarSistemasGermicidas(calcularTiempoUsoGermicidas())
             }
         }
     }
