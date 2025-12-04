@@ -16,41 +16,31 @@ interface UsuarioRepository : CrudRepository<Usuario, Long> {
     // o "usuario", al poner "usuarios" seria como decir "all usuario" o "lista usuario" me da igual usar cualquiera de los dos
 
     // TODO Creo que ahi estaria, tiene q ser fecha ultimo ingreso not null, fecha baja null y tener asignada
-    @Query(
-        """
-        SELECT COUNT(DISTINCT u)  
-        FROM Usuario u
-        JOIN Piscina p ON p.administrador = u
-        WHERE u.ultimoIngreso IS NOT NULL
-        AND u.fechaBaja IS NULL
-        AND u.rol = :rolUser
-    """
-    )
-    fun countUsuariosActivos(rolUser: RolType): Int
-
-    @Query(
-        """
-    SELECT COUNT(DISTINCT u)
-    FROM Usuario u
-    WHERE u.ultimoIngreso IS NOT NULL
-    AND u.fechaBaja IS NULL
-        AND u.rol = :rolUser
-    AND NOT EXISTS (
-        SELECT 1 FROM Piscina p WHERE p.administrador = u
-    )
-"""
-    )
-    fun countUsuariosInactivos(rolUser: RolType): Int
-
-    @Query(
-        """
+    @Query("""
     SELECT COUNT(u)
     FROM Usuario u
-    WHERE u.fechaBaja IS NULL
-    AND u.ultimoIngreso IS NULL
-        AND u.rol = :rolUser
-"""
-    )
+    WHERE u.estado = 'ACTIVO'
+    AND u.rol = :rolUser
+    AND u.fechaBaja IS NULL
+""")
+    fun countUsuariosActivos(rolUser: RolType): Int
+
+    @Query("""
+    SELECT COUNT(u)
+    FROM Usuario u
+    WHERE u.estado = 'INACTIVO'
+    AND u.rol = :rolUser
+    AND u.fechaBaja IS NULL
+""")
+    fun countUsuariosInactivos(rolUser: RolType): Int
+
+    @Query("""
+    SELECT COUNT(u)
+    FROM Usuario u
+    WHERE u.estado = 'PENDIENTE'
+    AND u.rol = :rolUser
+    AND u.fechaBaja IS NULL
+""")
     fun countUsuariosPendientes(rolUser: RolType): Int
 
     @Query(
@@ -58,6 +48,7 @@ interface UsuarioRepository : CrudRepository<Usuario, Long> {
         SELECT COUNT(u) 
         FROM Usuario u
         Where u.rol = :rolUser
+        AND u.fechaBaja IS NULL
     """
     )
     fun totalUsuarios(rolUser: RolType): Int

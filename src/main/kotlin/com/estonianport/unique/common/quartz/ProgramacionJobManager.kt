@@ -15,8 +15,8 @@ class ProgramacionJobManager(
             val comandoInicio = if (programacion.tipo == ProgramacionType.FILTRADO) "FILTRAR" else "ENCENDER_LUCES"
             val comandoFin = if (programacion.tipo == ProgramacionType.FILTRADO) "REPOSO" else "APAGAR_LUCES"
 
-            val jobInicioId = "inicio_${programacion.id}_${dia.name}_${programacion.horaInicio}"
-            val jobFinId = "fin_${programacion.id}_${dia.name}_${programacion.horaFin}"
+            val jobInicioId = "inicio_${programacion.id}_${dia.name}_${programacion.horaInicio}_${if (programacion.tipo == ProgramacionType.FILTRADO) "F" else "L"}"
+            val jobFinId = "fin_${programacion.id}_${dia.name}_${programacion.horaFin}_${if (programacion.tipo == ProgramacionType.FILTRADO) "F" else "L"}"
 
             // Evita duplicar jobs
             if (!quartzSchedulerService.scheduler.checkExists(JobKey.jobKey(jobInicioId))) {
@@ -37,8 +37,8 @@ class ProgramacionJobManager(
 
     fun eliminarJobs(programacion: Programacion) {
         programacion.dias.forEach { dia ->
-            quartzSchedulerService.eliminarJob("inicio_${programacion.id}_${dia.name}_${programacion.horaInicio}")
-            quartzSchedulerService.eliminarJob("fin_${programacion.id}_${dia.name}_${programacion.horaFin}")
+            quartzSchedulerService.eliminarJob("inicio_${programacion.id}_${dia.name}_${programacion.horaInicio}_${if (programacion.tipo == ProgramacionType.FILTRADO) "F" else "L"}")
+            quartzSchedulerService.eliminarJob("fin_${programacion.id}_${dia.name}_${programacion.horaFin}_${if (programacion.tipo == ProgramacionType.FILTRADO) "F" else "L"}")
         }
         println("🧹 Jobs Quartz eliminados para programación ${programacion.id}")
     }
