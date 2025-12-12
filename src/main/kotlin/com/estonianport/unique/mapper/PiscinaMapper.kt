@@ -2,6 +2,7 @@ package com.estonianport.unique.mapper
 
 import com.estonianport.unique.dto.request.PiscinaRequestDto
 import com.estonianport.unique.dto.response.*
+import com.estonianport.unique.model.Bomba
 import com.estonianport.unique.model.EstadoPiscina
 import com.estonianport.unique.model.Piscina
 import com.estonianport.unique.model.Plaqueta
@@ -28,6 +29,7 @@ object PiscinaMapper{
             clima = piscina.climaLocal().toString(),
             entradaAgua = estadoPiscina.entradaAguaActiva.map { it.toCapitalized() }.toList(),
             funcionActiva = estadoPiscina.funcionFiltroActivo,
+            bombas = piscina.bomba.ordenarPorTipo().map { BombaMapper.buildBombaResponseDto(it) },
             sistemasGermicidas = piscina.sistemaGermicida.map { SistemaGermicidaMapper.buildSistemaGermicidaResponseDto(it) },
             calefaccion = piscina.calefaccion?.let { CalefaccionMapper.buildCalefaccionResponseDto(it) },
             esDesbordante = piscina.esDesbordante,
@@ -52,7 +54,7 @@ object PiscinaMapper{
             presion = presionPiscina,
             ultimaActividad = calcularUltimaActividad(estadoPiscina.ultimaActividad),
             proximoCiclo = proximoCicloFiltrado,
-            bombas = piscina.bomba.map { BombaMapper.buildBombaResponseDto(it) }.toList(),
+            bombas = piscina.bomba.ordenarPorTipo().map { BombaMapper.buildBombaResponseDto(it) }.toList(),
             filtro = FiltroMapper.buildFiltroResponseDto(piscina.filtro),
             sistemasGermicidas = piscina.sistemaGermicida.map {
                 SistemaGermicidaMapper.buildSistemaGermicidaResponseDto(
@@ -153,7 +155,7 @@ object PiscinaMapper{
             profundidad = piscina.profundidad,
             volumen = piscina.volumen,
             volumenTC = piscina.volumenTC,
-            bomba = piscina.bomba.map { BombaMapper.buildBombaResponseDto(it) },
+            bomba = piscina.bomba.ordenarPorTipo().map { BombaMapper.buildBombaResponseDto(it) },
             filtro = FiltroMapper.buildFiltroResponseDto(piscina.filtro),
             sistemaGermicida = piscina.sistemaGermicida.map { SistemaGermicidaMapper.buildSistemaGermicidaResponseDto(it) },
             calefaccion = piscina.calefaccion?.let { CalefaccionMapper.buildCalefaccionResponseDto(it) },
@@ -204,6 +206,13 @@ object PiscinaMapper{
             plaqueta = plaqueta,
             notas = piscinaDTO.notas,
         )
+    }
+
+    private fun List<Bomba>.ordenarPorTipo(): List<Bomba> {
+        val ordenTipos = listOf("PRINCIPAL", "SECUNDARIA", "CASCADA", "HIDROMASAJE")
+        return this.sortedBy { bomba ->
+            ordenTipos.indexOf(bomba.tipo.name.uppercase()).takeIf { it >= 0 } ?: Int.MAX_VALUE
+        }
     }
 
 }

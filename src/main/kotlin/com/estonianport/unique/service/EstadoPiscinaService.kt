@@ -2,6 +2,7 @@ package com.estonianport.unique.service
 
 import com.estonianport.unique.common.errors.NotFoundException
 import com.estonianport.unique.common.mqtt.MqttPublisherService
+import com.estonianport.unique.model.Bomba
 import com.estonianport.unique.model.EstadoPiscina
 import com.estonianport.unique.model.Piscina
 import com.estonianport.unique.model.enums.EntradaAguaType
@@ -145,7 +146,7 @@ class EstadoPiscinaService(
 
     fun persistirNuevoEstado(piscina: Piscina, nuevoEstado: EstadoPiscina) {
         piscina.agregarNuevoEstadoPiscina(nuevoEstado)
-        piscina.verificarEstados()
+        piscina.verificarEstados(piscina)
         piscinaRepository.save(piscina)
     }
 
@@ -194,6 +195,17 @@ class EstadoPiscinaService(
             }
         }
         piscinaRepository.save(piscina)
+    }
+
+    fun actualizarEstadoBombaExtra (piscinaId: Long, bombaId: Long, nuevoEstado: Boolean) : Piscina {
+        val piscina =
+            piscinaRepository.findById(piscinaId) ?: throw NotFoundException("Piscina no encontrada con ID: $piscinaId")
+        val bombaExtra = piscina.bomba.find { it.id == bombaId }
+            ?: throw NotFoundException("Bomba extra no encontrada con ID: $bombaId")
+        //ACA SE ENVIA EL COMANDO MQTT PARA ACTIVAR/DESACTIVAR LA BOMBA EXTRA
+        bombaExtra.activa = nuevoEstado
+        piscinaRepository.save(piscina)
+        return piscina
     }
 
 }

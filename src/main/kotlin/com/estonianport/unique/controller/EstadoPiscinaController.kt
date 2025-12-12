@@ -3,6 +3,7 @@ package com.estonianport.unique.controller
 import com.estonianport.unique.dto.request.FuncionFiltroRequestDto
 import com.estonianport.unique.mapper.PiscinaMapper
 import com.estonianport.unique.dto.response.CustomResponse
+import com.estonianport.unique.mapper.BombaMapper
 import com.estonianport.unique.mapper.UsuarioMapper
 import com.estonianport.unique.model.enums.EntradaAguaType
 import com.estonianport.unique.model.enums.FuncionFiltroType
@@ -99,5 +100,24 @@ class EstadoPiscinaController {
         )
     }
 
+    data class ActivaRequest(val activa: Boolean)
+
+    @PostMapping("/actualizar-estado-bomba-extra/{piscinaId}/{bombaId}")
+    fun actualizarEstadoBombaExtra(
+        @PathVariable piscinaId: Long,
+        @PathVariable bombaId: Long,
+        @RequestBody request: ActivaRequest
+    ): ResponseEntity<CustomResponse> {
+        val piscinaActualizada = estadoPiscinaService.actualizarEstadoBombaExtra(piscinaId, bombaId, request.activa)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Estado de la bomba extra actualizado correctamente",
+                data = PiscinaMapper.buildPiscinaResumenResponseDto(
+                    piscinaActualizada,
+                    estadoPiscina = estadoPiscinaService.findEstadoActualByPiscinaId(piscinaId)
+                )
+            )
+        )
+    }
 
 }

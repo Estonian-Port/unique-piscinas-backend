@@ -71,7 +71,12 @@ class UsuarioService : GenericServiceImpl<Usuario, Long>() {
     }
 
     fun getUsuariosRegistrados(): List<Usuario> {
-        return getAll()!!.filter { it.rol != RolType.ADMIN && it.estado.name != "PENDIENTE" && it.estado.name != "BAJA" }
+        return getAll()!!.filter {
+            it.rol != RolType.ADMIN &&
+                    it.rol != RolType.PAT_GEN &&
+                    it.estado.name != "PENDIENTE" &&
+                    it.estado.name != "BAJA"
+        }
     }
 
     fun getUsuariosPendientes(): List<Usuario> {
@@ -118,7 +123,8 @@ class UsuarioService : GenericServiceImpl<Usuario, Long>() {
     }
 
     fun desvincularPiscina(usuarioId: Long, tienePiscinaAsignada: Boolean) {
-        val usuario = findById(usuarioId) ?: throw NoSuchElementException("No se encontró un usuario con el ID proporcionado")
+        val usuario =
+            findById(usuarioId) ?: throw NoSuchElementException("No se encontró un usuario con el ID proporcionado")
         if (!tienePiscinaAsignada) {
             usuario.estado = EstadoType.INACTIVO
             save(usuario)
@@ -126,14 +132,16 @@ class UsuarioService : GenericServiceImpl<Usuario, Long>() {
     }
 
     fun darDeBaja(usuarioId: Long) {
-        val usuario = findById(usuarioId) ?: throw NoSuchElementException("No se encontró un usuario con el ID proporcionado")
+        val usuario =
+            findById(usuarioId) ?: throw NoSuchElementException("No se encontró un usuario con el ID proporcionado")
         usuario.estado = EstadoType.BAJA
         usuario.fechaBaja = LocalDate.now()
         save(usuario)
     }
 
-    fun updatePerfil (usuario: Usuario) : Usuario {
-        val usuarioExistente = findById(usuario.id) ?: throw NoSuchElementException("No se encontró un usuario con el ID proporcionado")
+    fun updatePerfil(usuario: Usuario): Usuario {
+        val usuarioExistente =
+            findById(usuario.id) ?: throw NoSuchElementException("No se encontró un usuario con el ID proporcionado")
         usuarioExistente.nombre = usuario.nombre
         usuarioExistente.apellido = usuario.apellido
         usuarioExistente.email = usuario.email
@@ -142,7 +150,7 @@ class UsuarioService : GenericServiceImpl<Usuario, Long>() {
         return usuarioExistente
     }
 
-    fun updatePassword (usuarioDto : UsuarioCambioPasswordRequestDto) : Usuario {
+    fun updatePassword(usuarioDto: UsuarioCambioPasswordRequestDto): Usuario {
         val usuario = getUsuarioByEmail(usuarioDto.email)
         if (!BCryptPasswordEncoder().matches(usuarioDto.passwordActual, usuario.password)) {
             throw IllegalArgumentException("La contraseña actual es incorrecta")
@@ -156,6 +164,15 @@ class UsuarioService : GenericServiceImpl<Usuario, Long>() {
         usuario.password = encriptarPassword(usuarioDto.nuevoPassword)
         save(usuario)
         return usuario
+    }
+
+    fun eliminarInvitacionPorEmail(email: String) {
+        val usuario = usuarioRepository.getUsuarioByEmail(email)
+        if (usuario != null && usuario.estado == EstadoType.PENDIENTE) {
+            usuarioRepository.delete(usuario)
+        } else {
+            throw NoSuchElementException("No se encontró una invitación pendiente para el email proporcionado")
+        }
     }
 
 }
