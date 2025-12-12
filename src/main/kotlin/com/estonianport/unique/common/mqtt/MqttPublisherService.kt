@@ -3,12 +3,12 @@ package com.estonianport.unique.common.mqtt
 import com.estonianport.unique.model.enums.EntradaAguaType
 import com.estonianport.unique.model.enums.FuncionFiltroType
 import com.estonianport.unique.model.enums.SistemaGermicidaType
-import org.eclipse.paho.client.mqttv3.MqttClient
-import org.eclipse.paho.client.mqttv3.MqttMessage
+import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient
 import org.springframework.stereotype.Service
+import java.nio.charset.StandardCharsets
 
 @Service
-class MqttPublisherService(private val mqttClient: MqttClient) {
+class MqttPublisherService(private val mqttClient: Mqtt5AsyncClient) {
 
     fun sendCommand(patente: String, accion: String) {
         val topic = "plaquetas/comando"
@@ -19,9 +19,20 @@ class MqttPublisherService(private val mqttClient: MqttClient) {
                 "id_solicitud": $idSolicitud,
                 "accion": "$accion"
             }"""
-        val message = MqttMessage(payload.toByteArray()).apply { qos = 1 }
-        //mqttClient.publish(topic, message)
-        println("Publicado comando $accion para plaqueta $patente en $topic")
+
+        // Use the HiveMQ fluent builder API for publishing
+        mqttClient.publishWith()
+            .topic(topic)
+            .payload(payload.toByteArray(StandardCharsets.UTF_8))
+            .qos(com.hivemq.client.mqtt.datatypes.MqttQos.AT_LEAST_ONCE) // QOS 1
+            .send()
+            .whenComplete { publishResult, throwable ->
+                if (throwable != null) {
+                    println("Failed to publish command $accion for plaqueta $patente: ${throwable.message}")
+                } else {
+                    println("Publicado comando $accion para plaqueta $patente en $topic")
+                }
+            }
     }
 
     fun sendCommandList(
@@ -42,8 +53,19 @@ class MqttPublisherService(private val mqttClient: MqttClient) {
         )
 
         val payloadJson = com.fasterxml.jackson.module.kotlin.jacksonObjectMapper().writeValueAsString(payloadMap)
-        val message = MqttMessage(payloadJson.toByteArray()).apply { qos = 1 }
-        //mqttClient.publish(topic, message)
-        println("Publicado comando lista para plaqueta $patente en $topic: $payloadJson")
+
+        // Use the HiveMQ fluent builder API for publishing
+        mqttClient.publishWith()
+            .topic(topic)
+            .payload(payloadJson.toByteArray(StandardCharsets.UTF_8))
+            .qos(com.hivemq.client.mqtt.datatypes.MqttQos.AT_LEAST_ONCE) // QOS 1
+            .send()
+            .whenComplete { publishResult, throwable ->
+                if (throwable != null) {
+                    println("Failed to publish command list for plaqueta $patente: ${throwable.message}")
+                } else {
+                    println("Publicado comando lista para plaqueta $patente en $topic: $payloadJson")
+                }
+            }
     }
 }

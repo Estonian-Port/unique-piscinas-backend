@@ -6,22 +6,25 @@ import com.estonianport.unique.model.*
 import com.estonianport.unique.model.enums.EstadoType
 import com.estonianport.unique.repository.*
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import org.eclipse.paho.client.mqttv3.IMqttMessageListener
-import org.eclipse.paho.client.mqttv3.MqttClient
+import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient
+import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish
+import jakarta.annotation.PostConstruct // Use PostConstruct for initialization after dependency injection
 import org.springframework.stereotype.Service
+import java.nio.charset.StandardCharsets
 
 @Service
 class MqttSubscriberService(
-    mqttClient: MqttClient,
+    private val mqttClient: Mqtt5AsyncClient, // Inyectamos el cliente de HiveMQ
     private val plaquetaRepository: PlaquetaRepository,
     private val lecturaRepository: LecturaRepository,
     private val piscinaRepository: PiscinaRepository,
     private val estadoPiscinaRepository: EstadoPiscinaRepository,
     private val mqttPublisherService: MqttPublisherService
 ) {
-
-    private val mqttListener = IMqttMessageListener { topic, message ->
-        val payload = String(message.payload)
+    // The message handling logic is now inside a main callback function
+    private fun handleMqttMessage(publish: Mqtt5Publish) {
+        val topic = publish.topic.toString()
+        val payload = String(publish.payloadAsBytes, StandardCharsets.UTF_8)
         println("Mensaje recibido en $topic: $payload")
 
         when (topic) {
@@ -30,6 +33,30 @@ class MqttSubscriberService(
             "plaquetas/estado" -> procesarEstado(payload)
         }
     }
+
+    // Use @PostConstruct to subscribe once the service is fully initialized
+    @PostConstruct
+    fun subscribeToTopics() {
+        // We subscribe to multiple topics using the same callback handler
+        val topics = listOf("plaquetas/registro", "plaquetas/lectura", "plaquetas/estado")
+
+        topics.forEach { topic ->
+            mqttClient.subscribeWith()
+                .topicFilter(topic)
+                .qos(com.hivemq.client.mqtt.datatypes.MqttQos.AT_LEAST_ONCE)
+                .callback(this::handleMqttMessage) // Set the handler function
+                .send()
+                .whenComplete { subAck, throwable ->
+                    if (throwable != null) {
+                        println("Failed to subscribe to $topic: ${throwable.message}")
+                    } else {
+                        println("Suscrito a topic $topic")
+                    }
+                }
+        }
+        println("Suscripción iniciada para topics de plaquetas")
+    }
+
 
     private fun procesarRegistro(payload: String) {
         val patente = extractPatente(payload)
@@ -92,12 +119,5 @@ class MqttSubscriberService(
     private fun extractPatente(payload: String): String {
         return Regex("\"patente\":\\s*\"(\\w{4})\"")
             .find(payload)?.groups?.get(1)?.value ?: "UNKNOWN"
-    }
-
-    init {
-        mqttClient.subscribe("plaquetas/registro", mqttListener)
-        mqttClient.subscribe("plaquetas/lectura", mqttListener)
-        mqttClient.subscribe("plaquetas/estado", mqttListener)
-        println("Suscrito a topics de plaquetas")
     }
 }
