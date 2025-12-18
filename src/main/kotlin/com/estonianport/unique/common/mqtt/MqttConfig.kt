@@ -6,7 +6,7 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
-/*@Configuration
+@Configuration
 class MqttConfig(private val mqttProperties: MqttProperties) {
 
     fun buildConnectionOptions(): MqttConnectOptions {
@@ -30,26 +30,4 @@ class MqttConfig(private val mqttProperties: MqttProperties) {
         println("Conectado al broker MQTT")
         return client
     }
-}*/
-
-@Configuration
-class MqttConfig(private val mqttProperties: MqttProperties) {
-
-    @Bean
-    fun mqttConnectOptions(): MqttConnectOptions =
-        MqttConnectOptions().apply {
-            isCleanSession = true
-            userName = mqttProperties.username
-            password = mqttProperties.password.toCharArray()
-            connectionTimeout = 10
-            isAutomaticReconnect = true
-        }
-
-    @Bean
-    fun mqttClient(): MqttClient {
-        val broker = mqttProperties.brokerUrl
-        val clientId = "backend-${System.currentTimeMillis()}"
-        return MqttClient(broker, clientId, MemoryPersistence())
-    }
 }
-
