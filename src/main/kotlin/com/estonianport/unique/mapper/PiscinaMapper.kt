@@ -6,6 +6,7 @@ import com.estonianport.unique.model.Bomba
 import com.estonianport.unique.model.EstadoPiscina
 import com.estonianport.unique.model.Piscina
 import com.estonianport.unique.model.Plaqueta
+import com.estonianport.unique.model.enums.BombaType
 import com.estonianport.unique.model.enums.ProgramacionType
 import com.estonianport.unique.model.enums.toCapitalized
 import java.time.Duration
@@ -166,21 +167,34 @@ object PiscinaMapper{
     }
 
     fun buildPiscinaEquiposResponseDto(piscina: Piscina): PiscinaEquiposDto {
+        val ordenBombas = mapOf(
+            BombaType.PRINCIPAL to 1,
+            BombaType.SECUNDARIA to 2,
+            BombaType.CASCADA to 3,
+            BombaType.HIDROMASAJE to 4
+        )
+
+        val bombasOrdenadas = piscina.bomba
+            .sortedBy { ordenBombas[it.tipo] ?: 999 }
+            .map { BombaMapper.buildBombaResponseDto(it) }
+
+        val registrosOrdenados = piscina.registros
+            .map { RegistroMapper.buildRegistroResponseDto(it) }
+            .sortedByDescending { it.fecha }
+
         return PiscinaEquiposDto(
             id = piscina.id,
             direccion = piscina.direccion,
-            bombas = piscina.bomba.map { BombaMapper.buildBombaResponseDto(it) },
+            bombas = bombasOrdenadas,
             filtro = FiltroMapper.buildFiltroResponseDto(piscina.filtro),
             sistemasGermicidas = piscina.sistemaGermicida.map {
-                SistemaGermicidaMapper.buildSistemaGermicidaResponseDto(
-                    it
-                )
+                SistemaGermicidaMapper.buildSistemaGermicidaResponseDto(it)
             },
             cloroSalino = piscina.cloroSalino,
             controlAutomaticoPH = piscina.controlAutomaticoPH,
             orp = piscina.orp,
             calefaccion = piscina.calefaccion?.let { CalefaccionMapper.buildCalefaccionResponseDto(it) },
-            registros = piscina.registros.map { RegistroMapper.buildRegistroResponseDto(it) }
+            registros = registrosOrdenados
         )
     }
 

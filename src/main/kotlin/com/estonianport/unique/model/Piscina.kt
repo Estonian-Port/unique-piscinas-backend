@@ -11,28 +11,28 @@ class Piscina(
     val id: Long,
 
     @Column
-    val direccion: String,
+    var direccion: String,
 
     @Column
-    val ciudad: String,
+    var ciudad: String,
 
     @Column
-    val esDesbordante: Boolean,
+    var esDesbordante: Boolean,
 
     @Column
-    val largo: Double,
+    var largo: Double,
 
     @Column
-    val ancho: Double,
+    var ancho: Double,
 
     @Column
-    val profundidad: Double,
+    var profundidad: Double,
 
     @Column
-    val volumen: Double,
+    var volumen: Double,
 
     @Column
-    val volumenTC: Double?,
+    var volumenTC: Double?,
 
     @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     @JoinColumn(name = "piscina_id")
@@ -64,7 +64,7 @@ class Piscina(
     val plaqueta: Plaqueta,
 
     @Column(length = 5000)
-    val notas: String?,
+    var notas: String?,
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "piscina", cascade = [CascadeType.ALL], orphanRemoval = true)
     @OrderBy("id ASC")
