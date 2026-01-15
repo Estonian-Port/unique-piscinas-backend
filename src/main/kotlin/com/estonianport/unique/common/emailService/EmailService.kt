@@ -77,12 +77,12 @@ class EmailService {
             "usuario" to usuario.email,
             "password" to password,
             "action" to action,
-            "url_instagram" to "https://www.instagram.com/agendaza",
-            "url_web" to "https://estonian-port.github.io/estonianport-landingpage/",
-            "url_linkedin" to "https://www.linkedin.com/company/estonianport",
-            "imagen_ig" to "https://iili.io/3USINa4.png",
+            "url_fb" to "https://www.facebook.com/piscinasdeacero",
+            "url_web" to "https://unique.ar",
+            "url_yt" to "https://www.youtube.com/channel/UCOUL4joSqVbuvLcRRh5YSsQ",
+            "imagen_fb" to "https://iili.io/fS7JxoP.png",
             "imagen_web" to "https://iili.io/3USIh6G.png",
-            "imagen_linkedin" to "https://iili.io/3USIwFf.png",
+            "imagen_yt" to "https://iili.io/fS72Iaa.png",
         ))
 
         // ----------------- Envio email -------------------------
