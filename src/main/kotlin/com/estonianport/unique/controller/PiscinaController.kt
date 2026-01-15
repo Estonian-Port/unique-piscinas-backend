@@ -11,6 +11,7 @@ import com.estonianport.unique.dto.request.ProgramacionRequestDto
 import com.estonianport.unique.dto.request.SistemaGermicidaRequestDto
 import com.estonianport.unique.mapper.PiscinaMapper
 import com.estonianport.unique.dto.response.CustomResponse
+import com.estonianport.unique.dto.response.PiscinaFichaTecnicaDto
 import com.estonianport.unique.dto.response.RegistroResponseDto
 import com.estonianport.unique.mapper.BombaMapper
 import com.estonianport.unique.mapper.CalefaccionMapper
@@ -25,6 +26,7 @@ import com.estonianport.unique.service.EstadoPiscinaService
 import com.estonianport.unique.model.enums.EntradaAguaType
 import com.estonianport.unique.model.enums.FuncionFiltroType
 import com.estonianport.unique.model.enums.ProgramacionType
+import com.estonianport.unique.service.AdministracionService
 import com.estonianport.unique.service.PiscinaService
 import com.estonianport.unique.service.PlaquetaService
 import com.estonianport.unique.service.UsuarioService
@@ -53,6 +55,9 @@ class PiscinaController {
 
     @Autowired
     private lateinit var estadoPiscinaService: EstadoPiscinaService
+
+    @Autowired
+    lateinit var administracionService: AdministracionService
 
     @Autowired
     private lateinit var usuarioService: UsuarioService
@@ -406,6 +411,21 @@ class PiscinaController {
             CustomResponse(
                 message = "Registro eliminado correctamente",
                 data = null
+            )
+        )
+    }
+
+    @PutMapping("/editar-informacion-piscina/{usuarioId}")
+    fun editarInformacionPiscina(
+        @PathVariable usuarioId: Long,
+        @RequestBody piscinaDto: PiscinaFichaTecnicaDto
+    ): ResponseEntity<CustomResponse> {
+        administracionService.verificarRolAdmin(usuarioId)
+        val piscinaActualizada = piscinaService.editarInformacionPiscina(piscinaDto)
+        return ResponseEntity.status(200).body(
+            CustomResponse(
+                message = "Información de la piscina actualizada correctamente",
+                data = PiscinaMapper.buildPiscinaFichaTecnicaDto(piscinaActualizada)
             )
         )
     }

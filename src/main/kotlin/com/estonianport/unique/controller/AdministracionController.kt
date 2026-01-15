@@ -5,6 +5,7 @@ import com.estonianport.unique.dto.request.PlaquetaRequestDto
 import com.estonianport.unique.dto.request.UsuarioAltaRequestDto
 import com.estonianport.unique.mapper.PiscinaMapper
 import com.estonianport.unique.dto.response.CustomResponse
+import com.estonianport.unique.dto.response.PiscinaFichaTecnicaDto
 import com.estonianport.unique.mapper.UsuarioMapper
 import com.estonianport.unique.service.AdministracionService
 import com.estonianport.unique.service.PiscinaService

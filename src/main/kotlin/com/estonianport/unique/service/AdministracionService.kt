@@ -5,6 +5,7 @@ import com.estonianport.unique.common.errors.IllegalAccessException
 import com.estonianport.unique.dto.response.EstadisticasResponseDto
 import com.estonianport.unique.common.errors.NotFoundException
 import com.estonianport.unique.dto.request.PlaquetaRequestDto
+import com.estonianport.unique.dto.response.PiscinaFichaTecnicaDto
 import com.estonianport.unique.model.Plaqueta
 import com.estonianport.unique.model.enums.EstadoType
 import com.estonianport.unique.model.enums.RolType
@@ -36,8 +37,8 @@ class AdministracionService(
             usuariosInactivos = usuarioService.countUsuariosInactivos(),
             piscinasSkimmer = piscinaService.countPiscinasDesborde(),
             piscinasDesborde = piscinaService.countPiscinasSkimmer(),
-            volumenTotal = piscinaService.getVolumenTotal(),
-            volumenPromedio = piscinaService.getVolumenPromedio(),
+            volumenTotal = piscinaService.getVolumenTotal() ?: 0.0,
+            volumenPromedio = piscinaService.getVolumenPromedio() ?: 0.0,
         )
     }
 

@@ -3,6 +3,7 @@ package com.estonianport.unique.service
 import com.estonianport.unique.dto.response.LecturaConErrorResponseDto
 import com.estonianport.unique.common.errors.NotFoundException
 import com.estonianport.unique.common.quartz.QuartzSchedulerService
+import com.estonianport.unique.dto.response.PiscinaFichaTecnicaDto
 import com.estonianport.unique.model.Bomba
 import com.estonianport.unique.model.Calefaccion
 import com.estonianport.unique.model.Filtro
@@ -130,11 +131,11 @@ class PiscinaService(
         return piscinaRepository.countSkimmer()
     }
 
-    fun getVolumenTotal(): Double {
+    fun getVolumenTotal(): Double? {
         return piscinaRepository.getTotalVolumen()
     }
 
-    fun getVolumenPromedio(): Double {
+    fun getVolumenPromedio(): Double? {
         return piscinaRepository.getPromedioVolumen()
     }
 
@@ -364,5 +365,22 @@ class PiscinaService(
         val piscina = findById(piscinaId)
         return piscina.plaqueta.patente
     }
+
+
+    fun editarInformacionPiscina(piscinaDto : PiscinaFichaTecnicaDto) : Piscina {
+        val piscina = findById(piscinaDto.id)
+        piscina.direccion = piscinaDto.direccion
+        piscina.ciudad = piscinaDto.ciudad
+        piscina.esDesbordante = piscinaDto.esDesbordante
+        piscina.largo = piscinaDto.largo
+        piscina.ancho = piscinaDto.ancho
+        piscina.profundidad = piscinaDto.profundidad
+        piscina.volumen = piscinaDto.volumen
+        piscina.volumenTC = piscinaDto.volumenTC
+        piscina.notas = piscinaDto.notas
+        piscinaRepository.save(piscina)
+        return piscina
+    }
+
 
 }

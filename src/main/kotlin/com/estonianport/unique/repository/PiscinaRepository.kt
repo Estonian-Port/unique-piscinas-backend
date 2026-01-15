@@ -88,14 +88,14 @@ interface PiscinaRepository : JpaRepository<Piscina, Int> {
         SELECT SUM(p.volumen) FROM Piscina p
     """
     )
-    fun getTotalVolumen(): Double
+    fun getTotalVolumen(): Double?
 
     @Query(
         """
        SELECT ROUND(AVG(p.volumen), 2) FROM Piscina p
     """
     )
-    fun getPromedioVolumen(): Double
+    fun getPromedioVolumen(): Double?
 
     @Query(
         """
