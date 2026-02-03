@@ -4,9 +4,14 @@ import org.quartz.*
 import org.springframework.stereotype.Service
 import java.time.DayOfWeek
 import java.time.LocalTime
+import java.util.TimeZone
 
 @Service
 class QuartzSchedulerService(val scheduler: Scheduler) {
+
+    companion object {
+        private val ARGENTINA_TZ = TimeZone.getTimeZone("America/Argentina/Buenos_Aires")
+    }
 
     fun programarJob(
         piscinaId: Long,
@@ -42,7 +47,7 @@ class QuartzSchedulerService(val scheduler: Scheduler) {
                     quartzDayOfWeek,
                     hora.hour,
                     hora.minute
-                )
+                ).inTimeZone(ARGENTINA_TZ)
             )
             .build()
 
