@@ -1,52 +1,69 @@
 package com.estonianport.unique.common.emailService
 
 import com.estonianport.unique.common.errors.BusinessException
-import com.estonianport.unique.dto.request.UsuarioRequestDto
 import com.estonianport.unique.model.Usuario
-import jakarta.mail.MessagingException
-import jakarta.mail.internet.InternetAddress
-import jakarta.mail.internet.MimeMessage
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.mail.javamail.JavaMailSender
-import org.springframework.stereotype.Service
 import org.apache.commons.validator.routines.EmailValidator
-import org.springframework.mail.javamail.MimeMessageHelper
-
+import org.springframework.stereotype.Service
+import java.net.URI
+import java.net.http.HttpClient
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse
 
 @Service
 class EmailService {
 
-    @Autowired
-    lateinit var sender: JavaMailSender
+    private val httpClient = HttpClient.newHttpClient()
+    private val resendApiKey = System.getenv("MAIL_PASS")
+        ?: throw IllegalStateException("MAIL_PASS no definido")
+    private val fromEmail = "Unique Piscinas <unique.piscinas@estonianport.com.ar>"
 
     fun isEmailValid(target: String): Boolean {
         return target.isNotEmpty() && EmailValidator.getInstance().isValid(target)
     }
 
     fun sendEmail(emailBody: Email) {
-        if(!isEmailValid(emailBody.email)){
+        if (!isEmailValid(emailBody.email)) {
             throw BusinessException("Email Invalido")
         }
         sendEmailTool(emailBody.content, emailBody.email, emailBody.subject)
     }
 
-    private fun sendEmailTool(textMessage: String, email: String, subject: String) {
-        val message: MimeMessage = sender.createMimeMessage()
-        val helper = MimeMessageHelper(message)
+    private fun sendEmailTool(html: String, email: String, subject: String) {
         try {
-            helper.setTo(email)
-            helper.setText(textMessage, true)
-            helper.setSubject(subject)
-            helper.setFrom(InternetAddress("estonianport@gmail.com", "Estonian Port"))
-            sender.send(message)
-        } catch (e: MessagingException) {
+            val body = """
+            {
+              "from": "$fromEmail",
+              "to": ["$email"],
+              "subject": "$subject",
+              "html": ${jsonEscape(html)}
+            }
+            """.trimIndent()
+
+            val request = HttpRequest.newBuilder()
+                .uri(URI.create("https://api.resend.com/emails"))
+                .header("Authorization", "Bearer $resendApiKey")
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .build()
+
+            val response = httpClient.send(request, HttpResponse.BodyHandlers.ofString())
+
+            if (response.statusCode() !in 200..299) {
+                println("Error Resend: ${response.body()}")
+                throw BusinessException("No se pudo enviar el mail")
+            }
+
+        } catch (e: Exception) {
+            e.printStackTrace()
             throw BusinessException("No se pudo enviar el mail")
         }
     }
 
     fun loadHtmlTemplate(nombreArchivo: String): String {
-        val inputStream = javaClass.classLoader.getResourceAsStream("templates/email/$nombreArchivo")
-                ?: throw BusinessException("No se encontró la plantilla de mail")
+        val inputStream = javaClass.classLoader
+            .getResourceAsStream("templates/email/$nombreArchivo")
+            ?: throw BusinessException("No se encontró la plantilla de mail")
+
         return inputStream.bufferedReader().use { it.readText() }
     }
 
@@ -58,38 +75,48 @@ class EmailService {
         return result
     }
 
-    fun enviarEmailAltaUsuario(usuario: Usuario, action: String, password : String) {
+    fun enviarEmailAltaUsuario(usuario: Usuario, action: String, password: String) {
 
-        if(!isEmailValid(usuario.email)){
+        if (!isEmailValid(usuario.email)) {
             throw BusinessException("Email Invalido")
         }
 
-        // ----------------- Armado email -------------------------
-        val emailBody = Email(
-            usuario.email,
-            action
-        )
+        val template = loadHtmlTemplate("alta_usuario.html")
 
         // ----------------- Content email -------------------------
-        val template = loadHtmlTemplate("alta_usuario.html")
-        emailBody.content = renderTemplate(template, mapOf(
-            "empresa_logo" to "https://iili.io/KqONvFj.png",
-            "usuario" to usuario.email,
-            "password" to password,
-            "action" to action,
-            "url_fb" to "https://www.facebook.com/piscinasdeacero",
-            "url_web" to "https://unique.ar",
-            "url_yt" to "https://www.youtube.com/channel/UCOUL4joSqVbuvLcRRh5YSsQ",
-            "imagen_fb" to "https://iili.io/fS7JxoP.png",
-            "imagen_web" to "https://iili.io/3USIh6G.png",
-            "imagen_yt" to "https://iili.io/fS72Iaa.png",
-        ))
+
+        val content = renderTemplate(
+            template,
+            mapOf(
+                "empresa_logo" to "https://iili.io/KqONvFj.png",
+                "usuario" to usuario.email,
+                "password" to password,
+                "action" to action,
+                "url_fb" to "https://www.facebook.com/piscinasdeacero",
+                "url_web" to "https://unique.ar",
+                "url_yt" to "https://www.youtube.com/channel/UCOUL4joSqVbuvLcRRh5YSsQ",
+                "imagen_fb" to "https://iili.io/fS7JxoP.png",
+                "imagen_web" to "https://iili.io/3USIh6G.png",
+                "imagen_yt" to "https://iili.io/fS72Iaa.png",
+            )
+        )
 
         // ----------------- Envio email -------------------------
-        sendEmail(emailBody)
 
+        sendEmail(
+            Email(
+                email = usuario.email,
+                subject = action,
+                content = content
+            )
+        )
     }
 
-
-
+    private fun jsonEscape(html: String): String {
+        return "\"" + html
+            .replace("\\", "\\\\")
+            .replace("\"", "\\\"")
+            .replace("\n", "\\n")
+            .replace("\r", "") + "\""
+    }
 }
