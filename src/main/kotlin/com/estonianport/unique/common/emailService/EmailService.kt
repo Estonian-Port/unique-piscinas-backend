@@ -95,9 +95,9 @@ class EmailService {
                 "url_fb" to "https://www.facebook.com/piscinasdeacero",
                 "url_web" to "https://unique.ar",
                 "url_yt" to "https://www.youtube.com/channel/UCOUL4joSqVbuvLcRRh5YSsQ",
-                "imagen_fb" to "https://iili.io/fS7JxoP.png",
+                "imagen_fb" to "https://iili.io/qeMPAqQ.png",
                 "imagen_web" to "https://iili.io/3USIh6G.png",
-                "imagen_yt" to "https://iili.io/fS72Iaa.png",
+                "imagen_yt" to "https://iili.io/qeMPR1V.png",
             )
         )
 
